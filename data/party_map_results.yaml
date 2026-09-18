@@ -1,0 +1,222 @@
+# Maps Ministerio del Interior national-head candidatura codes (file 03, field "cabecera nacional")
+# to canonical party ids, per election. Codes are only stable within one election.
+# Every list that won a seat or >=1% nationally is listed; anything else becomes OTHER.
+# Siglas shown after each code are the Ministry's own, kept for auditability.
+# Regional confluences of Podemos (ECP, En Marea, Compromís-Podemos) are folded into UP,
+# and PSC into PSOE, because that is how seats are counted in Congress and how polls report them.
+"197706":
+  "000087": UCD      # UCD
+  "000078": PSOE     # PSOE
+  "000062": IU       # PCE
+  "000009": PP       # AP
+  "000080": PSP      # PSP-US
+  "000066": JUNTS    # PDPC (Pacte Democràtic per Catalunya, CDC-led)
+  "000069": PNV      # PNV
+  "000088": JUNTS    # UDC-IDCC (Unió)
+  "000028": ERC      # EC-FED (Esquerra de Catalunya)
+  "000029": EE       # EE
+  "000016": CAIC     # CAIC
+"197903":
+  "000062": UCD      # UCD
+  "000056": PSOE     # PSOE
+  "000038": IU       # PCE
+  "000007": PP       # CD (Coalición Democrática, AP-led)
+  "000010": JUNTS    # CiU
+  "000067": UN       # UN (Unión Nacional)
+  "000051": PA       # PSA-PA
+  "000047": PNV      # PNV
+  "000019": BILDU    # HB
+  "000015": ERC      # ERC-FN
+  "000013": EE       # EE
+  "000005": UPC      # UPC
+  "000035": PAR      # PAR
+"198210":
+  "000077": PSOE     # PSOE
+  "000005": PP       # AP-PDP
+  "000081": UCD      # UCD
+  "000055": IU       # PCE
+  "000018": JUNTS    # CiU
+  "000015": CDS      # CDS
+  "000020": PNV      # EAJ-PNV
+  "000034": BILDU    # HB
+  "000026": ERC      # ERC
+  "000021": EE       # EE
+"198606":
+  "000060": PSOE     # PSOE
+  "000009": PP       # AP-PDP-PL (Coalición Popular)
+  "000015": CDS      # CDS
+  "000017": JUNTS    # CiU
+  "000030": IU       # IU
+  "000021": PNV      # EAJ-PNV
+  "000028": BILDU    # HB
+  "000022": EE       # EE
+  "000016": CG       # CG
+  "000039": PAR      # PAR
+  "000007": CC       # AIC
+  "000068": UV       # UV
+"198910":
+  "000001": PSOE     # PSOE
+  "000002": PP       # PP
+  "000004": IU       # IU
+  "000003": CDS      # CDS
+  "000055": JUNTS    # CiU
+  "000094": PNV      # EAJ-PNV
+  "000077": BILDU    # HB
+  "000025": PA       # PA
+  "000086": UV       # UV
+  "000074": EA       # EA
+  "000075": EE       # EE
+  "000030": PAR      # PAR
+  "000041": CC       # AIC
+"199306":
+  "000001": PSOE     # PSOE
+  "000002": PP       # PP
+  "000004": IU       # IU
+  "000055": JUNTS    # CiU
+  "000003": CDS      # CDS
+  "000094": PNV      # EAJ-PNV
+  "000005": CC       # CC
+  "000077": BILDU    # HB
+  "000062": ERC      # ERC
+  "000030": PAR      # PAR
+  "000113": EA       # EA-EUE
+  "000086": UV       # UV
+"199603":
+  "000091": PP       # PP
+  "000108": PSOE     # PSOE
+  "000041": IU       # IU
+  "000015": JUNTS    # CiU
+  "000022": PNV      # EAJ-PNV
+  "000010": CC       # CC
+  "000009": BNG      # BNG
+  "000036": BILDU    # HB
+  "000025": ERC      # ERC
+  "000021": EA       # EA
+  "000124": UV       # UV
+"200003":
+  "000113": PP       # PP
+  "000135": PSOE     # PSOE-PROGRESISTAS
+  "000063": IU       # IU
+  "000026": JUNTS    # CiU
+  "000029": PNV      # EAJ-PNV
+  "000013": BNG      # BNG
+  "000014": CC       # CC
+  "000086": PA       # PA
+  "000036": ERC      # ERC
+  "000058": IU       # IC-V
+  "000028": EA       # EA
+  "000020": CHA      # CHA
+"200403":
+  "000146": PSOE     # PSOE
+  "000130": PP       # PP
+  "000070": IU       # IU
+  "000033": JUNTS    # CiU
+  "000041": ERC      # ERC
+  "000036": PNV      # EAJ-PNV
+  "000017": CC       # CC
+  "000015": BNG      # BNG
+  "000027": CHA      # CHA
+  "000035": EA       # EA
+  "000094": NABAI    # Na-Bai
+"200803":
+  "000225": PSOE     # PSOE
+  "000209": PP       # PP
+  "000116": IU       # IU
+  "000061": JUNTS    # CiU
+  "000084": PNV      # EAJ-PNV
+  "000271": UPYD     # UPyD
+  "000076": ERC      # ESQUERRA
+  "000026": BNG      # BNG
+  "000050": CC       # CC-PNC
+  "000152": NABAI    # NA-BAI
+"201111":
+  "000128": PP       # PP
+  "000137": PSOE     # PSOE
+  "000088": IU       # IU-LV
+  "000168": UPYD     # UPyD
+  "000026": JUNTS    # CiU
+  "000003": BILDU    # AMAIUR
+  "000054": PNV      # EAJ-PNV
+  "000045": ERC      # ESQUERRA
+  "000014": BNG      # BNG
+  "000024": CC       # CC-NC-PNC
+  "000012": COMPROMIS  # COMPROMÍS-Q
+  "000060": FAC      # FAC
+  "000061": NABAI    # GBAI
+"201512":
+  "903316": PP       # PP
+  "903484": PSOE     # PSOE
+  "901079": CS       # C's
+  "903736": PODEMOS  # PODEMOS
+  "905033": PODEMOS  # EN COMÚ PODEM
+  "904850": IU       # IU-UPeC
+  "905008": PODEMOS  # PODEMOS-COMPROMÍS-ÉS EL MOMENT
+  "905063": ERC      # ERC-CATSÍ
+  "904991": JUNTS    # DiL
+  "905041": PODEMOS  # PODEMOS-EN MAREA-ANOVA-EU
+  "901533": PNV      # EAJ-PNV
+  "901528": BILDU    # EH Bildu
+  "904744": CC       # CCa-PNC
+"201606":
+  "000068": PP       # PP
+  "000077": PSOE     # PSOE
+  "000059": UP       # PODEMOS-IU-EQUO
+  "000013": CS       # C's
+  "000022": UP       # ECP
+  "000055": UP       # PODEMOS-COMPROMÍS-EUPV
+  "000025": ERC      # ERC-CATSÍ
+  "000010": JUNTS    # CDC
+  "000056": UP       # PODEMOS-EN MAREA-ANOVA-EU
+  "000016": PNV      # EAJ-PNV
+  "000041": PACMA    # PACMA
+  "000023": BILDU    # EH Bildu
+  "000007": CC       # CCa-PNC
+"201904":
+  "000096": PSOE     # PSOE
+  "000083": PP       # PP
+  "000022": CS       # Cs
+  "000077": UP       # PODEMOS-IU-EQUO
+  "000117": VOX      # VOX
+  "000037": ERC      # ERC-SOBIRANISTES
+  "000032": UP       # ECP-GUANYEM EL CANVI
+  "000049": JUNTS    # JxCAT-JUNTS
+  "000027": PNV      # EAJ-PNV
+  "000054": PACMA    # PACMA
+  "000033": BILDU    # EH Bildu
+  "000075": UP       # PODEMOS-EU-MAREAS EN COMÚN
+  "000020": COMPROMIS  # COMPROMÍS 2019
+  "000015": CC       # CCa-PNC
+  "000052": UPN      # NA+
+  "000090": PRC      # PRC
+"201911":
+  "000094": PSOE     # PSOE
+  "000083": PP       # PP
+  "000116": VOX      # VOX
+  "000078": UP       # PODEMOS-IU
+  "000018": CS       # Cs
+  "000031": ERC      # ERC-SOBIRANISTES
+  "000028": UP       # ECP-GUANYEM EL CANVI
+  "000041": JUNTS    # JxCAT-JUNTS
+  "000022": PNV      # EAJ-PNV
+  "000046": MASPAIS  # MÁS PAÍS-EQUO
+  "000029": BILDU    # EH Bildu
+  "000020": CUP      # CUP-PR
+  "000074": UP       # PODEMOS-EU
+  "000048": COMPROMIS  # MÉS COMPROMÍS (Compromís with Más País)
+  "000013": CC       # CCa-PNC-NC
+  "000010": BNG      # BNG
+  "000053": UPN      # NA+
+  "000088": PRC      # PRC
+  "000108": TE       # TERUEL EXISTE
+"202307":
+  "000005": PP       # PP
+  "000002": PSOE     # PSOE
+  "000006": VOX      # VOX
+  "000010": SUMAR    # SUMAR
+  "000050": ERC      # ERC
+  "000057": JUNTS    # JxCAT-JUNTS
+  "000071": BILDU    # EH Bildu
+  "000075": PNV      # EAJ-PNV
+  "000065": BNG      # BNG
+  "000031": CC       # CCa
+  "000074": UPN      # UPN

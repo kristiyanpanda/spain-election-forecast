@@ -1,0 +1,16 @@
+# raw downloads are re-creatable with `make data`
+data/raw/**
+!data/raw/.gitkeep
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+# model traces can be large
+outputs/traces/
+*.nc
+# OS
+Thumbs.db
+.DS_Store

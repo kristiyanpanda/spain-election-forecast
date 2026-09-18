@@ -1,0 +1,98 @@
+# Maps Wikipedia column labels -> canonical party id. Keys are matched after normalisation
+# (lower-case, accents stripped, dashes unified, spaces/apostrophes removed), so "ERC–Sobiranistes"
+# and "erc-sobiranistes" are the same key. Anything not listed is an error at build time.
+#
+# Lineage choices are documented in docs/party_mapping.md. Summary of the non-obvious ones:
+#   JUNTS   = DiL (2015) -> PDeCAT (2016-18) -> JxCat (2019) -> Junts (2023-): the post-Convergència line
+#   UP      = Unidos/Unidas Podemos (2016-2023, Podemos + IU + confluences)
+#   SUMAR   = Sumar platform (2023-); Podemos inside Sumar until Dec 2023, then separate
+#   CC      = Coalición Canaria in all its coalition labels (CC, CCa, CC-NCa, CC-PNC)
+#   UPN     = UPN alone or as NA+ (2019 coalition with PP and Cs in Navarre)
+labels:
+  PP: PP
+  PSOE: PSOE
+  Vox: VOX
+  Sumar: SUMAR
+  Podemos: PODEMOS
+  Unidas Podemos: UP
+  Unidos Podemos: UP
+  IU–UPeC: IU
+  Cs: CS
+  CS: CS
+  C's: CS
+  ERC: ERC
+  ERC–CatSí: ERC
+  ERC–Sobiranistes: ERC
+  Junts: JUNTS
+  JxCat: JUNTS
+  PDeCAT: JUNTS
+  DiL: JUNTS
+  EH Bildu: BILDU
+  PNV: PNV
+  BNG: BNG
+  CC: CC
+  CCa: CC
+  CC–NCa: CC
+  UPN: UPN
+  NA+: UPN
+  Adelante Andalucía (2021): AA
+  SALF: SALF
+  Aliança.cat: ALIANCA
+  CUP: CUP
+  EV: EV
+  TE: TE
+  Más País: MASPAIS
+  Compromís: COMPROMIS
+  PRC: PRC
+  PACMA: PACMA
+
+# Display names and bloc for every canonical id used in polls or results.
+# Blocs (used for the bloc matrix, volatility split and the 176-seat majority questions):
+#   left        state-wide left (PSOE, PCE/IU, Podemos lineage, Sumar, Más País, PSP)
+#   right       state-wide centre-right and right (UCD, AP/PP, CDS, Cs, UPyD, Vox, SALF, UN)
+#   periph_left  sub-state left / nationalist left (ERC, HB/Bildu, BNG, CUP, Compromís, EA, EE, PA, CHA, Nabai, AA)
+#   periph_right sub-state centre/right (CiU/Junts, PNV, CC, PAR, UV, FAC, UPN/NA+, Aliança, CG)
+#   other       animal-rights, empty-Spain and unclassified lists (PACMA, TE, EV, Ruiz-Mateos...)
+parties:
+  PP:        {name: "Partido Popular (AP/CP before 1989)", bloc: right}
+  UCD:       {name: "Unión de Centro Democrático", bloc: right}
+  CDS:       {name: "Centro Democrático y Social", bloc: right}
+  UN:        {name: "Unión Nacional / Fuerza Nueva", bloc: right}
+  CS:        {name: "Ciudadanos", bloc: right}
+  UPYD:      {name: "Unión Progreso y Democracia", bloc: right}
+  VOX:       {name: "Vox", bloc: right}
+  SALF:      {name: "Se Acabó La Fiesta", bloc: right}
+  PSOE:      {name: "PSOE (incl. PSC)", bloc: left}
+  PSP:       {name: "Partido Socialista Popular-Unidad Socialista", bloc: left}
+  IU:        {name: "PCE / Izquierda Unida lineage", bloc: left}
+  PODEMOS:   {name: "Podemos (stand-alone: 2015, 2024-)", bloc: left}
+  UP:        {name: "Unidos/Unidas Podemos and confluences (2016-2023)", bloc: left}
+  SUMAR:     {name: "Sumar", bloc: left}
+  MASPAIS:   {name: "Más País", bloc: left}
+  ERC:       {name: "Esquerra Republicana de Catalunya", bloc: periph_left}
+  BILDU:     {name: "HB / EH / Amaiur / EH Bildu lineage", bloc: periph_left}
+  EE:        {name: "Euskadiko Ezkerra", bloc: periph_left}
+  EA:        {name: "Eusko Alkartasuna", bloc: periph_left}
+  BNG:       {name: "Bloque Nacionalista Galego", bloc: periph_left}
+  CUP:       {name: "Candidatura d'Unitat Popular", bloc: periph_left}
+  COMPROMIS: {name: "Compromís", bloc: periph_left}
+  PA:        {name: "Partido Andalucista", bloc: periph_left}
+  CHA:       {name: "Chunta Aragonesista", bloc: periph_left}
+  NABAI:     {name: "Nafarroa Bai / Geroa Bai", bloc: periph_left}
+  AA:        {name: "Adelante Andalucía", bloc: periph_left}
+  UPC:       {name: "Unión del Pueblo Canario", bloc: periph_left}
+  JUNTS:     {name: "CiU / CDC / PDeCAT / JxCat / Junts lineage", bloc: periph_right}
+  PNV:       {name: "EAJ-PNV", bloc: periph_right}
+  CC:        {name: "Coalición Canaria (AIC before 1993)", bloc: periph_right}
+  PAR:       {name: "Partido Aragonés", bloc: periph_right}
+  UV:        {name: "Unió Valenciana", bloc: periph_right}
+  CG:        {name: "Coalición Galega", bloc: periph_right}
+  FAC:       {name: "Foro Asturias", bloc: periph_right}
+  UPN:       {name: "UPN / Navarra Suma", bloc: periph_right}
+  PRC:       {name: "Partido Regionalista de Cantabria", bloc: periph_right}
+  ALIANCA:   {name: "Aliança Catalana", bloc: periph_right}
+  CAIC:      {name: "Candidatura Aragonesa Independiente de Centro", bloc: periph_right}
+  PACMA:     {name: "PACMA", bloc: other}
+  TE:        {name: "Teruel Existe", bloc: other}
+  EV:        {name: "España Vaciada", bloc: other}
+  OTHER:     {name: "All other lists", bloc: other}

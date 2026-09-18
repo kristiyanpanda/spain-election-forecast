@@ -1,0 +1,32 @@
+# Single source of truth for dates, seeds and file locations.
+# Every script reads this file; every output is stamped with `cutoff_date`.
+
+cutoff_date: "2026-09-18"        # polls published on or before this date are used
+last_election: "2023-07-23"
+legal_deadline: "2027-08-15"     # term expires 2027-07-23; election on day 54 after convocation
+seed: 20260918
+
+paths:
+  raw_mir: data/raw/mir
+  raw_polls: data/raw/polls
+  processed: data/processed
+  outputs: outputs
+  figures: reports/figures
+
+mir:
+  base_url: "https://infoelectoral.interior.gob.es/estaticos/docxl/apliextr"
+  # Congreso de los Diputados (tipo 02), all general elections 1977-2023
+  elections: ["197706", "197903", "198210", "198606", "198910", "199306", "199603",
+              "200003", "200403", "200803", "201111", "201512", "201606", "201904",
+              "201911", "202307"]
+
+wikipedia:
+  # English Wikipedia, CC BY-SA 4.0. Fetched as wikitext via action=raw.
+  pages:
+    next: "Opinion_polling_for_the_next_Spanish_general_election"
+    e2023: "Opinion_polling_for_the_2023_Spanish_general_election"
+    e2023_2022: "Nationwide_opinion_polling_for_the_2023_Spanish_general_election_(2022)"
+    e2023_2019_2021: "Nationwide_opinion_polling_for_the_2023_Spanish_general_election_(2019–2021)"
+    e2019nov: "Opinion_polling_for_the_November_2019_Spanish_general_election"
+    e2019apr: "Opinion_polling_for_the_April_2019_Spanish_general_election"
+    e2016: "Opinion_polling_for_the_2016_Spanish_general_election"
