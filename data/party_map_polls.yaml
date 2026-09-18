@@ -53,6 +53,15 @@ labels:
 #   periph_left  sub-state left / nationalist left (ERC, HB/Bildu, BNG, CUP, Compromís, EA, EE, PA, CHA, Nabai, AA)
 #   periph_right sub-state centre/right (CiU/Junts, PNV, CC, PAR, UV, FAC, UPN/NA+, Aliança, CG)
 #   other       animal-rights, empty-Spain and unclassified lists (PACMA, TE, EV, Ruiz-Mateos...)
+# Lineage used ONLY for Pedersen volatility (Bartolini-Mair merger rule: a merged list is
+# compared with the sum of its predecessors). ENP and the bloc matrix use lists as they ran.
+volatility_lineage:
+  IU: UP_LINEAGE
+  PODEMOS: UP_LINEAGE
+  UP: UP_LINEAGE
+  SUMAR: UP_LINEAGE
+  MASPAIS: UP_LINEAGE
+
 parties:
   PP:        {name: "Partido Popular (AP/CP before 1989)", bloc: right}
   UCD:       {name: "Unión de Centro Democrático", bloc: right}

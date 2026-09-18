@@ -6,6 +6,56 @@ last_election: "2023-07-23"
 legal_deadline: "2027-08-15"     # term expires 2027-07-23; election on day 54 after convocation
 seed: 20260918
 
+model:
+  # parties tracked by the aggregator in the current cycle; everything else is "other"
+  parties: [PP, PSOE, VOX, SUMAR, PODEMOS, SALF, ERC, JUNTS, BILDU, PNV, BNG, CC]
+  # one-off level shifts allowed in the latent series (party: date)
+  breaks:
+    SUMAR: "2023-12-08"      # Podemos leaves the Sumar group; first poll listing them apart
+  sampling: {draws: 1000, tune: 1000, chains: 4, target_accept: 0.9}
+
+backtest:
+  lead_days: 30            # observation cut-off = election day - lead_days
+  n_sims: 10000
+  sampling: {draws: 600, tune: 600, chains: 4, target_accept: 0.9}
+  cycles:
+    e2016:
+      election: "201606"
+      previous: "201512"
+      parties: [PP, PSOE, UP, CS, ERC, JUNTS, PNV, BILDU, CC]
+      anchor_sum: {UP: [PODEMOS, IU]}                     # 2015: Podemos (+confluences) and IU ran apart
+      composites: {UP: {sum: [UP], fallback: [PODEMOS, IU]}}
+      absorb: {UP: [PODEMOS, IU]}
+      proxies: {}
+      breaks: {}
+    e2019apr:
+      election: "201904"
+      previous: "201606"
+      parties: [PP, PSOE, UP, CS, VOX, ERC, JUNTS, PNV, BILDU, CC]
+      anchor_sum: {}
+      composites: {}
+      absorb: {}
+      proxies: {VOX: PP}                                  # 0.2 % in 2016: borrow PP's geography
+      breaks: {}
+    e2019nov:
+      election: "201911"
+      previous: "201904"
+      parties: [PP, PSOE, UP, CS, VOX, MASPAIS, ERC, JUNTS, PNV, BILDU, CC]
+      anchor_sum: {}
+      composites: {}
+      absorb: {}
+      proxies: {MASPAIS: UP}
+      breaks: {}
+    e2023:
+      election: "202307"
+      previous: "201911"
+      parties: [PP, PSOE, VOX, SUMAR, CS, ERC, JUNTS, PNV, BILDU, BNG, CC]
+      anchor_sum: {SUMAR: [UP, MASPAIS, COMPROMIS]}      # Sumar absorbed UP, Más País and Compromís
+      composites: {SUMAR: {sum: [SUMAR, PODEMOS], fallback: [UP, MASPAIS], fallback_min: 1}}
+      absorb: {SUMAR: [UP, MASPAIS, COMPROMIS]}
+      proxies: {}
+      breaks: {}
+
 paths:
   raw_mir: data/raw/mir
   raw_polls: data/raw/polls

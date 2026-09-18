@@ -14,5 +14,26 @@ def build_data() -> None:
     main()
 
 
+@app.command("aggregate")
+def aggregate(draws: int = None, tune: int = None, chains: int = None) -> None:  # type: ignore[assignment]
+    """Phase C: fit the Bayesian poll aggregator for the current cycle."""
+    from electoral.aggregate import main
+    main(draws=draws, tune=tune, chains=chains)
+
+
+@app.command("seats")
+def seats(n_sims: int = 10_000) -> None:
+    """Phase D: Monte Carlo seat projection from the aggregator's cut-off state."""
+    from electoral.project_seats import main
+    main(n_sims=n_sims)
+
+
+@app.command("backtest")
+def backtest() -> None:
+    """Phase E: replay the pipeline 30 days before 2016, Apr-2019, Nov-2019 and 2023."""
+    from electoral.backtest import main
+    main()
+
+
 if __name__ == "__main__":
     app()

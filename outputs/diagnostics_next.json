@@ -1,0 +1,13 @@
+{
+  "divergences": 0,
+  "rhat_max": 1.01,
+  "ess_bulk_min": 432.0,
+  "draws": 4000,
+  "tag": "next",
+  "cutoff_date": "2026-09-18",
+  "n_polls": 490,
+  "n_obs": 4714,
+  "n_pollsters": 25,
+  "weeks": 166,
+  "last_poll": "2026-09-11"
+}
