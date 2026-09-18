@@ -1,0 +1,5 @@
+variant,PP,PSOE,VOX,SUMAR,PODEMOS,JUNTS,ERC,right_bloc_sd,p_right_majority
+nowcast_no_swing_noise,3.196,2.831,2.805,1.039,0.216,0.567,0.5,2.163,1.0
+nowcast,4.444,4.27,4.079,1.709,0.629,0.871,0.868,4.16,1.0
++drift_to_deadline,11.099,11.234,11.779,4.324,1.65,1.271,1.065,10.67,0.995
++election_day_error,17.612,17.305,15.229,5.393,1.867,1.488,1.519,16.576,0.95

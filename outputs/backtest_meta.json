@@ -1,0 +1,38 @@
+[
+  {
+    "cycle": "e2016",
+    "election": "201606",
+    "obs_cutoff": "2016-05-27",
+    "n_polls": 89,
+    "n_pollsters": 21,
+    "noise_sd_log": 0.12382526838956069,
+    "divergences": 2
+  },
+  {
+    "cycle": "e2019apr",
+    "election": "201904",
+    "obs_cutoff": "2019-03-29",
+    "n_polls": 314,
+    "n_pollsters": 28,
+    "noise_sd_log": 0.09012277788765727,
+    "divergences": 15
+  },
+  {
+    "cycle": "e2019nov",
+    "election": "201911",
+    "obs_cutoff": "2019-10-11",
+    "n_polls": 72,
+    "n_pollsters": 19,
+    "noise_sd_log": 0.08888769938449022,
+    "divergences": 0
+  },
+  {
+    "cycle": "e2023",
+    "election": "202307",
+    "obs_cutoff": "2023-06-23",
+    "n_polls": 766,
+    "n_pollsters": 31,
+    "noise_sd_log": 0.1158544794586511,
+    "divergences": 0
+  }
+]

@@ -1,0 +1,55 @@
+{
+  "scores": [
+    {
+      "cycle": "e2016",
+      "method": "model",
+      "vote_mae_pp": 1.1198181685511779,
+      "vote_crps_pp": 0.8883420166808387,
+      "vote_cover90": 0.5555555555555556,
+      "seat_mae": 5.111111111111111,
+      "seat_cover90": 0.7777777777777778,
+      "p_right_majority": 0.0055,
+      "y_right_majority": 0.0,
+      "p_pp_largest": 0.9999,
+      "y_pp_largest": 1.0,
+      "brier": 1.5129999999999997e-05
+    },
+    {
+      "cycle": "e2016",
+      "method": "last_election",
+      "vote_mae_pp": 1.0684492671491665,
+      "vote_crps_pp": 1.0684492671491665,
+      "vote_cover90": 0.0,
+      "seat_mae": 4.777777777777778,
+      "seat_cover90": 0.5555555555555556,
+      "p_right_majority": 0.0,
+      "y_right_majority": 0.0,
+      "p_pp_largest": 1.0,
+      "y_pp_largest": 1.0,
+      "brier": 0.0
+    },
+    {
+      "cycle": "e2016",
+      "method": "poll_average_30d",
+      "vote_mae_pp": 1.1750941071651213,
+      "vote_crps_pp": 1.1750941071651217,
+      "vote_cover90": 0.0,
+      "seat_mae": 5.222222222222222,
+      "seat_cover90": 0.3333333333333333,
+      "p_right_majority": 0.0,
+      "y_right_majority": 0.0,
+      "p_pp_largest": 1.0,
+      "y_pp_largest": 1.0,
+      "brier": 0.0
+    }
+  ],
+  "meta": {
+    "cycle": "e2016",
+    "election": "201606",
+    "obs_cutoff": "2016-05-27",
+    "n_polls": 89,
+    "n_pollsters": 21,
+    "noise_sd_log": 0.12382526838956069,
+    "divergences": 2
+  }
+}

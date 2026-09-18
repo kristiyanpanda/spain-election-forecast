@@ -35,5 +35,26 @@ def backtest() -> None:
     main()
 
 
+@app.command("descriptive")
+def descriptive() -> None:
+    """Phase B: party-system indices and static figures."""
+    from electoral.descriptive import main
+    main()
+
+
+@app.command("forecast")
+def forecast() -> None:
+    """Phase F: projection to the legal deadline (after the backtest)."""
+    from electoral.forecast import main
+    main()
+
+
+@app.command("report")
+def report() -> None:
+    """Phase G: interactive HTML in docs/index.html."""
+    from electoral.report import main
+    main()
+
+
 if __name__ == "__main__":
     app()

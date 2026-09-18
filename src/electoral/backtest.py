@@ -39,6 +39,9 @@ def crps_from_draws(draws: np.ndarray, actual: float) -> float:
 def score(share_draws: pd.DataFrame, seat_draws: pd.DataFrame, actual_share: pd.Series,
           actual_seats: pd.Series, parties: list[str]) -> dict:
     out = {}
+    # a tracked party that fell below 1 % and won no seat is OTHER in the official table (Cs in 2023)
+    actual_share = actual_share.reindex(parties).fillna(0.0)
+    actual_seats = actual_seats.reindex(list(set(actual_seats.index) | set(parties))).fillna(0).astype(int)
     med = share_draws.median()
     out["vote_mae_pp"] = float((100 * (med[parties] - actual_share[parties]).abs()).mean())
     out["vote_crps_pp"] = float(np.mean([crps_from_draws(100 * share_draws[p].values, 100 * actual_share[p])
@@ -144,10 +147,19 @@ def main(cycles: list[str] | None = None) -> pd.DataFrame:
     election_dates = nat.drop_duplicates("election").set_index("election")["election_date"].to_dict()
 
     scores, details, metas = [], [], []
+    cache = out / "backtest"
+    cache.mkdir(parents=True, exist_ok=True)
     for key, spec in cfg["backtest"]["cycles"].items():
         if cycles and key not in cycles:
             continue
-        r, detail = run_cycle(key, spec, cfg, polls, nat, res, tot, election_dates)
+        f_scores, f_detail = cache / f"{key}_scores.json", cache / f"{key}_details.csv"
+        if f_scores.exists() and f_detail.exists():          # each cycle is cached once fitted
+            r = json.loads(f_scores.read_text())
+            detail = pd.read_csv(f_detail)
+        else:
+            r, detail = run_cycle(key, spec, cfg, polls, nat, res, tot, election_dates)
+            f_scores.write_text(json.dumps(r, indent=2))
+            detail.to_csv(f_detail, index=False)
         scores += r["scores"]
         metas.append(r["meta"])
         details.append(detail)

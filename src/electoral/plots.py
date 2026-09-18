@@ -109,6 +109,32 @@ def plot_seat_distributions(seat_df: pd.DataFrame, parties: list[str], path: Pat
     plt.close(fig)
 
 
+def plot_backtest(details: pd.DataFrame, path: Path, cutoff: str, labels: dict[str, str]) -> None:
+    """Per election: model 90 % seat interval vs. actual, poll average and last-election baselines."""
+    _style()
+    cycles = list(dict.fromkeys(details.cycle))
+    fig, axes = plt.subplots(1, len(cycles), figsize=(3.6 * len(cycles), 3.6), sharey=False)
+    for ax, c in zip(np.atleast_1d(axes), cycles):
+        d = details[details.cycle == c]
+        d = d[(d.actual_seats > 0) | (d.seats_q50 > 0)].sort_values("actual_seats", ascending=False).head(7)
+        x = np.arange(len(d))
+        ax.vlines(x, d.seats_q05, d.seats_q95, color="#1f6fb2", lw=6, alpha=0.35, label="model 90 % interval")
+        ax.scatter(x, d.seats_q50, color="#1f6fb2", s=26, zorder=3, label="model median")
+        ax.scatter(x + 0.22, d.seats_poll_avg, marker="^", color="#f0a500", s=26, zorder=3, label="30-day poll average")
+        ax.scatter(x - 0.22, d.seats_last_election, marker="s", color="#999999", s=22, zorder=3, label="last election")
+        ax.scatter(x, d.actual_seats, marker="_", color="black", s=260, lw=2, zorder=4, label="actual")
+        ax.set_xticks(x)
+        ax.set_xticklabels(d.party, fontsize=8)
+        ax.set_title(labels.get(c, c), fontsize=9, loc="left")
+    np.atleast_1d(axes)[0].set_ylabel("seats")
+    np.atleast_1d(axes)[0].legend(fontsize=7, loc="upper right")
+    fig.suptitle("Backtest: forecasts made 30 days before each election vs. the result", x=0.01, ha="left", fontsize=11)
+    stamp(fig, cutoff, "Only polls available at the time; anchored on the previous election.")
+    fig.tight_layout()
+    fig.savefig(path, bbox_inches="tight")
+    plt.close(fig)
+
+
 def plot_bloc_majority(seat_df: pd.DataFrame, blocs: dict[str, list[str]], path: Path, cutoff: str) -> None:
     _style()
     fig, ax = plt.subplots(figsize=(7, 3.2))

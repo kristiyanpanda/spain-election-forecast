@@ -1,0 +1,55 @@
+{
+  "scores": [
+    {
+      "cycle": "e2019nov",
+      "method": "model",
+      "vote_mae_pp": 1.23302463869392,
+      "vote_crps_pp": 1.0310932293164339,
+      "vote_cover90": 0.5454545454545454,
+      "seat_mae": 5.2727272727272725,
+      "seat_cover90": 0.8181818181818182,
+      "p_right_majority": 0.0089,
+      "y_right_majority": 0.0,
+      "p_pp_largest": 0.0393,
+      "y_pp_largest": 0.0,
+      "brier": 0.00081185
+    },
+    {
+      "cycle": "e2019nov",
+      "method": "last_election",
+      "vote_mae_pp": 2.0237327461492542,
+      "vote_crps_pp": 2.023732746149254,
+      "vote_cover90": 0.0,
+      "seat_mae": 10.272727272727273,
+      "seat_cover90": 0.18181818181818182,
+      "p_right_majority": 0.0,
+      "y_right_majority": 0.0,
+      "p_pp_largest": 0.0,
+      "y_pp_largest": 0.0,
+      "brier": 0.0
+    },
+    {
+      "cycle": "e2019nov",
+      "method": "poll_average_30d",
+      "vote_mae_pp": 1.4366290346749944,
+      "vote_crps_pp": 1.4366290346749944,
+      "vote_cover90": 0.0,
+      "seat_mae": 6.636363636363637,
+      "seat_cover90": 0.2727272727272727,
+      "p_right_majority": 0.0,
+      "y_right_majority": 0.0,
+      "p_pp_largest": 0.0,
+      "y_pp_largest": 0.0,
+      "brier": 0.0
+    }
+  ],
+  "meta": {
+    "cycle": "e2019nov",
+    "election": "201911",
+    "obs_cutoff": "2019-10-11",
+    "n_polls": 72,
+    "n_pollsters": 19,
+    "noise_sd_log": 0.08888769938449022,
+    "divergences": 0
+  }
+}

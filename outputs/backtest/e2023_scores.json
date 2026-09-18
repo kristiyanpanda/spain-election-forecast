@@ -1,0 +1,55 @@
+{
+  "scores": [
+    {
+      "cycle": "e2023",
+      "method": "model",
+      "vote_mae_pp": 1.0232001874564176,
+      "vote_crps_pp": 0.887441182766853,
+      "vote_cover90": 0.18181818181818182,
+      "seat_mae": 3.727272727272727,
+      "seat_cover90": 0.7272727272727273,
+      "p_right_majority": 0.6637,
+      "y_right_majority": 0.0,
+      "p_pp_largest": 0.9998,
+      "y_pp_largest": 1.0,
+      "brier": 0.22024886499999996
+    },
+    {
+      "cycle": "e2023",
+      "method": "last_election",
+      "vote_mae_pp": 2.8332409633048328,
+      "vote_crps_pp": 2.8332409633048328,
+      "vote_cover90": 0.0,
+      "seat_mae": 9.090909090909092,
+      "seat_cover90": 0.09090909090909091,
+      "p_right_majority": 0.0,
+      "y_right_majority": 0.0,
+      "p_pp_largest": 0.0,
+      "y_pp_largest": 1.0,
+      "brier": 0.5
+    },
+    {
+      "cycle": "e2023",
+      "method": "poll_average_30d",
+      "vote_mae_pp": 1.1218748450582128,
+      "vote_crps_pp": 1.1218748450582128,
+      "vote_cover90": 0.0,
+      "seat_mae": 3.909090909090909,
+      "seat_cover90": 0.36363636363636365,
+      "p_right_majority": 1.0,
+      "y_right_majority": 0.0,
+      "p_pp_largest": 1.0,
+      "y_pp_largest": 1.0,
+      "brier": 0.5
+    }
+  ],
+  "meta": {
+    "cycle": "e2023",
+    "election": "202307",
+    "obs_cutoff": "2023-06-23",
+    "n_polls": 766,
+    "n_pollsters": 31,
+    "noise_sd_log": 0.1158544794586511,
+    "divergences": 0
+  }
+}

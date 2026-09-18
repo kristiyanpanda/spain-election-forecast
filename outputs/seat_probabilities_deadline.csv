@@ -1,0 +1,24 @@
+event,members,probability,seats_q05,seats_q50,seats_q95,cutoff_date
+Right (PP+Vox+UPN+SALF) >= 176,PP+VOX+UPN+SALF,0.9515,176.0,203.0,230.0,2026-09-18
+PP+Vox >= 176,PP+VOX,0.9413,174.0,202.0,228.0,2026-09-18
+Left + peripheral left (PSOE+Sumar+Podemos+ERC+Bildu+BNG+CC+Compromís) >= 176,PSOE+SUMAR+PODEMOS+ERC+BILDU+BNG+CC,0.0107,108.0,135.0,163.0,2026-09-18
+2023 investiture bloc (above + PNV + Junts) >= 176,PSOE+SUMAR+PODEMOS+ERC+BILDU+BNG+CC+PNV+JUNTS,0.0311,118.0,144.0,172.0,2026-09-18
+State-wide left (PSOE+Sumar+Podemos) >= 176,PSOE+SUMAR+PODEMOS,0.0004,90.0,117.0,146.0,2026-09-18
+PP largest party,PP,0.8425,,,,2026-09-18
+PP >= 176 alone,PP,0.0133,,,,2026-09-18
+PSOE largest party,PSOE,0.154,,,,2026-09-18
+PSOE >= 176 alone,PSOE,0.0,,,,2026-09-18
+PP >= 150 seats,PP,0.2292,,,,2026-09-18
+PP >= 160 seats,PP,0.0934,,,,2026-09-18
+PP >= 176 seats,PP,0.0133,,,,2026-09-18
+VOX >= 40 seats,VOX,0.969,,,,2026-09-18
+VOX >= 50 seats,VOX,0.857,,,,2026-09-18
+VOX >= 60 seats,VOX,0.6415,,,,2026-09-18
+PSOE >= 100 seats,PSOE,0.6077,,,,2026-09-18
+PSOE >= 110 seats,PSOE,0.3843,,,,2026-09-18
+PSOE >= 121 seats,PSOE,0.1802,,,,2026-09-18
+SUMAR >= 10 seats,SUMAR,0.4418,,,,2026-09-18
+SUMAR >= 20 seats,SUMAR,0.0611,,,,2026-09-18
+PODEMOS >= 1 seats,PODEMOS,0.8861,,,,2026-09-18
+PODEMOS >= 4 seats,PODEMOS,0.2602,,,,2026-09-18
+SALF >= 1 seats,SALF,0.2117,,,,2026-09-18
