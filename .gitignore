@@ -14,3 +14,5 @@ outputs/traces/
 # OS
 Thumbs.db
 .DS_Store
+# local tooling
+.claude/

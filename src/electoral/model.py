@@ -243,6 +243,7 @@ def save_run(idata: az.InferenceData, d: ModelData, out_dir: Path, tag: str, cut
     idata.attrs = {k: (json.dumps(v) if isinstance(v, dict) else v) for k, v in idata.attrs.items()}
     idata.to_netcdf(out_dir / "traces" / f"{tag}.nc")
     tr = trend_table(idata, d, daily=True)
+    tr = tr[tr.date <= pd.Timestamp(cutoff)]        # the weekly grid may overshoot the cut-off by a few days
     tr["cutoff_date"] = cutoff
     tr.to_parquet(out_dir / f"poll_average_daily_{tag}.parquet", index=False)
     he = house_effects_table(idata, d)
