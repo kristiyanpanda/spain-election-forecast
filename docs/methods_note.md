@@ -83,7 +83,7 @@ costly that assumption is.
 A first version used a plain zero-sum constraint on house effects across all pollsters. Pollsters that
 never publish a regional party then absorbed that party's level through unconstrained effects and the
 regional series collapsed toward zero. Centring only across publishing pollsters fixed it; the episode
-is kept in `docs/model_choices.md` because it is the kind of bug that produces plausible-looking output.
+is recorded in `docs/model_choices.md` because the bug produced plausible-looking output.
 
 ## 5. Seat projection
 

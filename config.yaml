@@ -2,9 +2,8 @@
 # Every script reads this file; every output is stamped with `cutoff_date`.
 
 author:                          # shown on docs/index.html; edit freely
-  name: "Kristian Jhonny"
+  name: "Kristiyan Pandas"
   github: "https://github.com/kristiyanpanda"
-  linkedin: "https://www.linkedin.com/in/YOUR-LINKEDIN-HANDLE"
 
 cutoff_date: "2026-09-18"        # polls published on or before this date are used
 last_election: "2023-07-23"

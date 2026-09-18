@@ -183,8 +183,8 @@ def main() -> None:
  <div class="card"><div class="k">Backtest vote error</div><div class="v">{sc.loc['model', 'vote_mae_pp']:.2f} pp</div><div class="s">mean absolute error, 4 elections, 30 days out</div></div>
 </div>"""
 
-    links = " · ".join(f"<a href='{u}' target='_blank' rel='noopener'>{l}</a>"
-                       for l, u in (("GitHub", author.get("github")), ("LinkedIn", author.get("linkedin"))) if u)
+    gh = author.get("github")
+    links = f"<a href='{gh}' target='_blank' rel='noopener'>GitHub</a>" if gh else ""
     byline = f"<div class='byline'>By <b>{author.get('name', '')}</b>" + (f" · {links}" if links else "") + \
              f" · data cut-off {cutoff} · last poll {diag['last_poll']}</div>"
 

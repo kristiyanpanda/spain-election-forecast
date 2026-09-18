@@ -35,8 +35,8 @@ volatility; the descriptive part of that dossier is reproduced in `reports/figur
 
 The "now" columns carry only the uncertainty of where opinion stands today plus provincial swing
 noise. The deadline columns add eleven months of random-walk drift **and** an election-day polling
-error calibrated on the backtest (see below). The gap between the two columns is the honest size of
-what polls cannot tell you a year out.
+error calibrated on the backtest (see below). The gap between the two columns is the size of what
+polls cannot tell you a year out.
 
 ## Three figures
 
@@ -70,7 +70,7 @@ what polls cannot tell you a year out.
 | 30-day poll average | 1.17 | 1.17 | n/a | 5.0 | n/a | 0.13 |
 | last election result | 2.59 | 2.59 | n/a | 11.0 | n/a | 0.25 |
 
-What this says, plainly:
+In words:
 
 * The model beats both baselines on every point-accuracy score, but the margin over a plain
   30-day poll average is small (0.1 pp of vote, half a seat per party). Most of the value is in the
@@ -155,6 +155,11 @@ reports/figures/       all figures; docs/methods_note.md is the write-up; docs/i
 * English Wikipedia, "Opinion polling for the [2016 / April 2019 / November 2019 / 2023 / next]
   Spanish general election" and the 2019-2022 sub-pages, CC BY-SA 4.0. CIS barometers appear through
   those tables; *Fuente: Centro de Investigaciones Sociológicas*.
+
+## Author
+
+Kristiyan Pandas, [github.com/kristiyanpanda](https://github.com/kristiyanpanda). BA Sociology, MSc Data
+Analytics. Interactive version of the results: `docs/index.html`.
 
 ## Resumen en español
 
