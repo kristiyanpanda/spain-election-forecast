@@ -12,7 +12,8 @@ are judgement calls. The machine-readable versions are `data/party_map_results.y
 | PP | Partido Popular | AP / Coalición Popular before 1989 in the historical series |
 | PSOE | PSOE incl. PSC (Catalonia) | PSC lists carry the PSOE national head code in the Ministry files |
 | VOX | Vox | first seats in Apr-2019 |
-| SUMAR | Sumar platform | Podemos ran *inside* Sumar in Jul-2023; left the group in Dec-2023 |
+| SUMAR | Sumar platform, then Frente Amplio | Podemos ran *inside* Sumar in Jul-2023; left the group in Dec-2023; from 17 Oct 2026 the series continues as Frente Amplio |
+| FA | Frente Amplio | poll label only: polls listing FA feed the SUMAR series (`model.composites` in `config.yaml`) |
 | PODEMOS | Podemos on its own | polled separately since late 2023; 2015 stand-alone list in the historical series |
 | ERC | Esquerra Republicana | ERC-CatSí (2015-16), ERC-Sobiranistes (2019) |
 | JUNTS | post-Convergència line | CiU (1979-2011) → CDC/DiL (2015-16) → PDeCAT (2016-18) → JxCat (2019) → Junts (2023-) |
@@ -23,7 +24,8 @@ are judgement calls. The machine-readable versions are `data/party_map_results.y
 | UPN | UPN | ran as Navarra Suma (NA+, with PP and Cs) in both 2019 elections |
 | CS | Ciudadanos | 2015-2023, no seats in 2023, no longer polled |
 | UP | Unidos/Unidas Podemos | 2016-2023: Podemos + IU + confluences (ECP, En Marea, Compromís-Podemos in 2016) |
-| SALF, ALIANCA, AA, CUP, TE, EV, MASPAIS, COMPROMIS, PRC, PACMA | smaller lists | kept as-is where polled; folded into OTHER for modelling if fewer than 5 % of polls report them |
+| AA | Adelante Andalucía | tracked for 29N (about 10 % of polls since Jan 2026); seats spread over Andalusia's provinces |
+| SALF, ALIANCA, CUP, TE, EV, MASPAIS, COMPROMIS, PRC, PACMA | smaller lists | kept as-is where polled; folded into OTHER for modelling if fewer than 5 % of polls report them |
 
 ## Blocs
 
@@ -64,3 +66,17 @@ The Ministry assigns a new candidatura code in every election; a provincial list
 national head through the "cabecera nacional" field. `party_map_results.yaml` maps those head codes.
 Lists that neither won a seat nor reached 1 % nationally are OTHER, which keeps 92-99 % of the
 valid vote named in every election (see `data/processed/DATA_QUALITY.md`).
+
+## Party supply on 29 Nov 2026 (provisional, press reports as of 17 Oct)
+
+Poll parties and ballot lists no longer match one to one. The seat model therefore applies the
+coalitions province by province after the swing (`seats.scenarios` in `config.yaml`,
+`electoral.seats.apply_merges`). The full table and sources are in `docs/context_29N_2026.md` §7.
+
+* **Base case, split left:** Frente Amplio (the SUMAR series) and Podemos run apart, except for joint
+  lists in Canarias (Unidad del Pueblo Canario) and the Valencian Community (Compromís-Front Valencià),
+  where Podemos's share is added to FA's. Catalonia has no Podemos list: its polled vote goes 50 % to
+  ERC and 50 % to FA, which is the weakest assumption. UPN's 2023 share joins PP's in Navarra
+  (UPN-PP coalition). Aliança Catalana is not running.
+* **Sensitivity, merged left:** one FA + Podemos list everywhere, keeping 0.83 (sd 0.05) of the sum,
+  as Unidos Podemos did in 2016.

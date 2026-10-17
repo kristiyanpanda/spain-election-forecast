@@ -51,3 +51,50 @@ def test_reproduces_official_seats(election):
     shares, blank, seats = province_baseline(res, tot, election)
     assert seats.sum() == 350 and len(shares) == 52
     assert np.allclose(shares.sum(axis=1) + blank, 1.0, atol=1e-6)
+
+
+def test_merges_move_shares_into_joint_lists():
+    from electoral.seats import apply_merges
+
+    provs, col = ["08", "28", "46"], {"PODEMOS": 0, "SUMAR": 1, "ERC": 2}
+    base = np.array([[0.04, 0.10, 0.12], [0.03, 0.08, 0.0], [0.05, 0.10, 0.0]])  # prov x party
+    share = np.repeat(base[None], 2, axis=0)
+    apply_merges(share, [{"provinces": ["46"], "party": "PODEMOS", "into": {"SUMAR": 1.0}},
+                         {"provinces": ["08"], "party": "PODEMOS", "into": {"ERC": 0.5, "SUMAR": 0.5}}],
+                 provs, col, np.random.default_rng(0))
+    assert share[0, 2].tolist() == pytest.approx([0.0, 0.15, 0.0])           # Valencia: joint list
+    assert share[0, 0].tolist() == pytest.approx([0.0, 0.12, 0.14])          # Catalonia: split 50/50
+    assert share[0, 1].tolist() == pytest.approx([0.03, 0.08, 0.0])          # Madrid untouched
+
+
+def test_merge_efficiency_applies_to_the_joint_total():
+    from electoral.seats import apply_merges
+
+    share = np.array([[[0.04, 0.10]]])                                        # 1 draw, 1 prov
+    apply_merges(share, [{"provinces": "all", "party": "PODEMOS", "into": {"SUMAR": 1.0},
+                          "efficiency": 0.83}], ["01"], {"PODEMOS": 0, "SUMAR": 1},
+                 np.random.default_rng(0))
+    assert share[0, 0].tolist() == pytest.approx([0.0, 0.83 * 0.14])
+
+
+def test_regional_proxy_spreads_a_party_over_its_provinces_only():
+    from electoral.seats import simulate_seats
+
+    shares0 = pd.DataFrame({"A": [0.6, 0.6, 0.6]}, index=["04", "41", "28"])
+    blank0 = pd.Series(0.0, index=shares0.index)
+    seats0 = pd.Series(10, index=shares0.index)
+    weights = pd.Series([0.25, 0.25, 0.5], index=shares0.index)
+    draws = pd.DataFrame({"A": [0.6], "AA": [0.05]})
+    seat_df, _ = simulate_seats(draws, shares0, blank0, seats0, pd.Series({"A": 0.6}), 1, 0.0, 1,
+                                proxies={"AA": ["04", "41"]}, noise=False, weights=weights)
+    # 5 % nationally, all of it in two provinces holding half the vote -> 10 % there, 0 in Madrid
+    assert seat_df.loc[0, "AA"] == 2
+
+
+def test_forecast_horizon_is_the_snap_election():
+    from electoral import load_config
+    from electoral.forecast import horizon
+
+    cfg = load_config()
+    day, weeks = horizon({**cfg, "cutoff_date": "2026-10-17"})
+    assert day == pd.Timestamp("2026-11-29") and weeks == pytest.approx(43 / 7)

@@ -311,6 +311,57 @@ mobilisation that the polls miss.
 - First post-dissolution polls, especially whether housing moves back up the private pollsters'
   problem rankings.
 
+## 7. Party supply as of 17 Oct
+
+The coalition deadline closed on 16 Oct at 23:59. On 17 Oct the Junta Electoral Central had **not**
+published the validated coalitions: its *Candidaturas* page carried only forms. The BOE publishes the
+presented lists on 28 Oct and the proclaimed lists on 3 Nov. Until then this is the press picture,
+and the forecast is labelled provisional.
+
+| list | who | where | model treatment |
+|---|---|---|---|
+| **Frente Amplio** | IU, Movimiento Sumar, Más Madrid, Comuns and about 15 parties (Chunta in Aragón, Batzarre in Navarra, Iniciativa del Pueblo Andaluz); candidate Ada Colau, heading Barcelona | statewide, **without Podemos** | the Sumar series continues as FA (polls' FA column feeds it); Sumar's 2023 geography |
+| **Unidad del Pueblo Canario** | Podemos, IU, Movimiento Sumar, Nueva Canarias (Drago runs apart) | Las Palmas, S.C. Tenerife | Podemos's share joins FA's (sum; Nueva Canarias stays in "other") |
+| **Compromís-Front Valencià** | Compromís, EUPV, Podem, ERPV | Alicante, Castellón, Valencia | Podemos's share joins FA's (sum) |
+| **Podemos** | candidate Irene Montero | everywhere else **except Catalonia**, where it has no list (collaboration deal with ERC, not a coalition) | own list; Sumar's 2023 geography; in Catalonia its polled vote goes **50 % to ERC, 50 % to FA** |
+| **ERC** | Gabriel Rufián heads Barcelona; no plurinational front | Catalonia | ERC; the "plurinational front" scenario is dropped |
+| **UPN-PP** | "UPN en coalición con el PP", UPN heads the list | Navarra | UPN's 2023 share joins PP's there |
+| Aliança Catalana | not running | | not modelled |
+| Adelante Andalucía, BNG, EH Bildu, Junts (without Convergents) | own lists | | AA tracked (in about 10 % of polls since Jan 2026), spread uniformly over Andalusia's eight provinces |
+
+**Scenarios.** *Base case = split left* (the table above). *Sensitivity = merged left*: one FA + Podemos
+list in every province, with a merger efficiency drawn around 0.83 of the sum (sd 0.05). That is the 2016
+Unidos Podemos precedent. The joint lists in the base case (Canarias, Valencia) are summed with no loss.
+
+**Weakest assumptions.**
+1. *Catalonia.* About 16 % of Podemos's polled vote sits in Catalonia under Sumar's 2023 geography
+   (about 3.8 % in Barcelona), and no poll says where it goes without a Podemos ballot. The base case
+   splits it 50/50 between ERC (which Podemos is backing) and FA (the Comuns, its 2015-2023 partners).
+   In a dry run on the 17 Oct poll average, all of it to ERC gives ERC +1.2 and FA -0.8 seats, and
+   all of it to FA gives roughly the reverse.
+2. *Old poll labels.* Polls up to mid-October list "Sumar" and "Podemos" from before the split. Sumar is
+   read as FA from day one. Polls that already list FA without Podemos will continue the same series.
+3. *Joint lists with no loss.* In Canarias and Valencia the parts are summed (Compromís and Podemos ran
+   together in 2016 and 2019). Applying the 0.83 factor there too costs FA about 0.8 seats in the same dry run.
+
+Sources (accessed 17 Oct 2026). Frente Amplio registered without Podemos, Colau candidate:
+[Público](https://www.publico.es/politica/acuerdo-frente-amplio-elecciones-29n-directo-ultima-hora-negociaciones-reacciones.html),
+[El Cronista](https://www.cronista.com/espana/politica-es/frente-amplio-y-podemos-no-sellan-una-alianza-la-izquierda-afronta-dividida-las-elecciones-del-29-n/),
+[Canarias Diario](https://www.canariasdiario.com/noticia/152256/politica/ada-colau-sera-la-candidata-de-frente-amplio-tras-fracasar-el-acuerdo-con-podemos.html).
+Canarias: [RTVC](https://rtvc.es/podemos-nueva-canarias-iu-sumar-juntos-29n-bajo-nombre-unidad-pueblo-canario-15-octubre-2026/),
+[The Objective](https://theobjective.com/espana/politica/2026-10-15/podemos-frente-amplio-canarias-lista-conjunta/).
+Valencia: [Infobae (EUPV)](https://www.infobae.com/espana/agencias/2026/10/16/esquerra-unida-participara-finalmente-en-la-coalicion-electoral-compromis-front-valencia/),
+[Infobae (Podem)](https://www.infobae.com/espana/agencias/2026/10/16/compromis-y-podem-alcanzan-un-acuerdo-en-la-comunitat-valenciana-para-las-generales/).
+ERC and Podemos: [elDiario.es](https://www.eldiario.es/catalunya/erc-confirma-rufian-cabeza-lista-cierra-puerta-frente-amplio_1_13577275.html),
+[Público](https://www.publico.es/politica/partidos/gabriel-rufian-encabezara-lista-erc-congreso-elecciones-generales.html),
+[Ara](https://en.ara.cat/politics/rufian-will-be-the-candidate-of-erc-but-will-also-campaign-with-in-the-state_1_5876143.html).
+UPN-PP: [elDiario.es](https://www.eldiario.es/navarra/upn-pp-llegan-acuerdo-concurrir-elecciones-generales_1_13581039.html),
+[El Español](https://www.elespanol.com/espana/politica/20261013/feijoo-acuerda-upn-coalicion-ambos-partidos-navarra-presentarse-juntos-elecciones/1003744417920_0.html).
+Aliança Catalana: [Infobae](https://www.infobae.com/espana/agencias/2026/10/05/alianca-catalana-no-se-presentara-a-las-elecciones-generales/).
+JEC page checked: [juntaelectoralcentral.es](https://www.juntaelectoralcentral.es/cs/jec/eleccionesEnCurso/Elecciones_generales_2026?apartado=candidaturas).
+Not confirmed by a source found on 17 Oct: whether Podemos candidates sit on ERC's lists, and Junts's
+and Adelante Andalucía's list details (taken from the press summary of 17 Oct).
+
 ---
 
 ### Sources (accessed 5 Oct 2026)

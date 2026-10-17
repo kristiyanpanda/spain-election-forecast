@@ -19,7 +19,19 @@ from electoral import ROOT, load_config
 from electoral.plots import plot_bloc_majority, plot_seat_distributions
 from electoral.seats import calibrate_swing_noise, province_baseline, simulate_seats, summarise_seats
 
-PROXIES = {"PODEMOS": "SUMAR", "SALF": None}   # geography borrowed by entrants
+def proxies(cfg: dict) -> dict:
+    """Geography borrowed by parties without a 2023 provincial footprint (config: seats.proxies)."""
+    return dict(cfg["seats"]["proxies"])
+
+
+def scenario_merges(cfg: dict, scenario: str | None) -> list[dict]:
+    """Joint lists / coalitions of a party-supply scenario (config: seats.scenarios)."""
+    return list(cfg["seats"]["scenarios"][scenario]["merges"]) if scenario else []
+
+
+def province_weights(tot: pd.DataFrame, election: str) -> pd.Series:
+    t = tot[tot.election == election].set_index("prov")["votos_validos"]
+    return t / t.sum()
 
 
 def blocs_from_map() -> dict[str, list[str]]:
@@ -30,16 +42,17 @@ def blocs_from_map() -> dict[str, list[str]]:
     return {
         "Right (PP+Vox+UPN+SALF)": ["PP", "VOX", "UPN", "SALF"],
         "PP+Vox": ["PP", "VOX"],
-        "Left + peripheral left (PSOE+Sumar+Podemos+ERC+Bildu+BNG+CC+Compromís)":
-            ["PSOE", "SUMAR", "PODEMOS", "ERC", "BILDU", "BNG", "CC", "COMPROMIS"],
+        "Left + peripheral left (PSOE+Sumar/FA+Podemos+ERC+Bildu+BNG+CC+Compromís+AA)":
+            ["PSOE", "SUMAR", "PODEMOS", "ERC", "BILDU", "BNG", "CC", "COMPROMIS", "AA"],
         "2023 investiture bloc (above + PNV + Junts)":
-            ["PSOE", "SUMAR", "PODEMOS", "ERC", "BILDU", "BNG", "CC", "COMPROMIS", "PNV", "JUNTS"],
-        "State-wide left (PSOE+Sumar+Podemos)": ["PSOE", "SUMAR", "PODEMOS"],
+            ["PSOE", "SUMAR", "PODEMOS", "ERC", "BILDU", "BNG", "CC", "COMPROMIS", "AA", "PNV", "JUNTS"],
+        "State-wide left (PSOE+Sumar/FA+Podemos)": ["PSOE", "SUMAR", "PODEMOS"],
     }
 
 
 def main(n_sims: int = 10_000, tag: str = "next", state_file: str | None = None,
-         base_election: str = "202307", write: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+         base_election: str = "202307", write: bool = True,
+         scenario: str | None = "split") -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     cfg = load_config()
     out = ROOT / cfg["paths"]["outputs"]
     figs = ROOT / cfg["paths"]["figures"]
@@ -59,20 +72,23 @@ def main(n_sims: int = 10_000, tag: str = "next", state_file: str | None = None,
     noise_sd = float(sum(calib.values()) / len(calib))
 
     seat_df, share_df = simulate_seats(draws, shares0, blank0, seats0, national0, n_sims, noise_sd,
-                                       cfg["seed"], PROXIES)
+                                       cfg["seed"], proxies(cfg), merges=scenario_merges(cfg, scenario),
+                                       weights=province_weights(tot, base_election))
     blocs = blocs_from_map()
     q, probs = summarise_seats(seat_df, blocs, {"PP": [150, 160, 176], "VOX": [40, 50, 60],
                                                 "PSOE": [100, 110, 121], "SUMAR": [10, 20],
                                                 "PODEMOS": [1, 4], "SALF": [1]})
     q["cutoff_date"] = cfg["cutoff_date"]
     probs["cutoff_date"] = cfg["cutoff_date"]
+    q["scenario"] = probs["scenario"] = scenario or "none"
     if write:
         seat_df.to_parquet(out / f"seat_draws_{tag}.parquet", index=False)
         q.to_csv(out / f"seats_summary_{tag}.csv")
         probs.to_csv(out / f"seat_probabilities_{tag}.csv", index=False)
         (out / "swing_calibration.json").write_text(json.dumps(
             {"noise_sd_log": noise_sd, "components": calib, "base_election": base_election,
-             "n_sims": n_sims, "proxies": PROXIES, "cutoff_date": cfg["cutoff_date"]}, indent=2))
+             "n_sims": n_sims, "proxies": proxies(cfg), "scenario": scenario,
+             "cutoff_date": cfg["cutoff_date"]}, indent=2))
         last = nat[nat.election == base_election].set_index("party")["escanos"].astype(int).to_dict()
         plot_seat_distributions(seat_df, ["PP", "PSOE", "VOX", "SUMAR", "PODEMOS", "SALF"],
                                 figs / "seats_distribution.png", cfg["cutoff_date"], last)

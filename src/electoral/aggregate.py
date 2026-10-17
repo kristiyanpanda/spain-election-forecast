@@ -22,7 +22,7 @@ from electoral.model import fit, prepare, save_run
 from electoral.plots import plot_house_effects, plot_trends
 
 STATEWIDE = ["PP", "PSOE", "VOX", "SUMAR", "PODEMOS", "SALF"]
-REGIONAL = ["ERC", "JUNTS", "BILDU", "PNV", "BNG", "CC"]
+REGIONAL = ["ERC", "JUNTS", "BILDU", "PNV", "BNG", "CC", "AA"]
 
 
 def main(draws: int | None = None, tune: int | None = None, chains: int | None = None) -> dict:
@@ -35,7 +35,7 @@ def main(draws: int | None = None, tune: int | None = None, chains: int | None =
     anchor = nat[nat.election == "202307"].set_index("party")["share_valid"].to_dict()
 
     d = prepare(polls, "next", cfg["model"]["parties"], anchor, cfg["last_election"],
-                cfg["cutoff_date"], breaks=cfg["model"]["breaks"])
+                cfg["cutoff_date"], breaks=cfg["model"]["breaks"], composites=cfg["model"].get("composites"))
     s = dict(cfg["model"]["sampling"])
     s.update({k: v for k, v in {"draws": draws, "tune": tune, "chains": chains}.items() if v})
     idata = fit(d, seed=cfg["seed"], **s)

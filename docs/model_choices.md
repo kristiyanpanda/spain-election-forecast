@@ -14,7 +14,7 @@ A short list of the decisions that shape the numbers. Each is a one-line change 
 | One free level shift for Sumar on 2023-12-08 | Podemos leaving Sumar is a discontinuity, not drift; without it the walk needs a huge innovation sd | the shift date is fixed by hand from the first poll that lists Podemos separately |
 | Entrants (Podemos, SALF) start from a diffuse prior at week 0 and are only reported from their first poll | no data before entry | the pre-entry path is meaningless and is masked in outputs |
 | NUTS via nutpie (numba) | no C compiler needed on Windows; 4 chains x 1000 draws in about five minutes | one more dependency |
-| Wikipedia-only polls; CIS through its rows there | CIS publishes one Excel/PDF per barometer; scraping 100+ layouts was outside budget and gains nothing the Wikipedia rows lack | Wikipedia editors decide what counts as a poll; their harmonisation is documented on each page |
+| Wikipedia polls, plus CIS straight from cis.es | Wikipedia's CIS rows mixed the official estimate with third-party re-estimates; cis.es gives the official estimate (all cycles) and the microdata, which we re-weight ourselves (current cycle; not backtested) | about 100 PDF layouts to parse; series sharing one CIS survey split its n, so it counts once |
 
 ## Seat projection (`src/electoral/seats.py`)
 
@@ -24,6 +24,8 @@ A short list of the decisions that shape the numbers. Each is a one-line change 
 | Provincial noise: log-normal, sd calibrated on 2019->2023 and Apr->Nov 2019 residuals | the residuals of the same swing rule in the last two transitions are the best available estimate of how wrong it is | the two calibration transitions were unusually different (0.10 vs 0.17 log points); their mean is used |
 | Podemos borrows Sumar's 2023 geography; SALF is uniform | Podemos' 2023 votes were inside Sumar; SALF had no 2023 footprint | both are assumptions, and both parties are near the 3 % province threshold where the assumption bites most |
 | Untracked lists keep their 2023 share (UPN, CUP, Aliança...) | they are too rarely polled to model | Aliança Catalana could win a seat in Girona or Lleida under some polls; the model cannot see it |
+| Coalitions applied per province after the swing (29N: Canarias and Valencia joint lists, Podemos's Catalan vote split ERC/FA, UPN into PP in Navarra) | poll parties and ballot lists differ; the merge is explicit and switchable per scenario | the Catalan split and the no-loss joint lists are assumptions; the merged-left sensitivity uses a 0.83 efficiency |
+| Adelante Andalucía spread uniformly over Andalusia | no 2023 general-election footprint | its provincial strength (Cádiz, Sevilla) is flattened |
 | Renormalise each province to 2023's non-blank total | the twelve tracked parties do not sum to one; the remainder is spread proportionally | mechanical |
 
 ## What the intervals mean

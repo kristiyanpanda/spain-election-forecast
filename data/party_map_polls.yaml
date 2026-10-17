@@ -6,6 +6,8 @@
 #   JUNTS   = DiL (2015) -> PDeCAT (2016-18) -> JxCat (2019) -> Junts (2023-): the post-Convergència line
 #   UP      = Unidos/Unidas Podemos (2016-2023, Podemos + IU + confluences)
 #   SUMAR   = Sumar platform (2023-); Podemos inside Sumar until Dec 2023, then separate
+#   FA      = Frente Amplio (17 Oct 2026-): Sumar's successor without Podemos; the aggregator's
+#             SUMAR series continues through it (config model.composites)
 #   CC      = Coalición Canaria in all its coalition labels (CC, CCa, CC-NCa, CC-PNC)
 #   UPN     = UPN alone or as NA+ (2019 coalition with PP and Cs in Navarre)
 labels:
@@ -13,6 +15,8 @@ labels:
   PSOE: PSOE
   Vox: VOX
   Sumar: SUMAR
+  FA: FA
+  Frente Amplio: FA
   Podemos: PODEMOS
   Unidas Podemos: UP
   Unidos Podemos: UP
@@ -60,6 +64,7 @@ volatility_lineage:
   PODEMOS: UP_LINEAGE
   UP: UP_LINEAGE
   SUMAR: UP_LINEAGE
+  FA: UP_LINEAGE
   MASPAIS: UP_LINEAGE
 
 parties:
@@ -76,7 +81,8 @@ parties:
   IU:        {name: "PCE / Izquierda Unida lineage", bloc: left}
   PODEMOS:   {name: "Podemos (stand-alone: 2015, 2024-)", bloc: left}
   UP:        {name: "Unidos/Unidas Podemos and confluences (2016-2023)", bloc: left}
-  SUMAR:     {name: "Sumar", bloc: left}
+  SUMAR:     {name: "Sumar (from 17 Oct 2026 the Frente Amplio series)", bloc: left}
+  FA:        {name: "Frente Amplio (IU, Movimiento Sumar, Más Madrid, Comuns and others)", bloc: left}
   MASPAIS:   {name: "Más País", bloc: left}
   ERC:       {name: "Esquerra Republicana de Catalunya", bloc: periph_left}
   BILDU:     {name: "HB / EH / Amaiur / EH Bildu lineage", bloc: periph_left}
