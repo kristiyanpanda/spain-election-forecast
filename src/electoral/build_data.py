@@ -20,7 +20,7 @@ import pandas as pd
 import yaml
 
 from electoral import ROOT, load_config
-from electoral import cis, cis_microdata, mir, wiki_polls
+from electoral import cis, cis_microdata, mir, regional, wiki_polls
 
 # Wikipedia page key -> election cycle the polls belong to (sub-pages merged)
 CYCLE_OF = {
@@ -271,6 +271,14 @@ DICTIONARY = {
         "micro_<PARTY>": "our re-estimate from the microdata, % of valid vote (PESO, 2023 recall, likely voters); current cycle only",
         "source_url": "cis.es study page", "cutoff_date": "data cut-off",
     },
+    "regional_polls.csv": {
+        "region / provinces": "region and the INE province codes it covers",
+        "party": "canonical party id", "share": "estimated general-election share in the region, % of valid vote",
+        "n": "respondents behind the estimate", "tau_pp": "survey error beyond sampling (config regional.tau_pp)",
+        "sd_pp": "total sd used by the seat model: sqrt(share(100-share)/n + tau^2)",
+        "source / method": "CEO Congress vote with 2023 recall; Sociómetro Basque-Parliament estimate turned into a general-election share by relative swing; CIS regional subsample",
+        "fieldwork_start / fieldwork_end": "fieldwork window", "cutoff_date": "data cut-off",
+    },
 }
 
 
@@ -293,7 +301,11 @@ def write_dictionary(path: Path) -> None:
               "* **CIS**: Centro de Investigaciones Sociológicas, cis.es, licence CC BY 4.0: the "
               "'Estimación de voto' PDF, ficha técnica and microdata of each study (barometers, "
               "pre-electoral and flash surveys; list in `config.yaml`). *Fuente de los datos: Centro "
-              "de Investigaciones Sociológicas.*", ""]
+              "de Investigaciones Sociológicas.*",
+              "* **Regional polls**: Centre d'Estudis d'Opinió (Generalitat de Catalunya), open microdata "
+              "of the face-to-face Baròmetre d'Opinió Política; Sociómetro Vasco and the official 2024 "
+              "Basque Parliament results (Basque Government, euskadi.eus), table in "
+              "`data/regional/sociometro.csv` with the PDF URLs.", ""]
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -379,6 +391,14 @@ def main() -> None:
     write_cis_studies(out / "cis_studies.csv", cis_studies, cfg["cutoff_date"])
     polls, notes = build_polls(cfg, labels, parties, cis_long, cis_studies)
     notes += cis_notes
+    reg, reg_notes = regional.build_regional_polls(cfg, ROOT, res, tot, cis_studies)
+    reg.to_csv(out / "regional_polls.csv", index=False)
+    details = ROOT / cfg["paths"]["outputs"] / "backtest_details.csv"
+    if details.exists():
+        chk = regional.check_2023(cfg, ROOT, res, tot, pd.read_csv(details))
+        chk["cutoff_date"] = cfg["cutoff_date"]
+        chk.to_csv(ROOT / cfg["paths"]["outputs"] / "regional_check_2023.csv", index=False)
+    notes += reg_notes
     polls.to_parquet(out / "polls_long.parquet", index=False)
     meta = ["poll_id", "cycle", "pollster", "commissioner", "fieldwork_start", "fieldwork_end",
             "sample_size", "n_series", "turnout", "is_election"]

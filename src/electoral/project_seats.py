@@ -29,6 +29,16 @@ def scenario_merges(cfg: dict, scenario: str | None) -> list[dict]:
     return list(cfg["seats"]["scenarios"][scenario]["merges"]) if scenario else []
 
 
+def regional_observations(cfg: dict) -> list[dict]:
+    """Regional survey estimates for the seat model (data/processed/regional_polls.csv)."""
+    path = ROOT / cfg["paths"]["processed"] / "regional_polls.csv"
+    if not cfg.get("regional", {}).get("enabled") or not path.exists():
+        return []
+    r = pd.read_csv(path, dtype={"provinces": str})
+    return [{"provinces": row.provinces.split(), "party": row.party, "share": row.share, "sd": row.sd_pp}
+            for row in r.itertuples()]
+
+
 def province_weights(tot: pd.DataFrame, election: str) -> pd.Series:
     t = tot[tot.election == election].set_index("prov")["votos_validos"]
     return t / t.sum()
@@ -52,7 +62,8 @@ def blocs_from_map() -> dict[str, list[str]]:
 
 def main(n_sims: int = 10_000, tag: str = "next", state_file: str | None = None,
          base_election: str = "202307", write: bool = True,
-         scenario: str | None = "split") -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+         scenario: str | None = "split",
+         regional: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     cfg = load_config()
     out = ROOT / cfg["paths"]["outputs"]
     figs = ROOT / cfg["paths"]["figures"]
@@ -73,7 +84,9 @@ def main(n_sims: int = 10_000, tag: str = "next", state_file: str | None = None,
 
     seat_df, share_df = simulate_seats(draws, shares0, blank0, seats0, national0, n_sims, noise_sd,
                                        cfg["seed"], proxies(cfg), merges=scenario_merges(cfg, scenario),
-                                       weights=province_weights(tot, base_election))
+                                       weights=province_weights(tot, base_election),
+                                       regional=regional_observations(cfg) if regional else None,
+                                       regional_swing_sd=cfg["regional"]["swing_sd_pp"])
     blocs = blocs_from_map()
     q, probs = summarise_seats(seat_df, blocs, {"PP": [150, 160, 176], "VOX": [40, 50, 60],
                                                 "PSOE": [100, 110, 121], "SUMAR": [10, 20],

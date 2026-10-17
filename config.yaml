@@ -50,6 +50,27 @@ seats:
         # the efficiency multiplies the joint list's total (FA + Podemos)
         - {provinces: all, party: PODEMOS, into: {SUMAR: 1.0}, efficiency: {mean: 0.83, sd: 0.05}}
 
+# Regional-poll layer (electoral.regional; dossier §2.2): regional estimates of a party's general-
+# election share pull the proportional-swing provincial shares toward them in the seat model.
+regional:
+  enabled: true
+  window_months: 6                 # regional surveys with fieldwork in the 6 months before the cut-off
+  min_party_respondents: 30        # fewer respondents naming the party -> no observation (keeps the national layer)
+  # Errors in points, calibrated on the only regional check available (regional.check_2023:
+  # Catalonia, July 2023, ERC/Junts/PSC/Comuns; outputs/regional_check_2023.csv). Four data points.
+  tau_pp:                          # survey error beyond sampling
+    direct: 5.3                    # CEO RMSE in 2023 (Feb-Jun waves); also used for CIS subsamples
+    cross_election: 6.0            # Sociómetro (Basque Parliament question): no check, set above direct
+  swing_sd_pp: 7.7                 # error of national polls + proportional swing at regional level (2023 RMSE)
+  ceo:
+    parties: [ERC, JUNTS, PSOE, SUMAR]
+    alianca_to: {JUNTS: 0.23, VOX: 0.22}   # Aliança Catalana is not running; the rest abstain
+  sociometro_parties: [PNV, BILDU]
+  sociometro_max_age_months: 9     # published two to three times a year; the latest wave with a Parliament estimate
+  cis_subsamples:
+    Galicia: {ccaa_label: "Galicia", provinces: ["15", "27", "32", "36"], parties: [BNG]}
+    Canarias: {ccaa_label: "Canarias", provinces: ["35", "38"], parties: [CC]}
+
 backtest:
   lead_days: 30            # observation cut-off = election day - lead_days
   n_sims: 10000
@@ -96,6 +117,7 @@ paths:
   raw_mir: data/raw/mir
   raw_polls: data/raw/polls
   raw_cis: data/raw/cis
+  raw_ceo: data/raw/ceo
   processed: data/processed
   outputs: outputs
   figures: reports/figures

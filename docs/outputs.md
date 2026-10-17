@@ -46,3 +46,11 @@ thresholds).
 ## `diagnostics_next.json`, `swing_calibration.json`
 
 Sampler diagnostics (divergences, R-hat, ESS) and the provincial swing noise calibration.
+
+## Regional-poll layer
+
+* `data/processed/regional_polls.csv`: the regional observations the seat model uses (see
+  `data/processed/DATA_DICTIONARY.md`).
+* `outputs/regional_check_2023.csv`: Catalonia, July 2023: actual share, the CEO's pre-election
+  estimate and the national-polls + proportional-swing prediction for ERC, Junts, PSC and the Comuns,
+  with both errors. These errors set `regional.tau_pp.direct` and `regional.swing_sd_pp`.

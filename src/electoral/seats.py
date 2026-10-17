@@ -14,6 +14,10 @@ Swing model (documented choice, see docs/model_choices.md):
 * multiplicative log-normal noise per (province, party) with sd calibrated on the last two
   elections' proportional-swing residuals; shares are renormalised so that province totals sum to
   the 2023 non-blank share;
+* where a regional survey measures a party's general-election share in its region (CEO, Sociómetro,
+  CIS subsamples; ``regional``), the region-level share implied by the swing is combined with it,
+  weighting each by its uncertainty, and the party's provincial shares there are rescaled
+  accordingly (the other lists absorb the difference);
 * joint lists and coalitions that differ from the poll parties are applied last, province by
   province (``merges``): a party's provincial share moves into one or more lists, optionally
   times a merger efficiency (the votes lost do not go to the joint list; D'Hondt then works on
@@ -116,7 +120,9 @@ def simulate_seats(state_draws: pd.DataFrame, shares0: pd.DataFrame, blank0: pd.
                    seed: int, proxies: dict[str, str | None] | None = None,
                    threshold: float = 0.03, absorb: dict[str, list[str]] | None = None,
                    noise: bool = True, merges: list[dict] | None = None,
-                   weights: pd.Series | None = None) -> tuple[pd.DataFrame, pd.DataFrame]:
+                   weights: pd.Series | None = None,
+                   regional: list[dict] | None = None,
+                   regional_swing_sd: float = 0.0) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Monte Carlo seat simulation.
 
     state_draws: posterior draws of national shares (rows) for tracked parties (columns).
@@ -125,7 +131,8 @@ def simulate_seats(state_draws: pd.DataFrame, shares0: pd.DataFrame, blank0: pd.
     (None = uniform; a list of province codes = uniform over those provinces only, which needs
     ``weights``, each province's share of the national valid vote). absorb: tracked party ->
     baseline lists it replaces (their summed geography is used and their own share is zeroed,
-    e.g. SUMAR absorbs UP + MASPAIS in the 2023 backtest). merges: see :func:`apply_merges`.
+    e.g. SUMAR absorbs UP + MASPAIS in the 2023 backtest). regional: see :func:`apply_regional`
+    (needs ``weights``). merges: see :func:`apply_merges`.
     Returns (seat draws (n_sims x all parties), share draws national (n_sims x parties)).
     """
     rng = np.random.default_rng(seed)
@@ -168,6 +175,8 @@ def simulate_seats(state_draws: pd.DataFrame, shares0: pd.DataFrame, blank0: pd.
     # renormalise so that each province sums to its previous non-blank share
     target = (1.0 - blank0.values)[None, :]
     prov_share *= (target / prov_share.sum(axis=2))[:, :, None]
+    if regional:
+        apply_regional(prov_share, regional, provs, col, weights, target[0], regional_swing_sd)
     apply_merges(prov_share, merges or [], provs, col, rng)
 
     seats = np.zeros((S, len(all_parties)), dtype=int)
@@ -176,6 +185,47 @@ def simulate_seats(state_draws: pd.DataFrame, shares0: pd.DataFrame, blank0: pd.
     seat_df = pd.DataFrame(seats, columns=all_parties)
     share_df = pd.DataFrame(nat, columns=tracked)
     return seat_df, share_df
+
+
+def apply_regional(prov_share: np.ndarray, observations: list[dict], provs: list[str],
+                   col: dict[str, int], weights: pd.Series, target: np.ndarray,
+                   swing_sd: float = 0.0) -> None:
+    """Pull provincial shares toward regional survey estimates, in place (S, prov, party).
+
+    Each observation: ``{"provinces": [codes], "party": X, "share": pp, "sd": pp}``. Per draw s, the
+    region-level share implied by the swing is R_s (provinces weighted by valid votes), with mean m.
+    The swing estimate's error is s_m = sqrt(sd(R)^2 + swing_sd^2): the draws' spread plus how far
+    national polls + proportional swing miss a region (``swing_sd``, pp, calibrated on 2023). With
+    the survey's error s_y, the precision-weighted mean is m' = (m/s_m^2 + y/s_y^2) / (1/s_m^2 +
+    1/s_y^2) and its sd s' = (1/s_m^2 + 1/s_y^2)^-1/2. Each draw is shifted by m' - m and its
+    deviation from m is shrunk only if s' is below the draws' own spread. X's provincial shares in
+    the region are scaled by the draw's ratio; the other lists in those provinces are scaled so
+    that each province still sums to ``target``.
+    """
+    touched: dict[int, set[int]] = {}
+    w_all = weights.reindex(provs).fillna(0.0).values
+    for o in observations:
+        if o["party"] not in col:
+            continue
+        sel = np.flatnonzero(np.isin(provs, [str(x).zfill(2) for x in o["provinces"]]))
+        j = col[o["party"]]
+        w = w_all[sel] / w_all[sel].sum()
+        r = (prov_share[:, sel, j] * w[None, :]).sum(axis=1)
+        m, sd_r = r.mean(), max(r.std(), 1e-6)
+        sm = np.sqrt(sd_r ** 2 + (swing_sd / 100) ** 2)
+        y, sy = o["share"] / 100, o["sd"] / 100
+        prec = 1 / sm ** 2 + 1 / sy ** 2
+        m_post, s_post = (m / sm ** 2 + y / sy ** 2) / prec, prec ** -0.5
+        r_new = np.clip(m_post + (r - m) * min(1.0, s_post / sd_r), 0.0, None)
+        prov_share[:, sel, j] *= np.where(r > 0, r_new / np.where(r > 0, r, 1.0), 0.0)[:, None]
+        for i in sel:
+            touched.setdefault(int(i), set()).add(j)
+    for i, js in touched.items():
+        adj = sorted(js)
+        other = np.setdiff1d(np.arange(prov_share.shape[2]), adj)
+        room = target[i] - prov_share[:, i, adj].sum(axis=1)
+        tot_other = prov_share[:, i, other].sum(axis=1)
+        prov_share[:, i, other] *= np.where(tot_other > 0, np.clip(room, 0, None) / tot_other, 0.0)[:, None]
 
 
 def apply_merges(prov_share: np.ndarray, merges: list[dict], provs: list[str], col: dict[str, int],

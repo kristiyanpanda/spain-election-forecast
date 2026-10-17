@@ -169,6 +169,13 @@ Junts 3-6, against the CEO's 10-11 and 4-6. → **Re-run proposal:** add a regio
 Catalonia, Sociómetro / Deustobarómetro for Euskadi, CIS regional subsamples from microdata) that
 updates peripheral shares at the regional level, and treat AC's absence explicitly.
 
+**Implemented (17 Oct, step 4).** `src/electoral/regional.py` builds regional estimates of
+general-election shares: CEO (Catalonia, Congress vote, the two latest face-to-face waves, about 4,000
+respondents), the Sociómetro (Basque territories, its Basque-Parliament estimate relative to the 2024 result)
+and CIS regional subsamples (Galicia: BNG, about 920 respondents pooled over four barometers). The seat model
+weights them against the swing, with errors calibrated on Catalonia in 2023. Canarias (only 18 CIS respondents
+name CC) and Navarre keep the national layer.
+
 ## 3. Theories that apply
 
 Each item gives the mechanism, then what it predicts for 29N, then what it means for the model.

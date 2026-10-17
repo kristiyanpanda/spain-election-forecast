@@ -86,8 +86,23 @@ All processed files live in `data/processed/`. Codes and lineage choices are in 
 | `source_url` | cis.es study page |
 | `cutoff_date` | data cut-off |
 
+## `regional_polls.csv`
+
+| column | meaning |
+|---|---|
+| `region / provinces` | region and the INE province codes it covers |
+| `party` | canonical party id |
+| `share` | estimated general-election share in the region, % of valid vote |
+| `n` | respondents behind the estimate |
+| `tau_pp` | survey error beyond sampling (config regional.tau_pp) |
+| `sd_pp` | total sd used by the seat model: sqrt(share(100-share)/n + tau^2) |
+| `source / method` | CEO Congress vote with 2023 recall; Sociómetro Basque-Parliament estimate turned into a general-election share by relative swing; CIS regional subsample |
+| `fieldwork_start / fieldwork_end` | fieldwork window |
+| `cutoff_date` | data cut-off |
+
 ## Sources and licences
 
 * **Official results**: Ministerio del Interior, infoelectoral.interior.gob.es, files `02YYYYMM_TOTA.zip`. Reuse under Ley 37/2007 and RD 1495/2011. *Origen de los datos: Ministerio del Interior.*
 * **Polls**: English Wikipedia, "Opinion polling for the ... Spanish general election" pages (and the 2019-2022 sub-pages), licence CC BY-SA 4.0. Official CIS rows are dropped from these tables; third-party re-estimations of raw CIS data are kept as pollsters `CIS re-est. (X)`.
 * **CIS**: Centro de Investigaciones Sociológicas, cis.es, licence CC BY 4.0: the 'Estimación de voto' PDF, ficha técnica and microdata of each study (barometers, pre-electoral and flash surveys; list in `config.yaml`). *Fuente de los datos: Centro de Investigaciones Sociológicas.*
+* **Regional polls**: Centre d'Estudis d'Opinió (Generalitat de Catalunya), open microdata of the face-to-face Baròmetre d'Opinió Política; Sociómetro Vasco and the official 2024 Basque Parliament results (Basque Government, euskadi.eus), table in `data/regional/sociometro.csv` with the PDF URLs.

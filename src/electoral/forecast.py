@@ -175,7 +175,7 @@ def decompose_uncertainty(tag: str = "29n", scenario: str = "split") -> pd.DataF
     variants = {"nowcast_no_swing_noise": (pi_T, False), "nowcast": (pi_T, True),
                 "+drift_to_horizon": (expit(drift), True), "+election_day_error": (expit(full), True)}
     from electoral.seats import calibrate_swing_noise, province_baseline, simulate_seats
-    from electoral.project_seats import province_weights, proxies, scenario_merges
+    from electoral.project_seats import province_weights, proxies, regional_observations, scenario_merges
     proc = ROOT / cfg["paths"]["processed"]
     res, tot, nat = (pd.read_parquet(proc / f) for f in ("results_province.parquet", "province_totals.parquet", "results_national.parquet"))
     shares0, blank0, seats0 = province_baseline(res, tot, "202307")
@@ -186,7 +186,9 @@ def decompose_uncertainty(tag: str = "29n", scenario: str = "split") -> pd.DataF
         draws = pd.DataFrame(sh, columns=parties)
         seat_df, _ = simulate_seats(draws, shares0, blank0, seats0, national0, 4000, noise_sd, cfg["seed"],
                                     proxies(cfg), noise=noise, merges=scenario_merges(cfg, scenario),
-                                    weights=province_weights(tot, "202307"))
+                                    weights=province_weights(tot, "202307"),
+                                    regional=regional_observations(cfg),
+                                    regional_swing_sd=cfg["regional"]["swing_sd_pp"])
         right = seat_df[["PP", "VOX", "UPN", "SALF"]].sum(axis=1)
         row = {"variant": name, **{p: float(seat_df[p].std()) for p in ["PP", "PSOE", "VOX", "SUMAR", "PODEMOS", "JUNTS", "ERC"]},
                "right_bloc_sd": float(right.std()), "p_right_majority": float((right >= 176).mean())}

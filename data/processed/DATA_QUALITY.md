@@ -87,6 +87,10 @@ Notes from the build:
 * cis.es pages not found (no such study): barometro-de-julio-2016, barometro-de-agosto-2016, barometro-de-agosto-2017, barometro-de-agosto-2018, barometro-de-marzo-2019, barometro-de-abril-2019, barometro-de-agosto-2019, barometro-de-octubre-2019, barometro-de-diciembre-2019, barometro-de-agosto-2020, barometro-de-agosto-2021, barometro-de-agosto-2022, barometro-de-junio-2023, barometro-de-agosto-2023, barometro-de-septiembre-2023, barometro-de-agosto-2024, barometro-de-agosto-2025, barometro-de-agosto-2026, barometro-de-octubre-2026.
 * 3245 (Macrobarómetro de abril 2019. Preelectoral elecciones al Parlamento Europeo, autonómicas y municipales 2019): official estimate not usable (Stream has ended unexpectedly)
 * 3500 (Encuesta flash situación política española): microdata lack PROBVOTO; no re-estimate
+* CEO: 2 face-to-face barometer waves in the window, 4000 respondents.
+* Galicia: 922 CIS respondents pooled from 4 barometers.
+* Canarias: only 18 CIS respondents name CC; too few, the national layer is kept.
+* Canarias: 730 CIS respondents pooled from 4 barometers.
 
 ## Known limitations
 
