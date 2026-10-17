@@ -63,6 +63,7 @@ backtest:
 paths:
   raw_mir: data/raw/mir
   raw_polls: data/raw/polls
+  raw_cis: data/raw/cis
   processed: data/processed
   outputs: outputs
   figures: reports/figures
@@ -84,3 +85,26 @@ wikipedia:
     e2019nov: "Opinion_polling_for_the_November_2019_Spanish_general_election"
     e2019apr: "Opinion_polling_for_the_April_2019_Spanish_general_election"
     e2016: "Opinion_polling_for_the_2016_Spanish_general_election"
+
+cis:
+  # Centro de Investigaciones Sociológicas, cis.es, CC BY 4.0. Official estimates for all
+  # cycles; our microdata re-estimate for the current cycle only (not backtested).
+  first_month: "2016-01"           # barometers barometro-de-<mes>-<año> from here to the cut-off
+  # other studies carrying a general-election estimate, found in the cis.es catalogue (17 Oct 2026)
+  extra_studies:
+    - preelectoral-elecciones-generales-2016
+    - macrobarometro-de-marzo-2019.-preelectoral-elecciones-generales-2019
+    - macrobarometro-de-abril-2019.-preelectoral-elecciones-al-parlamento-europeo-autonomicas-y-municipales-2019
+    - macrobarometro-de-octubre-2019.-preelectoral-elecciones-generales-2019
+    - barometro-de-diciembre-2019.-postelectoral-elecciones-generales-2019
+    - macroencuesta-sobre-tendencias-en-voto-municipal.-octubre-2022
+    - barometro-de-junio-2023.-postelectoral-elecciones-municipales-y-autonomicas-2023
+    - preelectoral-elecciones-generales-2023
+    - encuesta-flash-elecciones-generales-2023
+    - barometro-de-septiembre-2023.-postelectoral-elecciones-generales-2023
+    - encuesta-flash-situacion-politica-espanola
+  microdata_from: "2023-07-24"     # re-weighted series starts the day after the 2023 election
+  likely_voter_min: 9              # PROBVOTO (0-10) threshold for likely voters
+  # FT3273 (Barómetro de febrero 2020) prints "Del 1 al 11 de enero": days kept, month corrected.
+  fieldwork_overrides:
+    "3273": ["2020-02-01", "2020-02-11"]

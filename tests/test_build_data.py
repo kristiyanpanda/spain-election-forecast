@@ -1,3 +1,6 @@
+import pandas as pd
+import pytest
+
 from electoral.build_data import assign_pollsters, pollster_id
 from electoral.wiki_polls import parse_tables, tables_to_long
 
@@ -66,3 +69,31 @@ def test_cis_reestimators_split_and_official_cis_dropped():
     key = ["cycle", "pollster", "commissioner", "fieldwork_start", "fieldwork_end",
            "sample_size", "party_label"]
     assert len(df.drop_duplicates(key)) == len(df)
+
+
+def test_cycle_of_assigns_the_next_election():
+    from electoral.build_data import cycle_of
+
+    assert cycle_of(pd.Timestamp("2016-06-26")) == "e2016"
+    assert cycle_of(pd.Timestamp("2019-09-18")) == "e2019nov"
+    assert cycle_of(pd.Timestamp("2026-09-04")) == "next"
+
+
+def test_shared_cis_sample_is_split_across_series():
+    from electoral.build_data import assign_sample_groups
+    from electoral.model import _impute_n
+
+    studies = pd.DataFrame({"study": ["3577"], "fieldwork_end": [pd.Timestamp("2026-09-04")]})
+    df = pd.DataFrame({
+        "pollster": ["CIS", "CIS (microdata, re-weighted)", "CIS re-est. (Target Point)",
+                     "CIS re-est. (Opina 360)", "Sigma Dos"],
+        "fieldwork_end": pd.to_datetime(["2026-09-04", "2026-09-04", "2026-09-04", "2026-10-06",
+                                         "2026-09-04"]),
+        "sample_size": [4042.0, 4042.0, 4042.0, 5025.0, 1200.0],
+        "sample_group": ["CIS-3577", "CIS-3577", "", "", ""],
+    })
+    out = assign_sample_groups(df, studies)
+    assert list(out.sample_group) == ["CIS-3577", "CIS-3577", "CIS-3577", "CIS-2026-10-06", ""]
+    assert list(out.n_series) == [3, 3, 3, 1, 1]
+    n = _impute_n(out)
+    assert n.iloc[:3].sum() == pytest.approx(4042) and n.iloc[4] == 1200

@@ -42,11 +42,11 @@ Checks: **all passed**.
 
 | cycle    |   polls | first               | last                |   pollsters | missing_n   |
 |:---------|--------:|:--------------------|:--------------------|------------:|:------------|
-| e2016    |     147 | 2016-01-11 00:00:00 | 2016-06-26 00:00:00 |          26 | 14.3 %      |
-| e2019apr |     390 | 2016-07-01 00:00:00 | 2019-04-28 00:00:00 |          38 | 24.4 %      |
-| e2019nov |     159 | 2019-05-14 00:00:00 | 2019-11-10 00:00:00 |          28 | 23.9 %      |
-| e2023    |     889 | 2019-11-12 00:00:00 | 2023-07-22 00:00:00 |          40 | 17.7 %      |
-| next     |     537 | 2023-07-25 00:00:00 | 2026-10-11 00:00:00 |          36 | 8.4 %       |
+| e2016    |     150 | 2016-01-11 00:00:00 | 2016-06-26 00:00:00 |          27 | 14.0 %      |
+| e2019apr |     402 | 2016-07-01 00:00:00 | 2019-04-28 00:00:00 |          39 | 23.6 %      |
+| e2019nov |     162 | 2019-05-11 00:00:00 | 2019-11-10 00:00:00 |          29 | 23.5 %      |
+| e2023    |     933 | 2019-11-12 00:00:00 | 2023-07-22 00:00:00 |          41 | 16.8 %      |
+| next     |     606 | 2023-07-25 00:00:00 | 2026-10-11 00:00:00 |          38 | 7.4 %       |
 
 Latest poll before the cut-off: **2026-10-11** (SocioMétrica).
 
@@ -62,27 +62,31 @@ Top pollsters (all cycles):
 | SocioMétrica      |     109 |
 | GAD3              |     107 |
 | Celeste-Tel       |     103 |
+| CIS               |      97 |
 | KeyData           |      78 |
 | 40dB              |      70 |
 | Metroscopia       |      67 |
 | DYM               |      67 |
 | GESOP             |      56 |
 | Hamalgama Métrica |      56 |
-| IMOP              |      55 |
 
 Sum of published party shares per poll (should sit a few points below 100 because small parties and 'others' are omitted):
 
 |               |   count |   mean |   std |   min |   25% |   50% |   75% |   max |
 |:--------------|--------:|-------:|------:|------:|------:|------:|------:|------:|
-| sum_of_shares |    2122 |   92.9 |   8.5 |     0 |    89 |  95.6 |  97.1 |  99.5 |
+| sum_of_shares |    2253 |   93.1 |   8.2 |     0 |  89.3 |  95.6 |  97.1 |  99.5 |
 
 19 polls sum below 80 or above 101 (kept, flagged here; see `section`).
 
 Notes from the build:
 
 * Dropped 92 official CIS polls from the Wikipedia tables (official CIS is sourced from cis.es); CIS re-estimations by third parties kept as their own pollsters.
+* 72 CIS surveys feed more than one series (official, our microdata re-estimate, third-party re-estimates); their n is split across the series (median 2 series per survey).
 * Dropped 456 duplicated (poll, party) rows across pages.
 * Excluded 0 polls with fieldwork ending after the cut-off 2026-10-17.
+* cis.es pages not found (no such study): barometro-de-julio-2016, barometro-de-agosto-2016, barometro-de-agosto-2017, barometro-de-agosto-2018, barometro-de-marzo-2019, barometro-de-abril-2019, barometro-de-agosto-2019, barometro-de-octubre-2019, barometro-de-diciembre-2019, barometro-de-agosto-2020, barometro-de-agosto-2021, barometro-de-agosto-2022, barometro-de-junio-2023, barometro-de-agosto-2023, barometro-de-septiembre-2023, barometro-de-agosto-2024, barometro-de-agosto-2025, barometro-de-agosto-2026, barometro-de-octubre-2026.
+* 3245 (Macrobarómetro de abril 2019. Preelectoral elecciones al Parlamento Europeo, autonómicas y municipales 2019): official estimate not usable (Stream has ended unexpectedly)
+* 3500 (Encuesta flash situación política española): microdata lack PROBVOTO; no re-estimate
 
 ## Known limitations
 

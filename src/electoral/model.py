@@ -51,8 +51,13 @@ class ModelData:
 
 
 def _impute_n(polls: pd.DataFrame) -> pd.Series:
+    """Sample size per observation; a survey feeding several series (official CIS, our CIS
+    microdata re-estimate, third-party re-estimates) has its n split evenly across them."""
     med = polls.groupby("pollster")["sample_size"].transform("median")
-    return polls["sample_size"].fillna(med).fillna(1000.0).clip(lower=200)
+    n = polls["sample_size"].fillna(med).fillna(1000.0).clip(lower=200)
+    if "n_series" in polls:
+        n = n / polls["n_series"].fillna(1).clip(lower=1)
+    return n
 
 
 def apply_composites(df: pd.DataFrame, composites: dict | None) -> pd.DataFrame:

@@ -20,7 +20,7 @@ import pandas as pd
 import yaml
 
 from electoral import ROOT, load_config
-from electoral import mir, wiki_polls
+from electoral import cis, cis_microdata, mir, wiki_polls
 
 # Wikipedia page key -> election cycle the polls belong to (sub-pages merged)
 CYCLE_OF = {
@@ -105,7 +105,59 @@ ELECTION_DATES = {k: pd.Timestamp(v) for k, v in ELECTION_DATES.items()}
 
 
 # ----------------------------------------------------------------------------- polls
-def build_polls(cfg: dict, labels: dict, parties: dict) -> tuple[pd.DataFrame, list[str]]:
+CYCLE_ENDS = [("e2016", "201606"), ("e2019apr", "201904"), ("e2019nov", "201911"), ("e2023", "202307")]
+
+
+def cycle_of(day: pd.Timestamp) -> str:
+    """Election cycle a poll belongs to: the first election on or after its fieldwork end."""
+    for cycle, election in CYCLE_ENDS:
+        if day <= ELECTION_DATES[election]:
+            return cycle
+    return "next"
+
+
+def cis_rows(cis_long: pd.DataFrame) -> pd.DataFrame:
+    """cis.es series (electoral.cis.build_series) in the column layout of the Wikipedia rows."""
+    df = cis_long.copy()
+    df["cycle"] = df["fieldwork_end"].map(cycle_of)
+    df["commissioner"] = ""
+    df["turnout"] = float("nan")
+    df["is_election"] = False
+    df["section"] = "cis.es study " + df["study"].astype(str)
+    df["source_page"] = df["source_url"]
+    df["sample_group"] = "CIS-" + df["study"].astype(str)
+    return df
+
+
+def assign_sample_groups(df: pd.DataFrame, studies: pd.DataFrame, tol_days: int = 3) -> pd.DataFrame:
+    """Link every series built from one CIS survey and count them (``n_series``).
+
+    Third-party re-estimates from Wikipedia carry the official CIS fieldwork window (shared
+    rowspan), so they are matched to the cis.es study whose fieldwork ends within ``tol_days``;
+    re-estimates of a survey not (yet) on cis.es are grouped by their own fieldwork end. The
+    model divides each poll's n by ``n_series``, so one survey carries its sample once in total.
+    """
+    df = df.copy()
+    if "sample_group" not in df:
+        df["sample_group"] = ""
+    df["sample_group"] = df["sample_group"].fillna("")
+    reest = df["pollster"].str.startswith("CIS re-est. (")
+    ends = studies[["study", "fieldwork_end"]].dropna().drop_duplicates()
+    ends["fieldwork_end"] = pd.to_datetime(ends["fieldwork_end"])
+    for end in map(pd.Timestamp, df.loc[reest, "fieldwork_end"].unique()):
+        gap = (ends["fieldwork_end"] - end).abs()
+        group = (f"CIS-{ends.loc[gap.idxmin(), 'study']}" if len(gap) and gap.min().days <= tol_days
+                 else f"CIS-{end.date()}")
+        df.loc[reest & (df["fieldwork_end"] == end), "sample_group"] = group
+    grouped = df["sample_group"] != ""
+    n = df[grouped].groupby("sample_group")["pollster"].nunique()
+    df["n_series"] = df["sample_group"].map(n).where(grouped, 1).astype(int)
+    return df
+
+
+def build_polls(cfg: dict, labels: dict, parties: dict,
+                cis_long: pd.DataFrame | None = None,
+                cis_studies: pd.DataFrame | None = None) -> tuple[pd.DataFrame, list[str]]:
     raw_dir = ROOT / cfg["paths"]["raw_polls"]
     pages = dict(cfg["wikipedia"]["pages"])
     frames, notes = [], []
@@ -126,6 +178,16 @@ def build_polls(cfg: dict, labels: dict, parties: dict) -> tuple[pd.DataFrame, l
     df, n_cis = assign_pollsters(df)
     notes.append(f"Dropped {n_cis} official CIS polls from the Wikipedia tables (official CIS is "
                  "sourced from cis.es); CIS re-estimations by third parties kept as their own pollsters.")
+    if cis_long is not None and len(cis_long):
+        df = pd.concat([df, cis_rows(cis_long)], ignore_index=True)
+        df = assign_sample_groups(df, cis_studies if cis_studies is not None else cis_long)
+        shared = df[df["n_series"] > 1].drop_duplicates(["sample_group", "pollster"])
+        notes.append(f"{shared['sample_group'].nunique()} CIS surveys feed more than one series "
+                     f"(official, our microdata re-estimate, third-party re-estimates); their n is "
+                     f"split across the series (median {shared.groupby('sample_group').size().median():.0f} "
+                     "series per survey).")
+    else:
+        df["sample_group"], df["n_series"] = "", 1
 
     # a poll is identified by pollster + fieldwork window + sample; duplicates across pages
     # (election rows repeated on every page, same poll in overlapping sub-pages) are dropped
@@ -150,8 +212,8 @@ def build_polls(cfg: dict, labels: dict, parties: dict) -> tuple[pd.DataFrame, l
     df["bloc"] = df["party"].map(lambda p: parties[p]["bloc"])
     df["cutoff_date"] = cutoff
     cols = ["poll_id", "cycle", "pollster", "commissioner", "fieldwork_start", "fieldwork_end",
-            "sample_size", "turnout", "is_election", "party", "bloc", "value", "section",
-            "source_page", "cutoff_date"]
+            "sample_size", "n_series", "sample_group", "turnout", "is_election", "party", "bloc",
+            "value", "section", "source_page", "cutoff_date"]
     return df[cols].sort_values(["cycle", "fieldwork_end", "poll_id"]).reset_index(drop=True), notes
 
 
@@ -188,15 +250,26 @@ DICTIONARY = {
     },
     "polls_long.parquet": {
         "poll_id": "cycle + running number", "cycle": "election the poll precedes: e2016, e2019apr, e2019nov, e2023, next",
-        "pollster": "polling firm (before the slash in Wikipedia); `CIS re-est. (X)` for X's re-estimation of raw CIS data; ELECTION for actual results rows",
+        "pollster": "polling firm (before the slash in Wikipedia); `CIS` = official CIS estimate and `CIS (microdata, re-weighted)` = our re-estimate, both from cis.es; `CIS re-est. (X)` for X's re-estimation of raw CIS data; ELECTION for actual results rows",
         "commissioner": "media outlet / client (after the slash)",
         "fieldwork_start": "first fieldwork day", "fieldwork_end": "last fieldwork day (used as poll date)",
         "sample_size": "n respondents; NaN when Wikipedia shows '?'",
+        "n_series": "number of series built from the same survey (CIS: official, our re-estimate, third-party re-estimates); the model divides n by it",
+        "sample_group": "CIS-<study> for series sharing one CIS survey, empty otherwise",
         "turnout": "turnout estimate in % when published", "is_election": "True for actual election result rows",
         "party": "canonical party id (data/party_map_polls.yaml)", "bloc": "bloc",
         "value": "vote estimate in % of valid vote; NaN when not published ('?') or party not polled ('–')",
-        "section": "Wikipedia table section (year or scenario label)", "source_page": "Wikipedia page title",
+        "section": "Wikipedia table section (year or scenario label), or `cis.es study <n>`",
+        "source_page": "Wikipedia page title, or the cis.es study page",
         "cutoff_date": "data cut-off stamped on every row",
+    },
+    "cis_studies.csv": {
+        "study": "CIS study number", "title": "study title on cis.es",
+        "fieldwork_start / fieldwork_end": "fieldwork window (microdata interview dates when available, else the ficha técnica)",
+        "sample_size": "interviews completed", "fieldwork_source": "where the fieldwork window comes from",
+        "official_<PARTY>": "official CIS estimate, % of valid vote (Alaminos-Tezanos model)",
+        "micro_<PARTY>": "our re-estimate from the microdata, % of valid vote (PESO, 2023 recall, likely voters); current cycle only",
+        "source_url": "cis.es study page", "cutoff_date": "data cut-off",
     },
 }
 
@@ -215,9 +288,12 @@ def write_dictionary(path: Path) -> None:
               "*Origen de los datos: Ministerio del Interior.*",
               "* **Polls**: English Wikipedia, \"Opinion polling for the ... Spanish general election\" "
               "pages (and the 2019-2022 sub-pages), licence CC BY-SA 4.0. Official CIS rows are dropped "
-              "from these tables (CIS is sourced from cis.es); third-party re-estimations of raw CIS "
-              "data are kept as pollsters `CIS re-est. (X)`. *Fuente de los datos: Centro de "
-              "Investigaciones Sociológicas* for those rows.", ""]
+              "from these tables; third-party re-estimations of raw CIS data are kept as pollsters "
+              "`CIS re-est. (X)`.",
+              "* **CIS**: Centro de Investigaciones Sociológicas, cis.es, licence CC BY 4.0: the "
+              "'Estimación de voto' PDF, ficha técnica and microdata of each study (barometers, "
+              "pre-electoral and flash surveys; list in `config.yaml`). *Fuente de los datos: Centro "
+              "de Investigaciones Sociológicas.*", ""]
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -275,6 +351,17 @@ def write_quality(path: Path, cfg: dict, res: pd.DataFrame, tot: pd.DataFrame, n
     path.write_text("\n".join(L), encoding="utf-8")
 
 
+def write_cis_studies(path: Path, studies: pd.DataFrame, cutoff: str) -> None:
+    """One row per CIS study: fieldwork, n, official estimate and our microdata re-estimate."""
+    t = studies.copy()
+    t = t[t["fieldwork_end"] <= pd.Timestamp(cutoff)]
+    lead = ["study", "title", "fieldwork_start", "fieldwork_end", "sample_size", "fieldwork_source"]
+    est = sorted(c for c in t.columns if c.startswith(("official_", "micro_")))
+    t = t[lead + est + ["source_url"]].sort_values("fieldwork_end")
+    t["cutoff_date"] = cutoff
+    t.to_csv(path, index=False)
+
+
 def main() -> None:
     cfg = load_config()
     labels, parties, rmap = load_maps()
@@ -287,11 +374,18 @@ def main() -> None:
     nat.to_parquet(out / "results_national.parquet", index=False)
     nat.to_csv(out / "results_national.csv", index=False)
 
-    polls, notes = build_polls(cfg, labels, parties)
+    targets = cis_microdata.recall_targets(nat, tot)
+    cis_long, cis_studies, cis_notes = cis.build_series(cfg, ROOT, targets)
+    write_cis_studies(out / "cis_studies.csv", cis_studies, cfg["cutoff_date"])
+    polls, notes = build_polls(cfg, labels, parties, cis_long, cis_studies)
+    notes += cis_notes
     polls.to_parquet(out / "polls_long.parquet", index=False)
-    wide = polls.pivot_table(index=["poll_id", "cycle", "pollster", "commissioner", "fieldwork_start",
-                                    "fieldwork_end", "sample_size", "turnout", "is_election"],
-                             columns="party", values="value", aggfunc="first").reset_index()
+    meta = ["poll_id", "cycle", "pollster", "commissioner", "fieldwork_start", "fieldwork_end",
+            "sample_size", "n_series", "turnout", "is_election"]
+    # pivot on poll_id only: polls with unknown n or turnout must not drop out
+    wide = polls.drop_duplicates("poll_id")[meta].merge(
+        polls.pivot_table(index="poll_id", columns="party", values="value", aggfunc="first").reset_index(),
+        on="poll_id", how="left")
     wide.to_csv(out / "polls_wide.csv", index=False)
 
     write_dictionary(out / "DATA_DICTIONARY.md")
