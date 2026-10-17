@@ -125,7 +125,7 @@ def main(tag: str = "29n") -> dict:
             "weeks_ahead": round(weeks_ahead, 2), "scenarios": list(cfg["seats"]["scenarios"]),
             "mean_reversion": rev, "error_inflation": infl}
     (out / f"forecast_{tag}.json").write_text(json.dumps(meta, indent=2))
-    from electoral.plots import plot_bloc_majority, plot_seat_distributions
+    from electoral.plots import expected_seats, plot_bloc_majority, plot_hemicycle, plot_seat_distributions
     from electoral.project_seats import blocs_from_map
     figs = ROOT / cfg["paths"]["figures"]
     blocs = blocs_from_map()
@@ -141,6 +141,11 @@ def main(tag: str = "29n") -> dict:
         plot_bloc_majority(seat_df, {k: v for k, v in blocs.items() if k in
                            ["Right (PP+Vox+UPN+SALF)", "2023 investiture bloc (above + PNV + Junts)"]},
                            figs / f"bloc_majority_{st}.png", cfg["cutoff_date"])
+        plot_hemicycle(expected_seats(seat_df), figs / f"hemicycle_{st}.png", cfg["cutoff_date"],
+                       f"Forecast Congress, {h_date.day} {h_date.strftime('%B %Y')}",
+                       f"Expected seats, {cfg['seats']['scenarios'][scenario]['label'].lower()}: mean of "
+                       f"{len(seat_df):,} simulations, rounded to 350.\nOthers: local lists (Soria ¡Ya!, "
+                       "Teruel Existe, UPL).", "Seats: model forecast, not a result.")
         print(scenario)
         print(q.round(1).to_string())
         print(probs.round(3).to_string())

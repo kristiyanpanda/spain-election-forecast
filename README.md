@@ -23,6 +23,13 @@ registered (Frente Amplio and Podemos apart, joint only in Canarias and Valencia
 **sensitivity** is one Frente Amplio + Podemos list everywhere, keeping 0.83 of the sum as Unidos
 Podemos did in 2016.
 
+![Forecast Congress](reports/figures/hemicycle_29n_split.png)
+*Expected seats on 29 November, base case: each party's mean over 10,000 simulations, rounded so they
+add up to 350. No single simulation need look exactly like this; the 90 % ranges are in the table below.
+PP + Vox reach 196 here. "Others" are local lists (Soria ¡Ya!, Teruel Existe, UPL). Merged-left version:
+[`hemicycle_29n_merged.png`](reports/figures/hemicycle_29n_merged.png); interactive version with both:
+`docs/index.html`.*
+
 | party | vote at cut-off | seats if held at cut-off, 90 % | seats on 29 Nov, split left (base) | seats on 29 Nov, merged left |
 |---|---|---|---|---|
 | PP | 31.1 % | 124 - 138 | 131 (104 - 157) | 130 (104 - 156) |

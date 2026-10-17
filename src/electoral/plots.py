@@ -179,3 +179,76 @@ def plot_bloc_majority(seat_df: pd.DataFrame, blocs: dict[str, list[str]], path:
     fig.tight_layout()
     fig.savefig(path, bbox_inches="tight")
     plt.close(fig)
+
+
+# ----------------------------------------------------------------------------- hemicycle
+# left-to-right seating order and display names for the Congress chart
+HEMICYCLE_ORDER = ["PODEMOS", "SUMAR", "PSOE", "ERC", "BILDU", "BNG", "AA", "CC", "OTHER", "PNV", "JUNTS",
+                   "PP", "UPN", "VOX", "SALF"]
+HEMICYCLE_NAMES = {"PODEMOS": "Podemos", "SUMAR": "Frente Amplio", "PSOE": "PSOE", "ERC": "ERC",
+                   "BILDU": "EH Bildu", "BNG": "BNG", "AA": "Adelante Andalucía", "CC": "CC",
+                   "OTHER": "Others", "PNV": "PNV", "JUNTS": "Junts", "PP": "PP", "UPN": "UPN",
+                   "VOX": "Vox", "SALF": "SALF"}
+# Bildu, PNV and BNG share greens with Vox elsewhere; the seat chart needs them apart
+HEMICYCLE_COLORS = {**COLORS, "BILDU": "#a8b820", "PNV": "#1b5e20", "BNG": "#6fa8dc", "AA": "#c9a66b",
+                    "UPN": "#3b7ac6"}
+
+
+def expected_seats(seat_draws: pd.DataFrame, total: int = 350) -> pd.Series:
+    """Mean seats per party over the simulations, rounded by largest remainder to sum to ``total``.
+
+    This is a summary for display (no single simulation need look like it), in seating order.
+    """
+    mean = seat_draws.mean()
+    mean = mean * total / mean.sum()
+    base = np.floor(mean).astype(int)
+    rest = total - base.sum()
+    base[(mean - base).sort_values(ascending=False).index[:rest]] += 1
+    order = [p for p in HEMICYCLE_ORDER if p in base] + [p for p in base.index if p not in HEMICYCLE_ORDER]
+    return base[order][base[order] > 0]
+
+
+def hemicycle_layout(n: int = 350, rows: int = 12, inner: float = 0.42) -> pd.DataFrame:
+    """Seat positions of a semicircular chamber, ordered left to right (x, y, row).
+
+    Each row's capacity is proportional to its radius; seats are then sorted by angle so that
+    consecutive seats form wedges spanning all rows, as in the usual parliament diagrams.
+    """
+    radii = np.linspace(inner, 1.0, rows)
+    cap = radii / radii.sum() * n
+    k = np.floor(cap).astype(int)
+    k[np.argsort(-(cap - k))[: n - k.sum()]] += 1
+    pts = []
+    for r, m in zip(radii, k):
+        ang = np.pi * (1 - (np.arange(m) + 0.5) / m)  # half-step offset: rows do not share angles
+        pts += [(a, r) for a in ang]
+    df = pd.DataFrame(pts, columns=["angle", "radius"]).sort_values(["angle", "radius"], ascending=[False, True])
+    df["x"], df["y"] = df.radius * np.cos(df.angle), df.radius * np.sin(df.angle)
+    return df.reset_index(drop=True)
+
+
+def plot_hemicycle(seats: pd.Series, path: Path, cutoff: str, title: str, subtitle: str,
+                   note: str = "") -> None:
+    """Congress seat chart: one dot per deputy, parties in seating order, 176-seat marker."""
+    _style()
+    lay = hemicycle_layout(int(seats.sum()))
+    lay["party"] = np.repeat(seats.index.values, seats.values)
+    fig, ax = plt.subplots(figsize=(8.2, 5.6))
+    for p in seats.index:
+        d = lay[lay.party == p]
+        ax.scatter(d.x, d.y, s=46, color=HEMICYCLE_COLORS.get(p, "#999999"), linewidths=0)
+    ax.plot([0, 0], [0.32, 1.06], color="black", lw=0.8, ls="--")
+    ax.text(0, 1.08, "176", ha="center", va="bottom", fontsize=8)
+    ax.set_aspect("equal")
+    ax.axis("off")
+    ax.set_xlim(-1.08, 1.08)
+    ax.set_ylim(-0.28, 1.15)
+    handles = [plt.Line2D([], [], marker="o", ls="", color=HEMICYCLE_COLORS.get(p, "#999999"), markersize=8,
+                          label=f"{HEMICYCLE_NAMES.get(p, p)} {n}") for p, n in seats.items()]
+    ax.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, -0.02), ncol=5, fontsize=8,
+              handletextpad=0.2, columnspacing=1.0)
+    fig.text(0.02, 0.955, title, ha="left", va="top", fontsize=13, weight="bold")
+    fig.text(0.02, 0.905, subtitle, ha="left", va="top", fontsize=8.5, color="#444444", wrap=True)
+    stamp(fig, cutoff, note)
+    fig.savefig(path, bbox_inches="tight")
+    plt.close(fig)

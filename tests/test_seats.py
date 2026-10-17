@@ -98,3 +98,13 @@ def test_forecast_horizon_is_the_snap_election():
     cfg = load_config()
     day, weeks = horizon({**cfg, "cutoff_date": "2026-10-17"})
     assert day == pd.Timestamp("2026-11-29") and weeks == pytest.approx(43 / 7)
+
+
+def test_hemicycle_layout_and_expected_seats():
+    from electoral.plots import expected_seats, hemicycle_layout
+
+    lay = hemicycle_layout(350)
+    assert len(lay) == 350 and lay["angle"].is_monotonic_decreasing              # sorted left to right
+    draws = pd.DataFrame({"PP": [130.6] * 3, "PSOE": [107.6] * 3, "VOX": [66.4] * 3, "SUMAR": [45.4] * 3})
+    seats = expected_seats(draws)
+    assert seats.sum() == 350 and list(seats.index) == ["SUMAR", "PSOE", "PP", "VOX"]

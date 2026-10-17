@@ -15,7 +15,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from electoral import ROOT, load_config
-from electoral.plots import COLORS
+from electoral.plots import COLORS, HEMICYCLE_COLORS, HEMICYCLE_NAMES, expected_seats, hemicycle_layout
 
 FONT = "Calibri, Carlito, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
 
@@ -73,6 +73,44 @@ def _table(headers: list[tuple[str, bool]], rows: list[list], highlight: set[int
         tds = "".join(f"<td class='{'num' if headers[j][1] else ''}'>{c}</td>" for j, c in enumerate(r))
         body.append(f"<tr{cls}>{tds}</tr>")
     return f"<table><thead><tr>{th}</tr></thead><tbody>{''.join(body)}</tbody></table>"
+
+
+def hemicycle_figure(draws: dict[str, pd.DataFrame], labels: dict[str, str]) -> go.Figure:
+    """Interactive Congress chart: one dot per seat, a button per party-supply scenario."""
+    fig = go.Figure()
+    buttons, n_traces = [], []
+    for i, (scen, sd) in enumerate(draws.items()):
+        seats = expected_seats(sd)
+        lay = hemicycle_layout(int(seats.sum()))
+        lay["party"] = [p for p, n in seats.items() for _ in range(n)]
+        k = 0
+        for p, n in seats.items():
+            d = lay[lay.party == p]
+            q05, q50, q95 = (int(sd[p].quantile(x)) for x in (0.05, 0.5, 0.95))
+            fig.add_trace(go.Scatter(
+                x=d.x, y=d.y, mode="markers", visible=i == 0, name=f"{HEMICYCLE_NAMES.get(p, p)} {n}",
+                marker={"color": HEMICYCLE_COLORS.get(p, "#999999"), "size": 9},
+                hovertemplate=(f"<b>{HEMICYCLE_NAMES.get(p, p)}</b><br>expected seats {n}<br>"
+                               f"median {q50}, 90 % range {q05}-{q95}<extra></extra>"), legendgroup=scen))
+            k += 1
+        n_traces.append(k)
+    total = sum(n_traces)
+    start = 0
+    for (scen, _), k in zip(draws.items(), n_traces):
+        vis = [False] * total
+        vis[start:start + k] = [True] * k
+        buttons.append({"label": labels[scen], "method": "update", "args": [{"visible": vis}]})
+        start += k
+    fig.add_shape(type="line", x0=0, x1=0, y0=0.32, y1=1.06, line={"dash": "dash", "color": "black", "width": 1})
+    fig.add_annotation(x=0, y=1.1, text="176", showarrow=False, font={"size": 12})
+    fig.update_xaxes(visible=False, range=[-1.1, 1.1])
+    fig.update_yaxes(visible=False, range=[-0.05, 1.16], scaleanchor="x", scaleratio=1)
+    fig.update_layout(height=520, template="plotly_white", font={"family": FONT, "size": 14, "color": "#1e2430"},
+                      legend={"orientation": "h", "y": -0.02, "x": 0.5, "xanchor": "center"},
+                      margin={"l": 10, "r": 10, "t": 50, "b": 10},
+                      updatemenus=[{"type": "buttons", "direction": "right", "buttons": buttons, "x": 0, "y": 1.12,
+                                    "xanchor": "left", "showactive": True}])
+    return fig
 
 
 def main() -> None:
@@ -146,6 +184,8 @@ def main() -> None:
     fig.update_layout(height=880, template="plotly_white", font={"family": FONT, "size": 14, "color": "#1e2430"},
                       legend={"orientation": "h", "y": 1.07}, margin={"l": 60, "r": 30, "t": 60, "b": 40})
 
+    hemi = hemicycle_figure({"split": seats_dl, "merged": seats_mg}, scen)
+
     # ---------------------------------------------------------------- tables
     def seat_row(sd: pd.DataFrame, p: str) -> str:
         return f"{int(sd[p].quantile(.05))} - {int(sd[p].quantile(.95))}"
@@ -214,8 +254,14 @@ def main() -> None:
 from {n_pollsters} pollsters published up to <b>{cutoff}</b>, about {fc['weeks_ahead']:.0f} weeks before polling day. These are
 model probabilities, not predictions of the result; the backtest below shows how wrong the same method has been before.</p>
 {cards}
+<h2>The Congress on {horizon}</h2>
+{hemi.to_html(full_html=False, include_plotlyjs="cdn")}
+<p class="small">One dot per deputy, expected seats: the mean of 10,000 simulations per party, rounded so that
+they add up to 350 (no single simulation need look exactly like this). Hover a party for its median and 90 % range;
+the buttons switch between the base case (Frente Amplio and Podemos apart) and the merged left. "Others" are local
+lists such as Soria ¡Ya!, Teruel Existe and UPL. The dashed line marks the 176-seat majority.</p>
 <h2>Vote shares and seats</h2>
-{fig.to_html(full_html=False, include_plotlyjs="cdn")}
+{fig.to_html(full_html=False, include_plotlyjs=False)}
 <p class="small">Click a party in the legend to show or hide it; regional parties are hidden by default. The boxes show the
 median, the 50 % and the 90 % intervals of 10,000 seat simulations. The horizontal line is the 176-seat majority.</p>
 <h2>Summary tables</h2>
