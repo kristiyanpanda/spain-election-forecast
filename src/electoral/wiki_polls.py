@@ -58,6 +58,8 @@ def _strip_templates(s: str) -> str:
 def _clean_cell(raw: str) -> str:
     s = re.sub(r"<ref[^>]*/>", "", raw)
     s = re.sub(r"<ref[^>]*>.*?</ref>", "", s, flags=re.S)
+    # keep {{smaller|(X)}} text: it names who re-estimated raw CIS data ("CIS (Target Point)")
+    s = re.sub(r"\s*\{\{\s*smaller\s*\|\s*([^{}|]*?)\s*\}\}", r" \1", s, flags=re.I)
     s = _strip_templates(s)
     s = re.sub(r"\[\[(?:[^|\]]*\|)?([^\]]*)\]\]", r"\1", s)  # links first: they contain '|'
     # attribute separator: `style="..."| value`, `rowspan="2"| value`

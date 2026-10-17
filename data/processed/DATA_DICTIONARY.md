@@ -56,7 +56,7 @@ All processed files live in `data/processed/`. Codes and lineage choices are in 
 |---|---|
 | `poll_id` | cycle + running number |
 | `cycle` | election the poll precedes: e2016, e2019apr, e2019nov, e2023, next |
-| `pollster` | polling firm (before the slash in Wikipedia); ELECTION for actual results rows |
+| `pollster` | polling firm (before the slash in Wikipedia); `CIS re-est. (X)` for X's re-estimation of raw CIS data; ELECTION for actual results rows |
 | `commissioner` | media outlet / client (after the slash) |
 | `fieldwork_start` | first fieldwork day |
 | `fieldwork_end` | last fieldwork day (used as poll date) |
@@ -73,4 +73,4 @@ All processed files live in `data/processed/`. Codes and lineage choices are in 
 ## Sources and licences
 
 * **Official results**: Ministerio del Interior, infoelectoral.interior.gob.es, files `02YYYYMM_TOTA.zip`. Reuse under Ley 37/2007 and RD 1495/2011. *Origen de los datos: Ministerio del Interior.*
-* **Polls**: English Wikipedia, "Opinion polling for the ... Spanish general election" pages (and the 2019-2022 sub-pages), licence CC BY-SA 4.0. CIS barometers enter through their rows in those tables; *Fuente de los datos: Centro de Investigaciones Sociológicas* for those rows.
+* **Polls**: English Wikipedia, "Opinion polling for the ... Spanish general election" pages (and the 2019-2022 sub-pages), licence CC BY-SA 4.0. Official CIS rows are dropped from these tables (CIS is sourced from cis.es); third-party re-estimations of raw CIS data are kept as pollsters `CIS re-est. (X)`. *Fuente de los datos: Centro de Investigaciones Sociológicas* for those rows.

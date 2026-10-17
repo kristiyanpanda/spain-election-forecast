@@ -11,6 +11,7 @@ Outputs (data/processed/):
 
 from __future__ import annotations
 
+import re
 import unicodedata
 from datetime import date
 from pathlib import Path
@@ -31,6 +32,35 @@ DEFAULT_YEAR = {"next": 2026, "e2023": 2023, "e2023_2022": 2022, "e2023_2019_202
 # Same organisation under two names in the tables (ElectoPanel is Electomanía's panel,
 # rebranded EM-Analytics in 2023). Pollster ids are otherwise the name before the slash.
 POLLSTER_ALIAS = {"ElectoPanel": "EM-Analytics"}
+# Third parties re-estimating raw CIS data appear as "CIS {{smaller|(X)}}" rows sharing a rowspan
+# with the official CIS row. Each becomes its own pollster; JM and JM&A are Jaime Miquel.
+CIS_REEST = re.compile(r"^CIS\s*\((.+)\)$")
+CIS_REEST_ALIAS = {"JM": "Jaime Miquel", "JM&A": "Jaime Miquel"}
+
+
+def pollster_id(firm: str) -> str:
+    """'Sigma Dos/El Mundo' -> 'Sigma Dos'; 'CIS (Target Point)' -> 'CIS re-est. (Target Point)'."""
+    name = firm.split("/", 1)[0].strip()
+    m = CIS_REEST.match(name)
+    if m:
+        who = m.group(1).strip()
+        return f"CIS re-est. ({CIS_REEST_ALIAS.get(who, who)})"
+    return POLLSTER_ALIAS.get(name, name)
+
+
+def assign_pollsters(df: pd.DataFrame) -> tuple[pd.DataFrame, int]:
+    """Add pollster/commissioner columns and drop official CIS rows (taken from cis.es instead).
+
+    Returns the frame and the number of official CIS polls dropped.
+    """
+    df = df.copy()
+    df["pollster"] = df["firm_raw"].map(pollster_id)
+    df["commissioner"] = df["firm_raw"].str.split("/", n=1).str[1].str.strip().fillna("")
+    df.loc[df["is_election"], "pollster"] = "ELECTION"
+    official = df["pollster"] == "CIS"
+    poll_key = ["cycle", "fieldwork_start", "fieldwork_end", "sample_size"]
+    n_cis = len(df.loc[official, poll_key].drop_duplicates())
+    return df[~official], n_cis
 
 
 def norm_label(s: str) -> str:
@@ -93,10 +123,9 @@ def build_polls(cfg: dict, labels: dict, parties: dict) -> tuple[pd.DataFrame, l
     df["party"] = df["party_label"].map(lambda s: labels[norm_label(s)])
     df["cycle"] = df["cycle"].map(CYCLE_OF)
 
-    firm = df["firm_raw"].str.split("/", n=1)
-    df["pollster"] = firm.str[0].str.strip().replace(POLLSTER_ALIAS)
-    df["commissioner"] = firm.str[1].str.strip().fillna("")
-    df.loc[df["is_election"], "pollster"] = "ELECTION"
+    df, n_cis = assign_pollsters(df)
+    notes.append(f"Dropped {n_cis} official CIS polls from the Wikipedia tables (official CIS is "
+                 "sourced from cis.es); CIS re-estimations by third parties kept as their own pollsters.")
 
     # a poll is identified by pollster + fieldwork window + sample; duplicates across pages
     # (election rows repeated on every page, same poll in overlapping sub-pages) are dropped
@@ -159,7 +188,7 @@ DICTIONARY = {
     },
     "polls_long.parquet": {
         "poll_id": "cycle + running number", "cycle": "election the poll precedes: e2016, e2019apr, e2019nov, e2023, next",
-        "pollster": "polling firm (before the slash in Wikipedia); ELECTION for actual results rows",
+        "pollster": "polling firm (before the slash in Wikipedia); `CIS re-est. (X)` for X's re-estimation of raw CIS data; ELECTION for actual results rows",
         "commissioner": "media outlet / client (after the slash)",
         "fieldwork_start": "first fieldwork day", "fieldwork_end": "last fieldwork day (used as poll date)",
         "sample_size": "n respondents; NaN when Wikipedia shows '?'",
@@ -185,9 +214,10 @@ def write_dictionary(path: Path) -> None:
               "`02YYYYMM_TOTA.zip`. Reuse under Ley 37/2007 and RD 1495/2011. "
               "*Origen de los datos: Ministerio del Interior.*",
               "* **Polls**: English Wikipedia, \"Opinion polling for the ... Spanish general election\" "
-              "pages (and the 2019-2022 sub-pages), licence CC BY-SA 4.0. CIS barometers enter through "
-              "their rows in those tables; *Fuente de los datos: Centro de Investigaciones Sociológicas* "
-              "for those rows.", ""]
+              "pages (and the 2019-2022 sub-pages), licence CC BY-SA 4.0. Official CIS rows are dropped "
+              "from these tables (CIS is sourced from cis.es); third-party re-estimations of raw CIS "
+              "data are kept as pollsters `CIS re-est. (X)`. *Fuente de los datos: Centro de "
+              "Investigaciones Sociológicas* for those rows.", ""]
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
