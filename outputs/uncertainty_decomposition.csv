@@ -1,5 +1,5 @@
-variant,PP,PSOE,VOX,SUMAR,PODEMOS,JUNTS,ERC,right_bloc_sd,p_right_majority
-nowcast_no_swing_noise,3.196,2.831,2.805,1.039,0.216,0.567,0.5,2.163,1.0
-nowcast,4.444,4.27,4.079,1.709,0.629,0.871,0.868,4.16,1.0
-+drift_to_deadline,11.099,11.234,11.779,4.324,1.65,1.271,1.065,10.67,0.995
-+election_day_error,17.612,17.305,15.229,5.393,1.867,1.488,1.519,16.576,0.95
+variant,PP,PSOE,VOX,SUMAR,PODEMOS,JUNTS,ERC,right_bloc_sd,p_right_majority,scenario,cutoff_date
+nowcast_no_swing_noise,3.033,3.007,2.723,0.554,0.047,0.54,0.614,2.587,1.0,split,2026-10-17
+nowcast,4.125,4.021,3.601,1.731,0.354,0.83,1.124,3.975,1.0,split,2026-10-17
++drift_to_horizon,5.67,5.494,5.436,2.298,0.435,0.878,1.17,5.336,1.0,split,2026-10-17
++election_day_error,15.907,15.338,12.188,4.268,0.578,1.241,1.782,14.695,0.93,split,2026-10-17

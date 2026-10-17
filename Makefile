@@ -26,7 +26,7 @@ seats:           ## phase D: seat projection (Monte Carlo)
 backtest:        ## phase E
 	$(PY) electoral backtest
 
-forecast:        ## phase F: projection to the legal deadline
+forecast:        ## phase F: projection to election day (29 Nov 2026)
 	$(PY) electoral forecast
 
 report:          ## phase G: interactive HTML

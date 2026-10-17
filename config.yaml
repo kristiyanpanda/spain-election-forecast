@@ -9,12 +9,20 @@ cutoff_date: "2026-10-17"        # polls published on or before this date are us
 last_election: "2023-07-23"
 legal_deadline: "2027-08-15"     # term expires 2027-07-23; election on day 54 after convocation
 election_date: "2026-11-29"      # snap election (RD 806/2026, BOE 6 Oct 2026): the forecast horizon
+provisional_label: "PROVISIONAL — coalitions per press reports as of 17 Oct 2026; official lists in BOE on 3 Nov"
+# marked on the trend charts (date: label)
+events:
+  "2026-07-30": "Ceuta"
+  "2026-10-02": "Decrees rejected"
+  "2026-10-05": "Dissolution"
+  "2026-10-16": "Coalition deadline"
+  "2026-10-17": "Colau announced"
 seed: 20260918
 
 model:
   # parties tracked by the aggregator in the current cycle; everything else is "other"
   # SUMAR is the Sumar -> Frente Amplio lineage (FA from 17 Oct 2026; see composites)
-  parties: [PP, PSOE, VOX, SUMAR, PODEMOS, SALF, ERC, JUNTS, BILDU, PNV, BNG, CC, AA]
+  parties: [PP, PSOE, VOX, SUMAR, PODEMOS, SALF, ERC, JUNTS, BILDU, PNV, BNG, CC]
   # polls that list Frente Amplio feed the SUMAR series; earlier polls list Sumar itself
   composites: {SUMAR: {sum: [FA], fallback: [SUMAR], fallback_min: 1}}
   # one-off level shifts allowed in the latent series (party: date)
@@ -31,6 +39,11 @@ seats:
     SALF: null
     AA: ["04", "11", "14", "18", "21", "23", "29", "41"]   # Adelante Andalucía: Andalusia only
   # Joint lists applied province by province after the swing (electoral.seats.apply_merges).
+  # Parties too thinly polled for the aggregator, entered in the seat model at their recent poll
+  # median with log-normal noise. Adelante Andalucía: 61 polls since Jan 2026, 42 of them from one
+  # panel; in the aggregator its latent share was not identified (R-hat 4, 90 % up to 5 % nationally).
+  fixed_shares:
+    AA: {days: 90, sd_log: 0.3}
   scenarios:
     split:      # BASE CASE: Frente Amplio and Podemos run apart except where noted
       label: "Split left (base case)"
@@ -110,6 +123,8 @@ backtest:
       anchor_sum: {SUMAR: [UP, MASPAIS, COMPROMIS]}      # Sumar absorbed UP, Más País and Compromís
       composites: {SUMAR: {sum: [SUMAR, PODEMOS], fallback: [UP, MASPAIS], fallback_min: 1}}
       absorb: {SUMAR: [UP, MASPAIS, COMPROMIS]}
+      # regional layer: CEO waves before the cut-off (March 2023); recall is of Nov 2019
+      regional_ceo: {recall_labels: {"Sumar - En Comú Podem": UP, "C's": CS, "Ciutadans/Ciudadanos": CS}}
       proxies: {}
       breaks: {}
 

@@ -28,7 +28,30 @@ def _style():
 
 
 def stamp(fig: plt.Figure, cutoff: str, source: str) -> None:
+    from electoral import load_config
+
+    label = load_config().get("provisional_label")
     fig.text(0.01, 0.005, f"Data cut-off {cutoff}. {source}", fontsize=7, color="#555555")
+    if label:
+        fig.text(0.99, 0.995, label, fontsize=7, color="#b00020", ha="right", va="top", weight="bold")
+
+
+def mark_events(ax, events: dict | None, start: pd.Timestamp) -> None:
+    """Numbered dotted lines for dated events (config ``events``), keyed in the lower-left corner."""
+    if not events:
+        return
+    ymax = ax.get_ylim()[1]
+    key = []
+    for i, (day, label) in enumerate(sorted(events.items()), 1):
+        d = pd.Timestamp(day)
+        if d < start:
+            continue
+        ax.axvline(d, color="#777777", lw=0.7, ls=":")
+        ax.annotate(str(i), (d, ymax), xytext=(-3, -3 - 8 * (i % 2)), textcoords="offset points",
+                    ha="right", va="top", fontsize=7, color="#444444", weight="bold")
+        key.append(f"{i} {label} ({d.day} {d.strftime('%b')})")
+    ax.text(0.01, 0.02, "   ".join(key), transform=ax.transAxes, fontsize=7, color="#444444",
+            bbox={"facecolor": "white", "edgecolor": "#cccccc", "boxstyle": "round,pad=0.3"})
 
 
 def plot_trends(trend: pd.DataFrame, polls: pd.DataFrame, parties: list[str], path: Path,
@@ -56,8 +79,11 @@ def plot_trends(trend: pd.DataFrame, polls: pd.DataFrame, parties: list[str], pa
     ax.set_ylabel("% of valid vote")
     ax.set_title(title, loc="left", fontsize=11)
     ax.set_xlim(trend.date.min(), trend.date.max() + pd.Timedelta(days=60))
+    from electoral import load_config
+
+    mark_events(ax, load_config().get("events"), trend.date.min())
     ax.legend(loc="upper left", ncol=len(parties), fontsize=8)
-    stamp(fig, cutoff, "Polls: Wikipedia (CC BY-SA 4.0); model: logit random walk + house effects.")
+    stamp(fig, cutoff, "Polls: Wikipedia (CC BY-SA 4.0) and CIS (cis.es); model: logit random walk + house effects.")
     fig.tight_layout()
     fig.savefig(path, bbox_inches="tight")
     plt.close(fig)

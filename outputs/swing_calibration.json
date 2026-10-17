@@ -8,7 +8,18 @@
   "n_sims": 10000,
   "proxies": {
     "PODEMOS": "SUMAR",
-    "SALF": null
+    "SALF": null,
+    "AA": [
+      "04",
+      "11",
+      "14",
+      "18",
+      "21",
+      "23",
+      "29",
+      "41"
+    ]
   },
-  "cutoff_date": "2026-09-18"
+  "scenario": "split",
+  "cutoff_date": "2026-10-17"
 }

@@ -239,3 +239,23 @@ def check_2023(cfg: dict, root: Path, res: pd.DataFrame, tot: pd.DataFrame,
     out["swing_error"] = (out.national_swing - out.actual_2023).round(1)
     out["ceo_waves"] = ", ".join(sorted(ceo["BOP_NUM"].unique()))
     return out
+
+
+def ceo_observations(cfg: dict, root: Path, res: pd.DataFrame, tot: pd.DataFrame, start, end,
+                     base_election: str, recall_labels: dict[str, str] | None = None) -> list[dict]:
+    """CEO Catalonia observations for the seat model from waves ending in (start, end].
+
+    Used by the backtest: only waves finished before its observation cut-off, recall re-weighted to
+    the previous election (``base_election``).
+    """
+    ceo = load_ceo(root / cfg["paths"]["raw_ceo"])
+    ceo = ceo[(ceo["fieldwork_end"] > pd.Timestamp(start)) & (ceo["fieldwork_end"] <= pd.Timestamp(end))
+              & (ceo["INT_CONGRES_VOT"] != "")]
+    if ceo.empty:
+        return []
+    rc = cfg["regional"]
+    est = ceo_estimate(ceo, regional_targets(res, tot, CATALONIA, base_election), {},
+                       recall_labels=recall_labels)
+    obs = _obs("Catalonia", CATALONIA, est, rc["ceo"]["parties"], len(ceo), rc["tau_pp"]["direct"],
+               "CEO", ceo["fieldwork_start"].min(), ceo["fieldwork_end"].max(), "backtest")
+    return [{"provinces": CATALONIA, "party": o["party"], "share": o["share"], "sd": o["sd_pp"]} for o in obs]

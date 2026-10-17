@@ -1,8 +1,9 @@
 """Phase G: one self-contained interactive HTML page (Plotly) in docs/index.html.
 
-Sections: headline numbers, latent vote-share trends with 90 % bands and raw polls (toggle
-parties), seat distributions at the cut-off and at the legal deadline, probability tables, the
-backtest scorecard, and an author/method footer. Author details come from ``config.yaml``.
+Sections: headline numbers, latent vote-share trends with 90 % bands, raw polls and dated events
+(toggle parties), seat distributions on election day under the base (split left) and sensitivity
+(merged left) party supply, probability tables, the backtest scorecard, and an author/method
+footer. Author details, the provisional label and the events come from ``config.yaml``.
 """
 
 from __future__ import annotations
@@ -58,9 +59,9 @@ def _hex_rgba(h: str, a: float) -> str:
 
 def _pct(p: float) -> str:
     if p > 0.995:
-        return "> 99 %"
+        return "&gt; 99 %"
     if p < 0.005:
-        return "< 1 %"
+        return "&lt; 1 %"
     return f"{100 * p:.0f} %"
 
 
@@ -77,22 +78,28 @@ def _table(headers: list[tuple[str, bool]], rows: list[list], highlight: set[int
 def main() -> None:
     cfg = load_config()
     out = ROOT / cfg["paths"]["outputs"]
-    cutoff, deadline = cfg["cutoff_date"], cfg["legal_deadline"]
+    cutoff = cfg["cutoff_date"]
+    fc = json.loads((out / "forecast_29n.json").read_text())
+    horizon = fc["horizon"]
+    provisional = cfg.get("provisional_label", "")
+    scen = {k: v["label"] for k, v in cfg["seats"]["scenarios"].items()}
     author = cfg.get("author", {})
     trend = pd.read_parquet(out / "poll_average_daily_next.parquet")
     trend = trend[trend.date.dt.dayofweek == pd.Timestamp(cutoff).dayofweek].round(4)   # weekly nodes keep the page light
     polls = pd.read_parquet(ROOT / cfg["paths"]["processed"] / "polls_long.parquet")
     polls = polls[(polls.cycle == "next") & (~polls.is_election) & polls.value.notna()]
     seats_now = pd.read_parquet(out / "seat_draws_next.parquet")
-    seats_dl = pd.read_parquet(out / "seat_draws_deadline.parquet")
+    seats_dl = pd.read_parquet(out / "seat_draws_29n_split.parquet")
+    seats_mg = pd.read_parquet(out / "seat_draws_29n_merged.parquet")
     probs_now = pd.read_csv(out / "seat_probabilities_next.csv")
-    probs_dl = pd.read_csv(out / "seat_probabilities_deadline.csv")
-    vote_dl = pd.read_csv(out / "vote_summary_deadline.csv", index_col=0)
+    probs_dl = pd.read_csv(out / "seat_probabilities_29n_split.csv")
+    probs_mg = pd.read_csv(out / "seat_probabilities_29n_merged.csv")
+    vote_dl = pd.read_csv(out / "vote_summary_29n.csv", index_col=0)
     diag = json.loads((out / "diagnostics_next.json").read_text())
     score = pd.read_csv(out / "backtest_scorecard.csv")
-    fc = json.loads((out / "forecast_deadline.json").read_text())
+    names = {"SUMAR": "Sumar / FA"}
 
-    parties = [p for p in ["PP", "PSOE", "VOX", "SUMAR", "PODEMOS", "SALF", "ERC", "JUNTS", "BILDU", "PNV", "BNG", "CC"]
+    parties = [p for p in ["PP", "PSOE", "VOX", "SUMAR", "PODEMOS", "SALF", "ERC", "JUNTS", "BILDU", "PNV", "BNG", "CC", "AA"]
                if p in set(trend.party)]
     # "now" = the cut-off state used by the seat simulation (same draws as the README numbers)
     sd_now = pd.read_parquet(out / "state_draws_next.parquet")
@@ -102,8 +109,8 @@ def main() -> None:
     # ---------------------------------------------------------------- figure
     fig = make_subplots(rows=2, cols=2, specs=[[{"colspan": 2}, None], [{}, {}]],
                         subplot_titles=("Latent vote share (median, 50 % and 90 % bands) and every poll",
-                                        f"Seats if the election were held at the cut-off ({cutoff})",
-                                        f"Seats projected to the legal deadline ({deadline})"),
+                                        f"Seats on {horizon}: {scen['split']}",
+                                        f"Seats on {horizon}: {scen['merged']}"),
                         vertical_spacing=0.14, row_heights=[0.6, 0.4])
     for p in parties:
         c = COLORS.get(p, "#444444")
@@ -122,10 +129,15 @@ def main() -> None:
                                  legendgroup=p, visible=vis,
                                  hovertemplate=p + " %{x|%d %b %Y}: %{y:.1f} %<extra></extra>"), row=1, col=1)
     fig.add_vline(x=pd.Timestamp(cutoff).timestamp() * 1000, line={"dash": "dash", "color": "black", "width": 1}, row=1, col=1)
-    for col, sd in ((1, seats_now), (2, seats_dl)):
+    for i, (day, ev) in enumerate(sorted((cfg.get("events") or {}).items())):
+        x = pd.Timestamp(day).timestamp() * 1000
+        fig.add_vline(x=x, line={"dash": "dot", "color": "#888", "width": 1}, row=1, col=1)
+        fig.add_annotation(x=x, y=1 - 0.05 * (i % 3), xref="x", yref="y domain", text=ev, showarrow=False,
+                           xanchor="right", font={"size": 11, "color": "#555"}, row=1, col=1)
+    for col, sd in ((1, seats_dl), (2, seats_mg)):
         for p in ["PP", "PSOE", "VOX", "SUMAR", "PODEMOS", "ERC", "JUNTS", "BILDU", "PNV"]:
             q = sd[p].quantile([0.05, 0.25, 0.5, 0.75, 0.95]).values   # summary stats only: keeps the HTML small
-            fig.add_trace(go.Box(name=p, x=[p], q1=[q[1]], median=[q[2]], q3=[q[3]], lowerfence=[q[0]], upperfence=[q[4]],
+            fig.add_trace(go.Box(name=names.get(p, p), x=[names.get(p, p)], q1=[q[1]], median=[q[2]], q3=[q[3]], lowerfence=[q[0]], upperfence=[q[4]],
                                  marker={"color": COLORS.get(p, "#444")}, showlegend=False,
                                  hovertemplate=p + ": %{y} seats<extra></extra>"), row=2, col=col)
         fig.add_hline(y=176, line={"color": "black", "width": 1}, row=2, col=col)
@@ -140,29 +152,33 @@ def main() -> None:
 
     party_rows = []
     for p in parties:
-        party_rows.append([p, f"{100 * last.loc[p, 'q50']:.1f}", f"{100 * last.loc[p, 'q05']:.1f} - {100 * last.loc[p, 'q95']:.1f}",
-                           f"{int(seats_now[p].median())}", seat_row(seats_now, p),
-                           f"{100 * vote_dl.loc[p, 'q05']:.1f} - {100 * vote_dl.loc[p, 'q95']:.1f}", seat_row(seats_dl, p)])
-    party_table = _table([("party", False), ("vote now, median", True), ("vote now, 90 %", True),
-                          ("seats now, median", True), ("seats now, 90 %", True),
-                          (f"vote at deadline, 90 %", True), ("seats at deadline, 90 %", True)], party_rows)
+        party_rows.append([names.get(p, p), f"{100 * last.loc[p, 'q50']:.1f}",
+                           f"{100 * vote_dl.loc[p, 'q50']:.1f} ({100 * vote_dl.loc[p, 'q05']:.1f} - {100 * vote_dl.loc[p, 'q95']:.1f})",
+                           f"{int(seats_dl[p].median())} ({seat_row(seats_dl, p)})",
+                           f"{int(seats_mg[p].median())} ({seat_row(seats_mg, p)})"])
+    party_table = _table([("party", False), ("vote at cut-off, median", True), (f"vote on {horizon}, 90 %", True),
+                          ("seats, split left (base)", True), ("seats, merged left", True)], party_rows)
 
     pn = probs_now.set_index("event")["probability"]
     pd_ = probs_dl.set_index("event")["probability"]
+    pm = probs_mg.set_index("event")["probability"]
     events = [("Right (PP+Vox+UPN+SALF) >= 176", "PP + Vox (+ UPN, SALF) reach 176 seats"),
               ("PP+Vox >= 176", "PP + Vox alone reach 176"),
               ("PP largest party", "PP is the largest party"),
-              ("2023 investiture bloc (above + PNV + Junts) >= 176", "2023 investiture bloc (PSOE, Sumar, Podemos, ERC, Bildu, BNG, CC, PNV, Junts) reaches 176"),
-              ("Left + peripheral left (PSOE+Sumar+Podemos+ERC+Bildu+BNG+CC+Compromís) >= 176", "Left + peripheral left without PNV and Junts reaches 176"),
+              ("2023 investiture bloc (above + PNV + Junts) >= 176", "2023 investiture bloc (PSOE, Sumar/FA, Podemos, ERC, Bildu, BNG, CC, AA, PNV, Junts) reaches 176"),
+              ("Left + peripheral left (PSOE+Sumar/FA+Podemos+ERC+Bildu+BNG+CC+Compromís+AA) >= 176", "Left + peripheral left without PNV and Junts reaches 176"),
               ("PP >= 176 alone", "PP alone reaches 176"),
               ("VOX >= 50 seats", "Vox above 50 seats"), ("PSOE >= 100 seats", "PSOE above 100 seats"),
-              ("PSOE >= 121 seats", "PSOE keeps its 121 seats or more"), ("SUMAR >= 10 seats", "Sumar at 10 seats or more"),
+              ("PSOE >= 121 seats", "PSOE keeps its 121 seats or more"), ("SUMAR >= 10 seats", "Sumar / Frente Amplio at 10 seats or more"),
               ("PODEMOS >= 1 seats", "Podemos wins at least one seat"), ("SALF >= 1 seats", "SALF wins at least one seat")]
-    prob_rows = [[label, _pct(pn.get(k, float("nan"))), _pct(pd_.get(k, float("nan")))] for k, label in events if k in pn]
-    prob_table = _table([("event", False), (f"if held now", True), (f"projected to {deadline[:7]}", True)], prob_rows, {0})
+    prob_rows = [[label, _pct(pn.get(k, float("nan"))), _pct(pd_.get(k, float("nan"))), _pct(pm.get(k, float("nan")))]
+                 for k, label in events if k in pd_]
+    prob_table = _table([("event", False), ("if held at the cut-off", True), (f"{horizon}, split left", True),
+                         (f"{horizon}, merged left", True)], prob_rows, {0})
 
     sc = score.groupby("method")[["vote_mae_pp", "vote_crps_pp", "vote_cover90", "seat_mae", "seat_cover90", "brier"]].mean()
     order = [("model", "this model"), ("poll_average_30d", "30-day poll average"), ("last_election", "last election result")]
+    sc = sc.loc[[k for k, _ in order]]
     sc_rows = []
     for key, label in order:
         r = sc.loc[key]
@@ -173,13 +189,13 @@ def main() -> None:
                        ("seat MAE", True), ("90 % seat coverage", True), ("Brier", True)], sc_rows, {0})
 
     n_polls, n_pollsters = diag["n_polls"], diag["n_pollsters"]
-    right_now, right_dl = pn.get("Right (PP+Vox+UPN+SALF) >= 176"), pd_.get("Right (PP+Vox+UPN+SALF) >= 176")
+    right_dl, right_mg = pd_.get("Right (PP+Vox+UPN+SALF) >= 176"), pm.get("Right (PP+Vox+UPN+SALF) >= 176")
     cards = f"""
 <div class="cards">
- <div class="card"><div class="k">PP vote now</div><div class="v">{100 * last.loc['PP', 'q50']:.1f} %</div><div class="s">90 %: {100 * last.loc['PP', 'q05']:.1f} - {100 * last.loc['PP', 'q95']:.1f}</div></div>
- <div class="card"><div class="k">PSOE vote now</div><div class="v">{100 * last.loc['PSOE', 'q50']:.1f} %</div><div class="s">90 %: {100 * last.loc['PSOE', 'q05']:.1f} - {100 * last.loc['PSOE', 'q95']:.1f}</div></div>
- <div class="card"><div class="k">Vox vote now</div><div class="v">{100 * last.loc['VOX', 'q50']:.1f} %</div><div class="s">90 %: {100 * last.loc['VOX', 'q05']:.1f} - {100 * last.loc['VOX', 'q95']:.1f}</div></div>
- <div class="card"><div class="k">PP + Vox majority</div><div class="v">{_pct(right_now)}</div><div class="s">if held now; {_pct(right_dl)} at the deadline</div></div>
+ <div class="card"><div class="k">PP vote, {horizon}</div><div class="v">{100 * vote_dl.loc['PP', 'q50']:.1f} %</div><div class="s">90 %: {100 * vote_dl.loc['PP', 'q05']:.1f} - {100 * vote_dl.loc['PP', 'q95']:.1f}</div></div>
+ <div class="card"><div class="k">PSOE vote, {horizon}</div><div class="v">{100 * vote_dl.loc['PSOE', 'q50']:.1f} %</div><div class="s">90 %: {100 * vote_dl.loc['PSOE', 'q05']:.1f} - {100 * vote_dl.loc['PSOE', 'q95']:.1f}</div></div>
+ <div class="card"><div class="k">Vox vote, {horizon}</div><div class="v">{100 * vote_dl.loc['VOX', 'q50']:.1f} %</div><div class="s">90 %: {100 * vote_dl.loc['VOX', 'q05']:.1f} - {100 * vote_dl.loc['VOX', 'q95']:.1f}</div></div>
+ <div class="card"><div class="k">PP + Vox (+UPN, SALF) majority</div><div class="v">{_pct(right_dl)}</div><div class="s">split left; {_pct(right_mg)} if the left merges</div></div>
  <div class="card"><div class="k">Backtest vote error</div><div class="v">{sc.loc['model', 'vote_mae_pp']:.2f} pp</div><div class="s">mean absolute error, 4 elections, 30 days out</div></div>
 </div>"""
 
@@ -191,12 +207,12 @@ def main() -> None:
     html = f"""<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Spanish general election forecast</title><style>{CSS % {'font': FONT}}</style></head><body>
-<h1>Forecasting the next Spanish general election</h1>
+<h1>Forecasting the 29 November 2026 Spanish general election</h1>
 <p class="subtitle">A Bayesian poll-aggregation and seat-projection model with a four-election backtest</p>
 {byline}
-<p class="note"><b>Numbers expire.</b> Everything on this page is conditional on the {n_polls} polls from {n_pollsters} pollsters
-published up to <b>{cutoff}</b>. The election must be held by mid-August 2027. These are model probabilities, not predictions
-of the result; the backtest below shows how wrong the same method has been before.</p>
+<p class="note" style="border-left-color:#b00020"><b>{provisional}.</b> Everything on this page is conditional on the {n_polls} polls
+from {n_pollsters} pollsters published up to <b>{cutoff}</b>, about {fc['weeks_ahead']:.0f} weeks before polling day. These are
+model probabilities, not predictions of the result; the backtest below shows how wrong the same method has been before.</p>
 {cards}
 <h2>Vote shares and seats</h2>
 {fig.to_html(full_html=False, include_plotlyjs="cdn")}
@@ -208,22 +224,25 @@ median, the 50 % and the 90 % intervals of 10,000 seat simulations. The horizont
 <div class="cols">
 <div><h3>Probabilities</h3>{prob_table}</div>
 <div><h3>Backtest scorecard (mean over 2016, Apr 2019, Nov 2019, 2023)</h3>{sc_table}
-<p class="small">Forecasts made 30 days before each election with only the polls available then. The model beats both
-baselines on point accuracy, but its 90 % vote intervals covered only {100 * sc.loc['model', 'vote_cover90']:.0f} % of outcomes
-(July 2023: every pollster underestimated PSOE by about 5 points). The deadline projection therefore adds an
-election-day error of {100 * fc['error_inflation']['extra_sd_relative']:.0f} % of each party's share, the smallest value that would have restored
-90 % coverage; mean reversion toward the last result was tested and rejected.</p></div>
+<p class="small">Forecasts made 30 days before each election with only the polls available then. The model's 90 % vote
+intervals covered {100 * sc.loc['model', 'vote_cover90']:.0f} % of outcomes, so the election-day projection adds an
+error of {100 * fc['error_inflation']['extra_sd_relative']:.0f} % of each party's share, the smallest value that would have restored
+90 % coverage; mean reversion toward the last result was tested ({'adopted' if fc['mean_reversion']['chosen_weight'] else 'rejected'}).
+The regional-poll layer enters the backtest only for Catalonia in 2023 (CEO), the one case with regional data.</p></div>
 </div>
 <h2>Method in one paragraph</h2>
 <p>Official results 1977-2023 come from the Ministerio del Interior; polls from the Wikipedia opinion-polling tables
-(CC BY-SA 4.0), with CIS barometers entering through their rows there. The aggregator is a state-space model on a weekly
-grid: each party's share follows a random walk on the logit scale, anchored on the July 2023 result, with hierarchical
-house effects per pollster and a noise term that combines sample size with a party-specific excess variance. Seats are
-simulated by proportional swing from each party's 2023 provincial share, calibrated provincial noise and D'Hondt in the
-52 districts (3 % threshold; Ceuta and Melilla by plurality). Sampling: NUTS, 4 chains x 1,000 draws, {diag['divergences']}
-divergences, R-hat {diag['rhat_max']:.2f}.</p>
+(CC BY-SA 4.0); CIS straight from cis.es: its official estimate as one series, and our re-estimate from its microdata (2023 recall,
+likely voters) as another, with series built from the same survey sharing its sample size. The aggregator is a state-space
+model on a weekly grid: each party's share follows a random walk on the logit scale, anchored on the July 2023 result, with
+hierarchical house effects per pollster and a noise term that combines sample size with a party-specific excess variance.
+Seats are simulated by proportional swing from each party's 2023 provincial share and calibrated provincial noise. Regional
+surveys (CEO in Catalonia, the Basque Sociómetro, CIS subsamples in Galicia) then pull the peripheral parties' regional shares
+toward them. The 29N coalitions (Frente Amplio, Podemos's joint lists in Canarias and Valencia, Podemos's Catalan vote split
+between ERC and Frente Amplio, UPN-PP) are applied before D'Hondt in the 52 districts (3 % threshold; Ceuta and Melilla by
+plurality). Sampling: NUTS, 4 chains x 1,000 draws, {diag['divergences']} divergences, R-hat {diag['rhat_max']:.2f}.</p>
 <footer>{author.get('name', '')}{(' · ' + links) if links else ''} · Sources: Ministerio del Interior (results, reuse under Ley 37/2007),
-Wikipedia (polls, CC BY-SA 4.0), CIS (via Wikipedia). Generated by <code>electoral report</code>; full code, tests, data
+Wikipedia (polls, CC BY-SA 4.0), CIS (cis.es, CC BY 4.0), CEO (Generalitat de Catalunya), Basque Government (Sociómetro). Generated by <code>electoral report</code>; full code, tests, data
 dictionary and methods note in the repository.</footer>
 </body></html>"""
     docs = ROOT / "docs"

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 
+import numpy as np
 import pandas as pd
 import yaml
 
@@ -37,6 +38,28 @@ def regional_observations(cfg: dict) -> list[dict]:
     r = pd.read_csv(path, dtype={"provinces": str})
     return [{"provinces": row.provinces.split(), "party": row.party, "share": row.share, "sd": row.sd_pp}
             for row in r.itertuples()]
+
+
+def add_fixed_shares(draws: pd.DataFrame, cfg: dict, polls: pd.DataFrame) -> pd.DataFrame:
+    """Append parties kept out of the aggregator (config seats.fixed_shares): each draw gets the
+    median of the party's polls in the last ``days`` before the cut-off, times log-normal noise."""
+    spec = cfg["seats"].get("fixed_shares") or {}
+    if not spec:
+        return draws
+    rng = np.random.default_rng(cfg["seed"] + 7)
+    cutoff = pd.Timestamp(cfg["cutoff_date"])
+    out = draws.copy()
+    for p, f in spec.items():
+        if p in out:
+            continue
+        x = polls[(polls.cycle == "next") & (polls.party == p) & polls.value.notna()
+                  & (polls.fieldwork_end > cutoff - pd.Timedelta(f"{f['days']}D"))
+                  & (polls.fieldwork_end <= cutoff)]["value"]
+        if x.empty:
+            continue
+        med = float(x.median()) / 100
+        out[p] = med * np.exp(rng.normal(-0.5 * f["sd_log"] ** 2, f["sd_log"], size=len(out)))
+    return out
 
 
 def province_weights(tot: pd.DataFrame, election: str) -> pd.Series:
@@ -72,6 +95,7 @@ def main(n_sims: int = 10_000, tag: str = "next", state_file: str | None = None,
     tot = pd.read_parquet(proc / "province_totals.parquet")
     nat = pd.read_parquet(proc / "results_national.parquet")
     draws = pd.read_parquet(state_file or out / f"state_draws_{tag}.parquet")
+    draws = add_fixed_shares(draws, cfg, pd.read_parquet(proc / "polls_long.parquet"))
 
     shares0, blank0, seats0 = province_baseline(res, tot, base_election)
     national0 = nat[nat.election == base_election].set_index("party")["share_valid"]

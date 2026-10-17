@@ -33,7 +33,7 @@ A short list of the decisions that shape the numbers. Each is a one-line change 
 
 The seat distributions answer "if the election were held at the cut-off date": they carry the
 posterior uncertainty of the latent shares plus provincial swing noise. They do **not** include
-(a) movement between the cut-off and the election, which the deadline projection adds by
+(a) movement between the cut-off and the election, which the election-day projection adds by
 extrapolating the random walk, nor (b) a common industry-wide polling error on election day,
-which the backtest measures and which is added to the deadline projection only if it improves
+which the backtest measures and which is added to the election-day projection only if it improves
 calibration (phase F).

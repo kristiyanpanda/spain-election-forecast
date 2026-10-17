@@ -44,7 +44,7 @@ def descriptive() -> None:
 
 @app.command("forecast")
 def forecast() -> None:
-    """Phase F: projection to the legal deadline (after the backtest)."""
+    """Phase F: projection to election day (election_date in config; after the backtest)."""
     from electoral.forecast import main
     main()
 

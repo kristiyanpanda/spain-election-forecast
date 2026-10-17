@@ -175,7 +175,8 @@ def decompose_uncertainty(tag: str = "29n", scenario: str = "split") -> pd.DataF
     variants = {"nowcast_no_swing_noise": (pi_T, False), "nowcast": (pi_T, True),
                 "+drift_to_horizon": (expit(drift), True), "+election_day_error": (expit(full), True)}
     from electoral.seats import calibrate_swing_noise, province_baseline, simulate_seats
-    from electoral.project_seats import province_weights, proxies, regional_observations, scenario_merges
+    from electoral.project_seats import (add_fixed_shares, province_weights, proxies, regional_observations,
+                                         scenario_merges)
     proc = ROOT / cfg["paths"]["processed"]
     res, tot, nat = (pd.read_parquet(proc / f) for f in ("results_province.parquet", "province_totals.parquet", "results_national.parquet"))
     shares0, blank0, seats0 = province_baseline(res, tot, "202307")
@@ -183,7 +184,8 @@ def decompose_uncertainty(tag: str = "29n", scenario: str = "split") -> pd.DataF
     noise_sd = json.loads((out / "swing_calibration.json").read_text())["noise_sd_log"]
     rows = []
     for name, (sh, noise) in variants.items():
-        draws = pd.DataFrame(sh, columns=parties)
+        draws = add_fixed_shares(pd.DataFrame(sh, columns=parties), cfg,
+                                 pd.read_parquet(proc / "polls_long.parquet"))
         seat_df, _ = simulate_seats(draws, shares0, blank0, seats0, national0, 4000, noise_sd, cfg["seed"],
                                     proxies(cfg), noise=noise, merges=scenario_merges(cfg, scenario),
                                     weights=province_weights(tot, "202307"),

@@ -22,7 +22,7 @@ from electoral.model import fit, prepare, save_run
 from electoral.plots import plot_house_effects, plot_trends
 
 STATEWIDE = ["PP", "PSOE", "VOX", "SUMAR", "PODEMOS", "SALF"]
-REGIONAL = ["ERC", "JUNTS", "BILDU", "PNV", "BNG", "CC", "AA"]
+REGIONAL = ["ERC", "JUNTS", "BILDU", "PNV", "BNG", "CC"]
 
 
 def main(draws: int | None = None, tune: int | None = None, chains: int | None = None) -> dict:
