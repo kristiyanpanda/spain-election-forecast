@@ -244,7 +244,8 @@ def plot_hemicycle(seats: pd.Series, path: Path, cutoff: str, title: str, subtit
     ax.set_xlim(-1.08, 1.08)
     ax.set_ylim(-0.04, 1.15)
     handles = [plt.Line2D([], [], marker="o", ls="", color=HEMICYCLE_COLORS.get(p, "#999999"), markersize=8,
-                          label=f"{HEMICYCLE_NAMES.get(p, p)} {n}") for p, n in seats.items()]
+                          label=f"{HEMICYCLE_NAMES.get(p, p)} {n}")
+               for p, n in seats.sort_values(ascending=False, kind="stable").items()]  # legend: most seats first
     ax.legend(handles=handles, loc="center left", bbox_to_anchor=(1.01, 0.5), ncol=1, fontsize=9,
               handletextpad=0.3, labelspacing=0.55)
     fig.text(0.02, 0.955, title, ha="left", va="top", fontsize=13, weight="bold")

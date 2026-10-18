@@ -84,12 +84,14 @@ def hemicycle_figure(draws: dict[str, pd.DataFrame], labels: dict[str, str]) -> 
         lay = hemicycle_layout(int(seats.sum()))
         lay["party"] = [p for p, n in seats.items() for _ in range(n)]
         k = 0
+        rank = {p: j for j, p in enumerate(seats.sort_values(ascending=False, kind="stable").index)}
         for p, n in seats.items():
             d = lay[lay.party == p]
             q05, q50, q95 = (int(sd[p].quantile(x)) for x in (0.05, 0.5, 0.95))
             fig.add_trace(go.Scatter(
                 x=d.x, y=d.y, mode="markers", visible=i == 0, name=f"{HEMICYCLE_NAMES.get(p, p)} {n}",
                 marker={"color": HEMICYCLE_COLORS.get(p, "#999999"), "size": 11},
+                legendrank=rank[p],  # legend lists most seats first; dots keep the seating order
                 hovertemplate=(f"<b>{HEMICYCLE_NAMES.get(p, p)}</b><br>expected seats {n}<br>"
                                f"median {q50}, 90 % range {q05}-{q95}<extra></extra>"), legendgroup=scen))
             k += 1
