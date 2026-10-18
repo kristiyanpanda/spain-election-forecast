@@ -89,7 +89,7 @@ def hemicycle_figure(draws: dict[str, pd.DataFrame], labels: dict[str, str]) -> 
             q05, q50, q95 = (int(sd[p].quantile(x)) for x in (0.05, 0.5, 0.95))
             fig.add_trace(go.Scatter(
                 x=d.x, y=d.y, mode="markers", visible=i == 0, name=f"{HEMICYCLE_NAMES.get(p, p)} {n}",
-                marker={"color": HEMICYCLE_COLORS.get(p, "#999999"), "size": 9},
+                marker={"color": HEMICYCLE_COLORS.get(p, "#999999"), "size": 11},
                 hovertemplate=(f"<b>{HEMICYCLE_NAMES.get(p, p)}</b><br>expected seats {n}<br>"
                                f"median {q50}, 90 % range {q05}-{q95}<extra></extra>"), legendgroup=scen))
             k += 1
@@ -105,8 +105,8 @@ def hemicycle_figure(draws: dict[str, pd.DataFrame], labels: dict[str, str]) -> 
     fig.add_annotation(x=0, y=1.1, text="176", showarrow=False, font={"size": 12})
     fig.update_xaxes(visible=False, range=[-1.1, 1.1])
     fig.update_yaxes(visible=False, range=[-0.05, 1.16], scaleanchor="x", scaleratio=1)
-    fig.update_layout(height=520, template="plotly_white", font={"family": FONT, "size": 14, "color": "#1e2430"},
-                      legend={"orientation": "h", "y": -0.02, "x": 0.5, "xanchor": "center"},
+    fig.update_layout(height=560, template="plotly_white", font={"family": FONT, "size": 14, "color": "#1e2430"},
+                      legend={"orientation": "v", "x": 1.0, "xanchor": "left", "y": 0.5, "yanchor": "middle"},
                       margin={"l": 10, "r": 10, "t": 50, "b": 10},
                       updatemenus=[{"type": "buttons", "direction": "right", "buttons": buttons, "x": 0, "y": 1.12,
                                     "xanchor": "left", "showactive": True}])

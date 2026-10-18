@@ -233,20 +233,20 @@ def plot_hemicycle(seats: pd.Series, path: Path, cutoff: str, title: str, subtit
     _style()
     lay = hemicycle_layout(int(seats.sum()))
     lay["party"] = np.repeat(seats.index.values, seats.values)
-    fig, ax = plt.subplots(figsize=(8.2, 5.6))
+    fig, ax = plt.subplots(figsize=(10.5, 5.6))
     for p in seats.index:
         d = lay[lay.party == p]
-        ax.scatter(d.x, d.y, s=46, color=HEMICYCLE_COLORS.get(p, "#999999"), linewidths=0)
+        ax.scatter(d.x, d.y, s=62, color=HEMICYCLE_COLORS.get(p, "#999999"), linewidths=0)
     ax.plot([0, 0], [0.32, 1.06], color="black", lw=0.8, ls="--")
     ax.text(0, 1.08, "176", ha="center", va="bottom", fontsize=8)
     ax.set_aspect("equal")
     ax.axis("off")
     ax.set_xlim(-1.08, 1.08)
-    ax.set_ylim(-0.28, 1.15)
+    ax.set_ylim(-0.04, 1.15)
     handles = [plt.Line2D([], [], marker="o", ls="", color=HEMICYCLE_COLORS.get(p, "#999999"), markersize=8,
                           label=f"{HEMICYCLE_NAMES.get(p, p)} {n}") for p, n in seats.items()]
-    ax.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, -0.02), ncol=5, fontsize=8,
-              handletextpad=0.2, columnspacing=1.0)
+    ax.legend(handles=handles, loc="center left", bbox_to_anchor=(1.01, 0.5), ncol=1, fontsize=9,
+              handletextpad=0.3, labelspacing=0.55)
     fig.text(0.02, 0.955, title, ha="left", va="top", fontsize=13, weight="bold")
     fig.text(0.02, 0.905, subtitle, ha="left", va="top", fontsize=8.5, color="#444444", wrap=True)
     stamp(fig, cutoff, note)
