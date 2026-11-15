@@ -209,6 +209,16 @@ def build_polls(cfg: dict, labels: dict, parties: dict,
     n_after = df.loc[df["fieldwork_end"] > cutoff, "poll_id"].nunique()
     df = df[df["fieldwork_end"] <= cutoff]
     notes.append(f"Excluded {n_after} polls with fieldwork ending after the cut-off {cutoff.date()}.")
+    from electoral.model import drop_overlapping_waves
+
+    cur = df[(df["cycle"] == "next") & ~df["is_election"]]
+    notes.append(f"Current cycle: {cur['poll_id'].nunique()} polls listed, "
+                 f"{drop_overlapping_waves(cur)['poll_id'].nunique()} after keeping one release per "
+                 "overlapping fieldwork window of a pollster (trackers, cumulative panels); the file "
+                 "keeps them all, the aggregator drops the overlaps.")
+    joint = df[df["party"] == "FAFV"]["poll_id"].nunique()
+    notes.append(f"{joint} polls give one figure for Frente Amplio + Compromís-Front Valencià (party "
+                 "`FAFV`); the others list `FA` and `FV` apart.")
     df["bloc"] = df["party"].map(lambda p: parties[p]["bloc"])
     df["cutoff_date"] = cutoff
     cols = ["poll_id", "cycle", "pollster", "commissioner", "fieldwork_start", "fieldwork_end",

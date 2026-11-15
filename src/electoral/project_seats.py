@@ -25,6 +25,38 @@ def proxies(cfg: dict) -> dict:
     return dict(cfg["seats"]["proxies"])
 
 
+def absent(cfg: dict) -> dict:
+    """Provinces where a tracked party fields no list (config: seats.absent)."""
+    return {p: [str(x).zfill(2) for x in v] for p, v in (cfg["seats"].get("absent") or {}).items()}
+
+
+def regional_parts(cfg: dict, polls: pd.DataFrame) -> dict:
+    """Fraction of a tracked party's national share cast for its list in one region (config
+    seats.regional_part), from the polls that publish both figures apart: the median over
+    pollsters of each pollster's median ratio in the last ``days``, and the log sd between them."""
+    from electoral.model import drop_overlapping_waves
+
+    cutoff = pd.Timestamp(cfg["cutoff_date"])
+    out = {}
+    for party, spec in (cfg["seats"].get("regional_part") or {}).items():
+        x = polls[(polls.cycle == "next") & ~polls.is_election & polls.value.notna()
+                  & polls.party.isin([spec["part"], spec["rest"]])
+                  & (polls.fieldwork_end > cutoff - pd.Timedelta(f"{spec['days']}D"))
+                  & (polls.fieldwork_end <= cutoff)]
+        w = drop_overlapping_waves(x).pivot_table(index=["poll_id", "pollster"], columns="party",
+                                                  values="value", aggfunc="first")
+        if not {spec["part"], spec["rest"]} <= set(w.columns):
+            continue
+        w = w.dropna(subset=[spec["part"], spec["rest"]])
+        ratio = (w[spec["part"]] / (w[spec["part"]] + w[spec["rest"]])).groupby("pollster").median()
+        if len(ratio) < spec.get("min_pollsters", 3):
+            continue
+        out[party] = {"provinces": [str(p).zfill(2) for p in spec["provinces"]],
+                      "fraction": float(ratio.median()), "sd_log": float(np.log(ratio).std()),
+                      "n_pollsters": int(len(ratio))}
+    return out
+
+
 def scenario_merges(cfg: dict, scenario: str | None) -> list[dict]:
     """Joint lists / coalitions of a party-supply scenario (config: seats.scenarios)."""
     return list(cfg["seats"]["scenarios"][scenario]["merges"]) if scenario else []
@@ -42,7 +74,10 @@ def regional_observations(cfg: dict) -> list[dict]:
 
 def add_fixed_shares(draws: pd.DataFrame, cfg: dict, polls: pd.DataFrame) -> pd.DataFrame:
     """Append parties kept out of the aggregator (config seats.fixed_shares): each draw gets the
-    median of the party's polls in the last ``days`` before the cut-off, times log-normal noise."""
+    median of the party's polls in the last ``days`` before the cut-off (non-overlapping waves
+    only, as in the aggregator), times log-normal noise."""
+    from electoral.model import drop_overlapping_waves
+
     spec = cfg["seats"].get("fixed_shares") or {}
     if not spec:
         return draws
@@ -54,7 +89,8 @@ def add_fixed_shares(draws: pd.DataFrame, cfg: dict, polls: pd.DataFrame) -> pd.
             continue
         x = polls[(polls.cycle == "next") & (polls.party == p) & polls.value.notna()
                   & (polls.fieldwork_end > cutoff - pd.Timedelta(f"{f['days']}D"))
-                  & (polls.fieldwork_end <= cutoff)]["value"]
+                  & (polls.fieldwork_end <= cutoff)]
+        x = drop_overlapping_waves(x)["value"]
         if x.empty:
             continue
         med = float(x.median()) / 100
@@ -95,7 +131,9 @@ def main(n_sims: int = 10_000, tag: str = "next", state_file: str | None = None,
     tot = pd.read_parquet(proc / "province_totals.parquet")
     nat = pd.read_parquet(proc / "results_national.parquet")
     draws = pd.read_parquet(state_file or out / f"state_draws_{tag}.parquet")
-    draws = add_fixed_shares(draws, cfg, pd.read_parquet(proc / "polls_long.parquet"))
+    polls = pd.read_parquet(proc / "polls_long.parquet")
+    draws = add_fixed_shares(draws, cfg, polls)
+    parts = regional_parts(cfg, polls)
 
     shares0, blank0, seats0 = province_baseline(res, tot, base_election)
     national0 = nat[nat.election == base_election].set_index("party")["share_valid"]
@@ -110,7 +148,8 @@ def main(n_sims: int = 10_000, tag: str = "next", state_file: str | None = None,
                                        cfg["seed"], proxies(cfg), merges=scenario_merges(cfg, scenario),
                                        weights=province_weights(tot, base_election),
                                        regional=regional_observations(cfg) if regional else None,
-                                       regional_swing_sd=cfg["regional"]["swing_sd_pp"])
+                                       regional_swing_sd=cfg["regional"]["swing_sd_pp"],
+                                       absent=absent(cfg), regional_part=parts)
     blocs = blocs_from_map()
     q, probs = summarise_seats(seat_df, blocs, {"PP": [150, 160, 176], "VOX": [40, 50, 60],
                                                 "PSOE": [100, 110, 121], "SUMAR": [10, 20],
@@ -124,7 +163,8 @@ def main(n_sims: int = 10_000, tag: str = "next", state_file: str | None = None,
         probs.to_csv(out / f"seat_probabilities_{tag}.csv", index=False)
         (out / "swing_calibration.json").write_text(json.dumps(
             {"noise_sd_log": noise_sd, "components": calib, "base_election": base_election,
-             "n_sims": n_sims, "proxies": proxies(cfg), "scenario": scenario,
+             "n_sims": n_sims, "proxies": proxies(cfg), "absent": absent(cfg), "regional_part": parts,
+             "scenario": scenario,
              "cutoff_date": cfg["cutoff_date"]}, indent=2))
         last = nat[nat.election == base_election].set_index("party")["escanos"].astype(int).to_dict()
         plot_seat_distributions(seat_df, ["PP", "PSOE", "VOX", "SUMAR", "PODEMOS", "SALF"],

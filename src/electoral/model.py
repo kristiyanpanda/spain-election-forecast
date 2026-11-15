@@ -7,11 +7,15 @@ Specification (per election cycle):
   an independent Gaussian random walk per party with party-specific innovation sd ``sigma_rw[p]``
   (non-centred parameterisation). Week 0 is anchored on the previous election result; parties
   that did not exist then (entrants) start from a diffuse prior.
-* Optional structural breaks (e.g. Podemos leaving Sumar in Dec 2023) add a one-off free jump to
-  the named party's theta from the break week on.
+* Optional structural breaks (e.g. Podemos leaving Sumar in Dec 2023, or polls switching to the
+  ballots as proclaimed in Oct 2026) add a one-off free jump to the named party's theta from the
+  break week on; a party can have several.
+* Releases of one pollster with overlapping fieldwork (daily trackers, cumulative panels) share
+  respondents: only non-overlapping waves are used, the latest first (``drop_overlapping_waves``).
 * Observation: poll i for party p reports ``y = pi[t_i, p] + delta[p, h_i] + noise``,
   with house effect ``delta[p, h]`` for pollster h (zero-sum across pollsters per party, hierarchical
-  scale), and noise sd ``sqrt(pi(1-pi)/n_i + tau[p]^2)``: binomial sampling variance from the
+  scale; series that read the same raw data, such as the official CIS estimate and the
+  re-estimates of it, form a family that counts as one pollster in that sum), and noise sd ``sqrt(pi(1-pi)/n_i + tau[p]^2)``: binomial sampling variance from the
   sample size plus a party-specific excess variance (design effects, rounding, differing bases).
 * Weeks after the last observed poll are pure random-walk extrapolation: this is how the model
   produces a forecast for an election 30 days ahead (backtest) or for the legal deadline.
@@ -48,6 +52,7 @@ class ModelData:
     entry_week: np.ndarray           # first week with a poll per party
     breaks: list[tuple[int, int]]    # (party index, week index) one-off jumps
     polls: pd.DataFrame              # poll-level table used (for plotting)
+    centre_w: np.ndarray | None = None   # (party, pollster) weight in the house-effect centring
 
 
 def _impute_n(polls: pd.DataFrame) -> pd.Series:
@@ -58,6 +63,50 @@ def _impute_n(polls: pd.DataFrame) -> pd.Series:
     if "n_series" in polls:
         n = n / polls["n_series"].fillna(1).clip(lower=1)
     return n
+
+
+def drop_overlapping_waves(df: pd.DataFrame) -> pd.DataFrame:
+    """Keep non-overlapping fieldwork windows per pollster, working back from the latest release.
+
+    A tracker that publishes "10-12 Nov" and then "10-13 Nov", or a panel accumulated since
+    September, re-uses its respondents: counted as separate polls they would weigh several times
+    and the model would read the repetition as precision. For each pollster the latest release is
+    kept, then the latest one whose fieldwork ended before every kept window started, and so on.
+    Rows are (poll, party) or one per poll; needs poll_id, pollster, fieldwork_start, fieldwork_end.
+    """
+    polls = df.drop_duplicates("poll_id")
+    start = polls["fieldwork_start"].fillna(polls["fieldwork_end"])
+    size = polls["sample_size"].fillna(0.0) if "sample_size" in polls else pd.Series(0.0, index=polls.index)
+    polls = polls.assign(wave_start=start, wave_n=size).sort_values(["fieldwork_end", "wave_n"], ascending=False)
+    keep: list = []
+    for _, g in polls.groupby("pollster", sort=False):
+        frontier = None
+        for r in g.itertuples():
+            if frontier is None or r.fieldwork_end < frontier:
+                keep.append(r.poll_id)
+                frontier = r.wave_start if frontier is None else min(frontier, r.wave_start)
+    return df[df["poll_id"].isin(keep)]
+
+
+def centring_weights(pollsters: list[str], publishes: np.ndarray,
+                     families: dict[str, str] | None) -> np.ndarray:
+    """Weight of each pollster in the zero-mean constraint on house effects, per party.
+
+    ``publishes`` is the (party, pollster) 0/1 matrix of who publishes which party. ``families``
+    maps a family name to a regular expression on the pollster id (config model.house_families).
+    Pollsters of one family that publish a party share one vote for it; everyone else has one each.
+    """
+    import re
+
+    group = list(pollsters)
+    for name, pattern in (families or {}).items():
+        group = [name if re.search(pattern, h) else g for h, g in zip(pollsters, group)]
+    w = np.zeros_like(publishes, dtype=float)
+    for g in set(group):
+        cols = [i for i, x in enumerate(group) if x == g]
+        n = publishes[:, cols].sum(axis=1, keepdims=True)
+        w[:, cols] = np.divide(publishes[:, cols], n, out=np.zeros((len(publishes), len(cols))), where=n > 0)
+    return w
 
 
 def apply_composites(df: pd.DataFrame, composites: dict | None) -> pd.DataFrame:
@@ -89,13 +138,17 @@ def apply_composites(df: pd.DataFrame, composites: dict | None) -> pd.DataFrame:
 
 def prepare(polls_long: pd.DataFrame, cycle: str, parties: list[str], anchor: dict[str, float],
             start_date: str | pd.Timestamp, end_date: str | pd.Timestamp,
-            obs_cutoff: str | pd.Timestamp | None = None, breaks: dict[str, str] | None = None,
-            composites: dict | None = None, min_polls_per_pollster: int = 1) -> ModelData:
+            obs_cutoff: str | pd.Timestamp | None = None,
+            breaks: dict[str, str | list[str]] | None = None,
+            composites: dict | None = None, min_polls_per_pollster: int = 1,
+            dedupe_overlap: bool = True, families: dict[str, str] | None = None) -> ModelData:
     start, end = pd.Timestamp(start_date), pd.Timestamp(end_date)
     obs_cutoff = pd.Timestamp(obs_cutoff) if obs_cutoff is not None else end
     df = polls_long[(polls_long["cycle"] == cycle) & (~polls_long["is_election"])].copy()
     df = df[~df["pollster"].str.contains("election", case=False)]      # e.g. "2024 EP election" rows
     df = df[(df["fieldwork_end"] > start) & (df["fieldwork_end"] <= obs_cutoff)]
+    if dedupe_overlap and "fieldwork_start" in df:   # after the cut-off: later waves are unknown then
+        df = drop_overlapping_waves(df)
     df = apply_composites(df, composites)
     df = df[df["party"].isin(parties) & df["value"].notna()].copy()
     counts = df.drop_duplicates("poll_id")["pollster"].value_counts()
@@ -115,13 +168,18 @@ def prepare(polls_long: pd.DataFrame, cycle: str, parties: list[str], anchor: di
     entry = np.where(np.isnan(anchor_arr), entry, 0)
 
     br = []
-    for p, d in (breaks or {}).items():
-        if p in p_map:
+    for p, dates in (breaks or {}).items():
+        for d in ([dates] if isinstance(dates, (str, pd.Timestamp)) or not hasattr(dates, "__iter__")
+                  else dates):
             w = int((pd.Timestamp(d) - start).days // 7)
-            if 0 < w < T:
+            if p in p_map and 0 < w < T:
                 br.append((p_map[p], w))
 
+    publishes = np.zeros((len(parties), len(pollsters)))
+    publishes[df["party"].map(p_map).values, df["pollster"].map(h_map).values] = 1.0
+
     return ModelData(
+        centre_w=centring_weights(pollsters, publishes, families),
         parties=parties, pollsters=pollsters, weeks=weeks,
         y=(df["value"].values / 100.0).astype(float), n=df["n_eff"].values.astype(float),
         t_idx=df["t"].values, p_idx=df["party"].map(p_map).values, h_idx=df["pollster"].map(h_map).values,
@@ -153,12 +211,14 @@ def build_model(d: ModelData) -> pm.Model:
         # House effects: hierarchical per party, centred to mean zero across the pollsters that
         # actually publish that party (a plain zero-sum over all pollsters would let pollsters
         # that never report a small party absorb its level through unconstrained effects).
+        # Series of one family (readings of the same raw data) share one vote in that mean.
         mask = np.zeros((P, H))
         mask[d.p_idx, d.h_idx] = 1.0
+        w = mask if d.centre_w is None else d.centre_w
         sigma_house = pm.HalfNormal("sigma_house", sigma=0.02, dims="party")
         delta_raw = pm.Normal("delta_raw", 0.0, 1.0, shape=(P, H))
         delta_scaled = delta_raw * sigma_house[:, None] * mask
-        centre = (delta_scaled * mask).sum(axis=1) / np.maximum(mask.sum(axis=1), 1.0)
+        centre = (delta_scaled * w).sum(axis=1) / np.maximum(w.sum(axis=1), 1.0)
         delta = pm.Deterministic("delta", (delta_scaled - centre[:, None]) * mask,
                                  dims=("party", "pollster"))
         tau = pm.HalfNormal("tau", sigma=0.01, dims="party")

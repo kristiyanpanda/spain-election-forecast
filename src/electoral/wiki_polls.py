@@ -77,6 +77,22 @@ def _rowspan(raw: str) -> int:
     return int(m.group(1)) if m else 1
 
 
+SPANNED = "^"   # placeholder in a column covered by the colspan cell on its left
+
+
+def _colspan(raw: str) -> int:
+    """Columns covered by a cell. Only the attribute part counts (before the last ``|``), with
+    references and templates removed, so a ``colspan`` quoted inside a citation is ignored."""
+    s = re.sub(r"<ref[^>]*/>", "", raw)
+    s = re.sub(r"<ref[^>]*>.*?</ref>", "", s, flags=re.S)
+    s = _strip_templates(s)
+    s = re.sub(r"\[\[[^\]]*\]\]", "", s)
+    if "|" not in s:
+        return 1
+    m = re.search(r'colspan\s*=\s*"?(\d+)', s.rsplit("|", 1)[0])
+    return int(m.group(1)) if m else 1
+
+
 def _header_label(raw: str) -> str:
     s = re.sub(r"<ref[^>]*>.*?</ref>", "", raw, flags=re.S)
     if "|" in _strip_templates(s.split("[[")[0]):
@@ -171,11 +187,12 @@ def _parse_one_table(lines: list[str], i: int, section: str) -> tuple[int, Table
     headers = [_header_label(h) for h in header_rows[0]] if header_rows else []
     ncol = len(headers)
 
-    # expand rowspans
+    # expand rowspans and colspans: a cell spanning several columns keeps its value in the first
+    # and marks the others SPANNED (e.g. one figure for Frente Amplio + Front Valencià)
     pending: dict[int, tuple[str, int]] = {}
     rows = []
     for raw in raw_rows:
-        row, k = [], 0
+        row, k, span_left = [], 0, 0
         for col in range(ncol):
             if col in pending:
                 val, left = pending[col]
@@ -185,6 +202,10 @@ def _parse_one_table(lines: list[str], i: int, section: str) -> tuple[int, Table
                 else:
                     del pending[col]
                 continue
+            if span_left:
+                span_left -= 1
+                row.append(SPANNED)
+                continue
             if k < len(raw):
                 cell = raw[k]
                 k += 1
@@ -192,6 +213,7 @@ def _parse_one_table(lines: list[str], i: int, section: str) -> tuple[int, Table
                 rs = _rowspan(cell)
                 if rs > 1:
                     pending[col] = (val, rs - 1)
+                span_left = _colspan(cell) - 1
                 row.append(val)
             else:
                 row.append("")
@@ -255,12 +277,23 @@ def tables_to_long(tables: list[Table], cycle: str, default_year: int | None = N
             sample = to_number(row[idx["Sample size"]]) if row[idx["Sample size"]] else float("nan")
             turnout = to_number(row[idx["Turnout"]]) if "Turnout" in idx else float("nan")
             is_election = bool(re.search(r"general election", firm, re.I))
-            for p in parties:
-                recs.append({
-                    "cycle": cycle, "section": tb.section, "row": r_i,
-                    "firm_raw": firm, "fieldwork_start": start, "fieldwork_end": end,
-                    "sample_size": sample, "turnout": turnout, "is_election": is_election,
-                    "party_label": p, "value": to_number(row[idx[p]]),
-                    "cell_raw": row[idx[p]],
-                })
+            k = 0
+            while k < len(parties):
+                # one cell covering several party columns is reported under the joined label
+                # ("FA+FV"); its member columns get no row of their own for that poll
+                group = [parties[k]]
+                while (k + len(group) < len(parties)
+                       and idx[parties[k + len(group)]] == idx[group[-1]] + 1
+                       and row[idx[parties[k + len(group)]]] == SPANNED):
+                    group.append(parties[k + len(group)])
+                cell = row[idx[group[0]]]
+                if cell != SPANNED:   # a span that starts in a non-party column carries no share
+                    recs.append({
+                        "cycle": cycle, "section": tb.section, "row": r_i,
+                        "firm_raw": firm, "fieldwork_start": start, "fieldwork_end": end,
+                        "sample_size": sample, "turnout": turnout, "is_election": is_election,
+                        "party_label": "+".join(group), "value": to_number(cell),
+                        "cell_raw": cell,
+                    })
+                k += len(group)
     return pd.DataFrame(recs)

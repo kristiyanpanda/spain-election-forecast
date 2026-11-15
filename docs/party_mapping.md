@@ -67,16 +67,23 @@ national head through the "cabecera nacional" field. `party_map_results.yaml` ma
 Lists that neither won a seat nor reached 1 % nationally are OTHER, which keeps 92-99 % of the
 valid vote named in every election (see `data/processed/DATA_QUALITY.md`).
 
-## Party supply on 29 Nov 2026 (provisional, press reports as of 17 Oct)
+## Party supply on 29 Nov 2026 (lists proclaimed in the BOE of 3 Nov)
 
-Poll parties and ballot lists no longer match one to one. The seat model therefore applies the
-coalitions province by province after the swing (`seats.scenarios` in `config.yaml`,
-`electoral.seats.apply_merges`). The full table and sources are in `docs/context_29N_2026.md` §7.
+Since mid-October the poll tables list the ballots as registered, and so does the CIS pre-election
+study (3584). The full table and sources are in `docs/context_29N_2026.md` §7 and §8.
 
-* **Base case, split left:** Frente Amplio (the SUMAR series) and Podemos run apart, except for joint
-  lists in Canarias (Unidad del Pueblo Canario) and the Valencian Community (Compromís-Front Valencià),
-  where Podemos's share is added to FA's. Catalonia has no Podemos list: its polled vote goes 50 % to
-  ERC and 50 % to FA, which is the weakest assumption. UPN's 2023 share joins PP's in Navarra
-  (UPN-PP coalition). Aliança Catalana is not running.
+| ballot | in the tables | in the model |
+|---|---|---|
+| Frente Amplio, with Unidad del Pueblo Canario (Canarias) and Ara Més-Front Ampli (Baleares, with Podemos since 26 Oct) | `FA` | SUMAR series |
+| Compromís-Front Valencià (Compromís, EUPV, Podem, ERPV) | `FV`, or one figure with FA (`FA+FV`, id `FAFV`) | SUMAR series (FA + FV) |
+| ERC, with Podemos candidates on its Catalan lists ("ERC-Podemos" in the CIS) | `ERC` | ERC |
+| Podemos, own list in 42 districts | `Podemos` | PODEMOS, no share in the ten provinces without a list (`seats.absent`) |
+| UPN-PP in Navarra | PP | UPN's 2023 share joins PP's there |
+
+* **Base case, split left:** the table above. The 17 Oct run moved an assumed part of Podemos's
+  polled vote to Frente Amplio (Canarias, Valencia) and to ERC and Frente Amplio (Catalonia, 50/50).
+  That is no longer needed: the polls measure those voters where they now are. A level shift in the
+  week of 11 Oct 2026 lets the Frente Amplio, Podemos and ERC series absorb the change of definition.
+  Aliança Catalana is not running.
 * **Sensitivity, merged left:** one FA + Podemos list everywhere, keeping 0.83 (sd 0.05) of the sum,
   as Unidos Podemos did in 2016.

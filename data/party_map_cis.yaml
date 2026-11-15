@@ -14,6 +14,9 @@
 # Compromís alone: a confluence until 2018 (Compromís-Podemos), its own list in 2019, then counted
 # with Más País (their Nov 2019 joint list), as the Wikipedia feed does.
 # OTHER and BLANK rows are used for the sum check and then dropped, as in the Wikipedia feed.
+# Pre-election study 3584 (Oct 2026) lists the ballots as proclaimed: Frente Amplio with its joint
+# lists in Canarias (UPC) and Baleares (Ara Més-Front Ampli) -> FA; "Compromís: Front Valencià" -> FV;
+# "ERC-Podemos" (Podemos candidates on ERC's Catalan lists) -> ERC, as the Wikipedia feed does.
 rules:
   - [PSOE, PSOE]
   - [PP, PP]
@@ -23,6 +26,9 @@ rules:
   - [U. Podemos, UP]
   - [Podemos, PODEMOS]
   - [IU, IU]
+  - [Frente Amplio, FA]
+  - [Ara Més, FA]
+  - [UPC, FA]
   - [Movimiento SUMAR, SUMAR]
   - [SUMAR, SUMAR]
   - [Ciudadanos, CS]
@@ -30,6 +36,7 @@ rules:
   - [En Común-Unidas Podemos, CONFLUENCE]
   - [Compromís-Podemos, CONFLUENCE]
   - [En Marea, CONFLUENCE]
+  - ["Compromís: Front", FV]
   - [Més Compromís, MASPAIS]       # Nov 2019: Más País-Compromís joint list
   - [Más País, MASPAIS]            # incl. "Más País / Compromís" (2020-2022)
   - [Compromís, COMPROMIS]
@@ -56,6 +63,8 @@ rules:
   - [Existe, TE]
   - [PACMA, PACMA]
   - [Se Acabó la Fiesta, SALF]
+  - [SALF, SALF]
+  - [Adelante Andalucía, AA]
   - [Aliança Catalana, ALIANCA]
   - [Geroa Bai, OTHER]
   - [Nueva Canarias, OTHER]

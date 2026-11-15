@@ -6,7 +6,9 @@ Source: Centro de Investigaciones Sociológicas (https://www.cis.es), licence CC
 Each study page carries schema.org JSON-LD listing its files ("Estimación de voto" PDF,
 "Ficha técnica" PDF, "Fichero datos" microdata zip). Barometer pages are found by slug
 (``barometro-de-<mes>-<año>``); other studies with a general-election estimate
-(pre-electoral macro-barometers, flash surveys) are listed in ``config.yaml``.
+(pre-electoral macro-barometers, flash surveys) are listed in ``config.yaml``. A study whose
+page is not up yet but whose estimate PDF is (``cis.direct_studies``: the Oct 2026 pre-election
+survey) is read from that PDF, with fieldwork and sample size taken from the config.
 
 Two series come out of this module:
 
@@ -45,12 +47,18 @@ def _get(url: str, timeout: int = 60) -> requests.Response:
     return requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=timeout)
 
 
-def study_page(slug: str, cache_dir: Path, force: bool = False) -> dict | None:
-    """Study metadata from the page's JSON-LD; None when the page does not exist."""
+def study_page(slug: str, cache_dir: Path, force: bool = False,
+               recheck_missing: bool = False) -> dict | None:
+    """Study metadata from the page's JSON-LD; None when the page does not exist.
+
+    A page cached as missing is asked for again when ``recheck_missing`` (recent barometers: the
+    page of the month in course appears a few days after the cut-off of an earlier run).
+    """
     cache = cache_dir / f"{slug}.json"
     if cache.exists() and not force:
         meta = json.loads(cache.read_text(encoding="utf-8"))
-        return meta or None
+        if meta or not recheck_missing:
+            return meta or None
     r = _get(BASE + slug)
     meta: dict = {}
     if r.status_code == 200:
@@ -80,10 +88,12 @@ def _file(files: dict, *prefixes: str) -> str | None:
 def catalogue(cfg: dict, raw_dir: Path, force: bool = False) -> tuple[pd.DataFrame, list[str]]:
     """One row per study page found; also returns the slugs that do not exist."""
     cutoff = pd.Timestamp(cfg["cutoff_date"])
-    slugs = barometer_slugs(cfg["cis"]["first_month"], cutoff) + list(cfg["cis"]["extra_studies"])
+    barometers = barometer_slugs(cfg["cis"]["first_month"], cutoff)
+    slugs = barometers + list(cfg["cis"]["extra_studies"])
+    recent = set(barometers[-3:])
     rows, missing = [], []
     for slug in slugs:
-        meta = study_page(slug, raw_dir / "pages", force=force)
+        meta = study_page(slug, raw_dir / "pages", force=force, recheck_missing=slug in recent)
         if meta is None:
             missing.append(slug)
             continue
@@ -92,6 +102,13 @@ def catalogue(cfg: dict, raw_dir: Path, force: bool = False) -> tuple[pd.DataFra
                      "published": pd.Timestamp(meta["published"]) if meta["published"] else pd.NaT,
                      "estimate_url": _file(f, "estimación", "estimacion"),
                      "ficha_url": _file(f, "ficha"), "microdata_url": _file(f, "fichero datos")})
+    seen = {str(r["study"]) for r in rows}
+    for d in cfg["cis"].get("direct_studies") or []:
+        if str(d["study"]) in seen or pd.Timestamp(d["published"]) > cutoff:
+            continue  # its study page has been catalogued, or it came out after the cut-off
+        rows.append({"slug": None, "study": str(d["study"]), "title": d["title"],
+                     "published": pd.Timestamp(d["published"]), "estimate_url": d["estimate_url"],
+                     "ficha_url": None, "microdata_url": None})
     return pd.DataFrame(rows), missing
 
 
@@ -256,7 +273,7 @@ def map_parties(rows: list[tuple[str, float]], rules: list[tuple[str, str]],
             elif fieldwork_end > NOV_2019:
                 party = "MASPAIS"  # Más País-Compromís joint list (Nov 2019), as in the Wikipedia feed
         mapped.append((party, v))
-    has_sumar = any(p == "SUMAR" for p, _ in mapped)
+    has_sumar = any(p in ("SUMAR", "FA") for p, _ in mapped)   # Sumar or its successor list
     up_era = fieldwork_end >= UP_PACT and not has_sumar
     out: dict[str, float] = {}
     for p, v in mapped:
@@ -290,6 +307,8 @@ def build_series(cfg: dict, root: Path, targets: pd.Series | None) -> tuple[pd.D
     raw = root / cfg["paths"]["raw_cis"]
     ccfg = cfg["cis"]
     overrides = {str(k): v for k, v in (ccfg.get("fieldwork_overrides") or {}).items()}
+    direct = {str(d["study"]): d for d in ccfg.get("direct_studies") or []}
+    overrides.update({k: d["fieldwork"] for k, d in direct.items() if k not in overrides})
     rules = load_rules(root / "data/party_map_cis.yaml")
     cat, missing = catalogue(cfg, raw)
     notes = [f"cis.es pages not found (no such study): {', '.join(missing)}."]
@@ -307,6 +326,8 @@ def build_series(cfg: dict, root: Path, targets: pd.Series | None) -> tuple[pd.D
         else:
             err = "no estimate table found"
         sample = parse_sample(ft_text or "")
+        if pd.isna(sample) and r.study in direct:
+            sample = float(direct[r.study]["sample_size"])
         dfm = None
         if r.microdata_url and pd.notna(r.published) and r.published >= md_from:
             dfm = md.load_labelled(download(r.microdata_url, raw / r.study / f"MD{r.study}.zip"))
@@ -314,7 +335,8 @@ def build_series(cfg: dict, root: Path, targets: pd.Series | None) -> tuple[pd.D
         start, end, fw_src = _study_fieldwork(r.study, ft_text, md.fieldwork(dfm) if dfm is not None else None,
                                               overrides)
         base = {"study": r.study, "title": r.title, "fieldwork_start": start, "fieldwork_end": end,
-                "sample_size": sample, "source_url": BASE + r.slug, "fieldwork_source": fw_src}
+                "sample_size": sample, "source_url": BASE + r.slug if r.slug else r.estimate_url,
+                "fieldwork_source": fw_src}
         row = dict(base)
         if not rows:
             problems.append(f"{r.study} ({r.title}): official estimate not usable ({err})")

@@ -196,9 +196,10 @@ def build_regional_polls(cfg: dict, root: Path, res: pd.DataFrame, tot: pd.DataF
         for p in sorted(set(spec["parties"]) - set(parties)):
             notes.append(f"{region}: only {(named == p).sum()} CIS respondents name {p}; "
                          "too few, the national layer is kept.")
+        used = studies[studies["study"].astype(str).isin({f["_study"].iloc[0] for f in sub})]
         rows += _obs(region, provs, est, parties, n, rc["tau_pp"]["direct"],
-                     f"CIS microdata, {len(sub)} barometers", studies["fieldwork_start"].min(),
-                     studies["fieldwork_end"].max(), "Congress vote, regional 2023 recall")
+                     f"CIS microdata, {len(sub)} barometers", used["fieldwork_start"].min(),
+                     used["fieldwork_end"].max(), "Congress vote, regional 2023 recall")
         notes.append(f"{region}: {n} CIS respondents pooled from {len(sub)} barometers.")
     out = pd.DataFrame(rows)
     out["cutoff_date"] = cfg["cutoff_date"]

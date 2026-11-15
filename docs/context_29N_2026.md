@@ -1,6 +1,7 @@
 # The 29 November 2026 snap election: context dossier
 
-*Compiled 5 October 2026, the day the dissolution was announced. This is background for the forecast
+*Compiled 5 October 2026, the day the dissolution was announced; §7 added on 17 October and §8 on
+14 November. This is background for the forecast
 re-run, not part of the model. Items marked (unverified) come from a single source or a partisan outlet
 and should be checked before they go into the README.*
 
@@ -368,6 +369,112 @@ Aliança Catalana: [Infobae](https://www.infobae.com/espana/agencias/2026/10/05/
 JEC page checked: [juntaelectoralcentral.es](https://www.juntaelectoralcentral.es/cs/jec/eleccionesEnCurso/Elecciones_generales_2026?apartado=candidaturas).
 Not confirmed by a source found on 17 Oct: whether Podemos candidates sit on ERC's lists, and Junts's
 and Adelante Andalucía's list details (taken from the press summary of 17 Oct).
+
+## 8. Update, 14 November (the day after the campaign opened)
+
+### 8.1 What happened since 17 October
+
+| date | event |
+|---|---|
+| 26 Oct | Podemos joins **Ara Més-Front Ampli** in Baleares (its regional coordinator third on the list, as an independent). ERC is not on that ballot; Ara Més and ERC have a pact to cooperate and not compete. |
+| 28 Oct | Rail crash at Urda (Toledo), 69 dead, the second serious rail accident of the year after Adamuz (January). |
+| 3 Nov | Transport minister Óscar Puente resigns and leaves the PSOE lists. The BOE publishes the proclaimed candidacies: 534 lists for Congress, 361 for the Senate. |
+| 12 Nov | CIS pre-election study (3584): PSOE 33.3, PP 25.5, Vox 18.4. |
+| 13 Nov | Campaign opens (13-27 Nov). Jordi Wild publishes long interviews with Sánchez, Feijóo and Colau; Abascal cancels his at the last minute. |
+| 19 Nov | Sánchez-Feijóo debate (Academia de Televisión). A four-way debate on 26 Nov is not agreed. |
+| 23 Nov | Last day on which polls may be published (LOREG art. 69.7: none in the five days before polling day). |
+
+### 8.2 Party supply as proclaimed
+
+- **Left of PSOE:** Frente Amplio in 46 districts; Compromís-Front Valencià (with Podem and EUPV) in
+  the three Valencian provinces; Unidad del Pueblo Canario (with Podemos and Nueva Canarias);
+  Ara Més-Front Ampli in Baleares (with Podemos); Podemos alone in the other 42 districts. In
+  Catalonia Podemos candidates sit on ERC's lists and the Comuns run as Comuns-Front Ampli under
+  Colau. The CIS codes "ERC-Podemos" as one option there.
+- **Right:** PP + UPN in Navarra is the only joint Congress list. PP and Vox agreed not to compete in
+  some **Senate** districts, nothing for Congress. A new centre-right coalition, Democracia para el
+  Siglo 21 (Democracia 21, Ciudadanos, UCIN; Miriam González), is on the ballot; no pollster in the
+  tables lists it. SALF runs in 46 districts.
+- **Senate only:** "Senado de Progreso" (PSOE, IU, Movimiento Sumar, Más Madrid, Compromís, CHA,
+  Batzarre) in 49 of 60 districts; ERC-EH Bildu in Catalonia, the Basque Country and Navarra.
+- **Others:** Coalición Canaria with Municipalistas Primero Canarias; Coalición Existe (Teruel
+  Existe, Aragón Existe).
+
+→ *Model:* the tables now list the ballots, so the 17 Oct transfers of Podemos's vote (including the
+50/50 guess in Catalonia) are replaced by measurement; see `docs/party_mapping.md`.
+
+### 8.3 CIS pre-election study 3584 (45,074 interviews, 7-30 Oct)
+
+| | direct vote (% census) | CIS estimate | seats (5-95) | Opina 360 re-estimate | Ateneo del Dato re-estimate |
+|---|---|---|---|---|---|
+| PSOE | 28.7 | 33.3 | 134-143 | 29.9 | 30.1 |
+| PP | 17.2 | 25.5 | 98-106 | 27.7 | 27.6 |
+| Vox | 15.0 | 18.4 | 57-65 | 20.5 | 21.7 |
+| Frente Amplio | 3.3 | 4.7 | 7-11 | 6.4 (with FV) | 6.3 (with FV) |
+| ERC-Podemos | 2.4 | 3.1 | 10-14 | | 3.0 |
+| EH Bildu | 1.3 | 1.8 | 7-10 | | 1.6 |
+| Compromís-Front Valencià | 1.2 | 1.6 | 4-6 | | |
+| Adelante Andalucía | 1.1 | 1.5 | 3-4 | | |
+| Junts / PNV / BNG | 0.7 / 0.4 / 0.7 | 1.2 / 0.7 / 1.0 | 2-4 / 2-4 / 2-3 | | 1.1 / 0.9 / 0.9 |
+| Podemos | 0.8 | 1.1 | 0-1 | 1.1 | 1.1 |
+
+- The official estimate has PP + Vox at 155-171 seats, short of 176. The two re-estimates of the
+  same raw data keep PSOE first but put Vox at 20.5-21.7, so PP + Vox stay near 49 % of the vote.
+- Unlike in September, **the recall-weighted reading no longer puts PP clearly ahead.** Our own
+  re-estimate of the October barometer (3582, 1-6 Oct) gives PP 28.4 / PSOE 27.6 / Vox 18.6, against
+  PP 30.6 / PSOE 25.7 in September. The microdata of 3584 are not on cis.es yet (the study page does
+  not exist; only the estimate and marginals PDFs), so it enters as the official estimate only.
+- Most of the fieldwork predates Urda and Puente's resignation.
+- Campaign items: television is the main source of political information for 71.7 %, social
+  networks for 45.5 % (Instagram 33.9 % of those, X 15.2 %). 49.1 % say they decide each time
+  "according to what convinces them most at that moment".
+
+### 8.4 Private polls, 1-13 November
+
+Most pollsters: PP 30-33, PSOE 25-28, Vox 18.5-20, Frente Amplio + Front Valencià 6-8, Podemos 1.2-2.
+Two read the race as much closer: the 40dB daily tracking (PP 31.1, PSOE 29.8) and SW Demoscopia for
+La Séptima, a channel launched on 5 November, which has PSOE first (31.6 to 28.7) and no track record.
+The PP-PSOE gap therefore ranges from PP +7.7 (Data10) to PSOE +2.9. The right bloc is steadier:
+PP + Vox between 48 and 52 % in nearly all, 45.8 % in SW Demoscopia and 43.9 % in the official CIS.
+Within the right, Vox has gained on PP since October.
+
+Several series are trackers with overlapping samples (40dB daily, SW Demoscopia cumulative since
+26 Oct, Sigma Dos and Electomanía rolling, SocioMétrica's panel since 1 Sep). → *Model:* one release
+per overlapping window.
+
+### 8.5 The youth vote
+
+- 1.6 million can vote in a general election for the first time; 18-24s are 8.4 % of the adult
+  population. Polls do reach them (7.3 % of CIS interviews, 89 % by mobile).
+- They lean right, with a large gender gap. CIS pre-election direct vote, 18-24: Vox 22, PSOE 19,
+  PP 12; Vox leads under 45. On the 1-10 ideology scale men of 18-24 sit at 5.5 and women at 3.9;
+  18-24s as a whole (4.71) are to the right of 65-74s (4.18). 40dB: under 35, PP + Vox 43 % against
+  26 % for PSOE, Sumar and Podemos.
+- Housing splits them: among the young who name it as a personal problem PSOE leads (27 %, Sumar
+  9 %); among those who do not, Vox has 34 % (SocioMétrica panel).
+- They vote less and decide late: 70 % of 18-24s say they will vote for certain, against 89 % of
+  65-74s; about a third decide in the last week. Declared intention to vote among under-35s has
+  risen from 36 % to 56 % (40dB, as reported).
+- → *Model:* no youth adjustment. The 2023-style "hidden left surge" through young voters is not
+  what the data show: higher youth turnout would now help Vox as much as the left. The weight is
+  also small: 18-24s cast about 6-7 % of votes, so a 10-point swing among them moves a national
+  share by about 0.6 points. Late deciders are covered by the election-day error term.
+
+Sources (accessed 14 Nov 2026). CIS: [press note](https://www.cis.es/es/w/el-psoe-lograr%C3%ADa-el-33-3-de-los-votos-en-las-elecciones-generales-del-29n),
+[estimate PDF](https://www.cis.es/documents/d/guest/3584_estimacion-pdf), [Electomanía](https://electomania.es/cis-preelectoral-nov26-el-psoe-ganaria-las-elecciones/),
+[Colmena de Datos](https://colmenadedatos.com/encuesta-cis-preelectoral-elecciones-generales-2026/).
+Polls: [Wikipedia table](https://en.wikipedia.org/wiki/Opinion_polling_for_the_2026_Spanish_general_election),
+[Colmena de Datos average](https://colmenadedatos.com/media-de-encuestas-elecciones-espana-1a-semana-de-noviembre-2026/),
+[El Pespunte](https://www.elpespunte.es/otros/ultimas-encuestas-elecciones-generales-29-noviembre-cis-situa-psoe-delante-mientras-otros-sondeos-dan-ventaja-pp/20261113071601161838.html).
+Candidacies: [Artículo 14](https://www.articulo14.es/politica/que-partidos-se-presentan-a-las-elecciones-del-29-n-candidaturas-y-coaliciones-20261108.html),
+[elDiario.es (Baleares)](https://www.eldiario.es/illes-balears/politica/suma-coalicion-ara-mes-front-ampli-no-presentara-solitario-congreso-balears_1_13614467.html).
+Campaign: [El Cronista](https://www.cronista.com/espana/politica-es/comienza-la-campana-electoral-del-29n-los-movimientos-de-sanchez-feijoo-y-abascal-y-la-fecha-del-esperado-cara-a-cara/),
+[Estrella Digital (Puente)](https://www.estrelladigital.es/espana/oscar-puente-dimite-tragedia-urda-ministro-puede-continuar-dos-accidentes-gravedad/20261103081631452810.html).
+Youth: [Noticias de Navarra / EFE](https://www.noticiasdenavarra.com/politica/2026/11/14/voto-joven-batalla-ultimo-escano-campana-youtube-11755823.html),
+[El Español](https://www.elespanol.com/reportajes/20261024/radiografia-nuevos-electores-preguntan-votar-ia-vivienda-divide-decidiran-justo/1003744432917_0.html),
+[Agenda Pública](https://agendapublica.es/noticia/21675/cambio-ideologico-juventud-espanola-cara-al-29n).
+Not checked against a primary source: the 40dB youth figures (taken from Agenda Pública) and the
+debate calendar beyond 19 Nov.
 
 ---
 

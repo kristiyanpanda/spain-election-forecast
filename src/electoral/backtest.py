@@ -83,7 +83,8 @@ def run_cycle(key: str, spec: dict, cfg: dict, polls: pd.DataFrame, nat: pd.Data
     anchor = {p: v for p, v in anchor.items() if not np.isnan(v) and v > 0}
 
     d = prepare(polls, key, parties, anchor, p_date, e_date, obs_cutoff=obs_cutoff,
-                breaks=spec.get("breaks") or None, composites=spec.get("composites") or None)
+                breaks=spec.get("breaks") or None, composites=spec.get("composites") or None,
+                families=cfg["model"].get("house_families"))
     idata = fit(d, seed=cfg["seed"], **cfg["backtest"]["sampling"])
     sd = state_draws(idata, d)                                    # election-week extrapolation
 

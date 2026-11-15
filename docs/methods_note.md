@@ -1,10 +1,10 @@
 # Forecasting the next Spanish general election: a Bayesian poll aggregation and seat projection model
 
-> **Update, 17 October 2026: provisional re-run for the 29 November snap election.** Section 12
-> describes what changed (CIS from cis.es, Frente Amplio and the coalitions, the regional-poll
-> layer, the 29 November horizon) and gives the new results. Sections 6, 8 and 9 keep the
-> 18 September numbers as a record. PROVISIONAL: coalitions per press reports as of 17 Oct 2026;
-> official lists in BOE on 3 Nov.
+> **Update, 14 November 2026: interim run two weeks before the 29 November election.** Section 13
+> describes what changed since 17 October (the ballots as proclaimed, the CIS pre-election study,
+> trackers counted once, CIS-based series as one pollster) and gives the current results. Section 12 keeps the 17 October run and
+> sections 6, 8 and 9 the 18 September numbers as a record. INTERIM: the final run will use the
+> polls published up to 23 November, the last day the law allows.
 
 *Methods and findings note. Data cut-off 2026-09-18. All numbers are produced by the code in this
 repository (`make all`); none is typed by hand.*
@@ -291,3 +291,105 @@ to 9-12 seats, mostly through the CEO layer. Podemos falls to 0-2 seats under th
 moves mix four weeks of post-dissolution polls with the new CIS treatment, and the two were not
 separated. The bloc arithmetic does not depend on how the left runs: merging moves 2-3 seats from ERC
 and Podemos to Frente Amplio and changes no majority.
+
+## 13. Interim run, 14 November 2026 (data to 14 November)
+
+The campaign opened on 13 November. The lists were proclaimed in the BOE on 3 November and the CIS
+published its pre-election study on 12 November. Context and sources: `docs/context_29N_2026.md` §8.
+
+**Poll tables as ballots.** Since mid-October the Wikipedia table lists the registered ballots:
+Frente Amplio (with its joint lists in Canarias and Baleares), Compromís-Front Valencià, ERC (with
+Podemos candidates on its Catalan lists) and Podemos where it runs alone. Twenty-nine of the fifty
+polls in that section give one figure for Frente Amplio and Front Valencià in a cell that spans both
+columns. The parser now reads column spans; without that, every column to the right of such a cell
+was shifted by one. The Sumar series is the sum of the two lists, or the joint figure.
+
+**Level shifts.** Asking about ballots changes what the Podemos, Frente Amplio and ERC figures mean.
+Podemos is measured only in the 42 districts where it has a list; its voters in Catalonia, the
+Valencian provinces, Canarias and Baleares are counted with ERC, Front Valencià and Frente Amplio.
+Each of the three series gets a free level shift in the week of 11 October, the week of the first
+such poll. The fitted Podemos series drops from 3.2 % to 1.7 % across that week.
+
+**Seats under the proclaimed lists.** The 17 October run moved assumed parts of Podemos's polled vote
+into other lists, including a 50/50 split of its Catalan vote between ERC and Frente Amplio. Those
+transfers are gone. Podemos has no share in the ten provinces where it has no ballot, and its polled
+share is spread over the other 42 with Sumar's 2023 geography. The Valencian part of the Frente Amplio
+space comes from the seven pollsters that list Front Valencià apart: 19 % of the space (median over
+pollsters, log sd 0.27), against 13 % under Sumar's 2023 geography. Adelante Andalucía now has a
+column in the tables and enters at the median of the last 30 days (1.3 %).
+
+**Trackers count once.** Several series re-publish overlapping samples: the 40dB daily tracking, SW
+Demoscopia's cumulative sample since 26 October, rolling windows from Sigma Dos and Electomanía, and
+SocioMétrica's panel since 1 September. For each pollster the latest release is kept, then the latest
+one that ended before every kept window began. That leaves 583 of the 659 current-cycle polls. The
+rule is applied after the backtest's observation cut-off, so each backtest sees only the releases that
+existed then; it removes 10-17 % of the polls in the four earlier cycles.
+
+**CIS.** The October barometer (3582) enters with both series. The pre-election study (3584; 45,074
+interviews, 7-30 October) has no study page or microdata on cis.es yet, so its official estimate is
+read from the PDF, with fieldwork and sample size from the press note, and it has no re-estimate of
+ours. Two third-party re-estimates of it are in the tables; the three series share its sample size.
+Fitted house effects for the official CIS are -5.1 pp for PP and +4.1 for PSOE. Our re-estimate of
+the October barometer is PP 28.4 / PSOE 27.6 / Vox 18.6 (September: 30.6 / 25.7 / 18.3).
+
+**CIS-based series as one pollster.** House effects are centred so that the average pollster has
+none. Ten of the 39 series in this cycle are readings of CIS raw data: the official estimate, ours and
+eight third-party re-estimates. With one vote each they made up a quarter of that average and leaned
+to PSOE. They now form a family that shares one vote per party (`model.house_families`); the family's
+position is the mean of its members. The same rule applies in the backtest, where April 2019 has
+eight such series. Under one vote per series the cut-off read PP 30.2 / PSOE 27.8; it now reads
+PP 30.5 / PSOE 27.6.
+
+**Backtest, refitted** with both rules (17 October values in brackets): vote MAE 1.04 pp (1.03), CRPS
+0.89 (0.88), 90 % vote coverage 40 % (40 %), seat MAE 4.2 (4.2), 90 % seat coverage 73 % (73 %), Brier
+0.06 (0.05). Neither rule buys accuracy in the backtest. The election-day error that restores 90 %
+coverage is 11.5 % of each party's share (13.3 %). Mean reversion was tested again and rejected.
+
+**Results.** Sampling converged (0 divergences, R-hat 1.00, 583 polls from 39 series).
+
+At the cut-off:
+
+| party | PP | PSOE | Vox | Frente Amplio + Front Valencià | Podemos | ERC |
+|---|---|---|---|---|---|---|
+| vote | 30.5 % (29.9-31.2) | 27.6 % (26.8-28.3) | 19.1 % (18.3-19.8) | 7.0 % | 1.6 % | 2.6 % |
+
+On 29 November:
+
+| party | vote, 90 % | seats, split left | seats, merged left |
+|---|---|---|---|
+| PP | 25.0-36.6 % | 128 (105-151) | 128 (105-151) |
+| PSOE | 22.5-33.2 % | 109 (89-131) | 109 (89-131) |
+| Vox | 15.6-23.1 % | 67 (52-85) | 68 (52-85) |
+| Frente Amplio + Front Valencià | 5.7-8.6 % | 10 (6-16) | 10 (6-17) |
+| Podemos | 1.3-2.1 % | 1 (0-1) | merged |
+| ERC | 2.2-3.2 % | 10 (7-13) | 10 (7-13) |
+
+Probabilities on 29 November, split left:
+- PP + Vox (+ UPN, SALF) reach 176: 94 % (95 % with the merged left).
+- PP is the largest party: 78 %; PSOE: 22 %.
+- The 2023 investiture bloc reaches 176: 3 %.
+
+Seat standard deviation for PP, adding sources one at a time:
+
+| source | posterior at the cut-off | + provincial noise | + two weeks of drift | + election-day error |
+|---|---|---|---|---|
+| PP seat sd | 2.9 | 4.0 | 4.5 | 13.8 |
+
+**Against 17 October.** The 17 October run read PP 31.1 / PSOE 26.9 at its cut-off and this one reads
+PP 30.5 / PSOE 27.6, so the published gap went from 4.2 to 2.9 points. Little of that is movement in
+the last four weeks: with today's polls and rules the model reads 17 October itself as PP 30.6 /
+PSOE 27.4 / Vox 19.4. The rest is a re-reading caused by the new studies and pollsters and by the rule
+changes above, which were not separated. PP + Vox stay at 49-50 %, the majority probability is
+unchanged (93 % to 94 %) and PP's chance of being the largest party goes from 80 % to 78 %.
+
+**Two caveats on that gap.**
+1. Where the average pollster sits is a choice. With the CIS-based series as one pollster the gap is
+   2.9 points; with one vote per series it is 2.4. A plain average of recent private polls gives PP a
+   lead near five points, because prolific pollsters weigh more in it.
+2. The model gives the Frente Amplio space 10 seats where the CIS and most pollsters give 11 to 15 for
+   a similar vote. Sumar's 2023 geography outside Valencia probably understates Más Madrid. The seats
+   it misses go to larger lists of both blocs.
+
+**Not in this run.** The CIS pre-election microdata, any CEO wave after 5 October, and a demographic
+model: the campaign's contest for young voters (§8.5 of the dossier) enters only through the polls
+and the election-day error.
