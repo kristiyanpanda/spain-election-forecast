@@ -17,7 +17,7 @@ import pandas as pd
 import yaml
 
 from electoral import ROOT, load_config
-from electoral.plots import plot_bloc_majority, plot_seat_distributions
+from electoral.figures import draw_seats, each_language
 from electoral.seats import calibrate_swing_noise, province_baseline, simulate_seats, summarise_seats
 
 def proxies(cfg: dict) -> dict:
@@ -125,7 +125,6 @@ def main(n_sims: int = 10_000, tag: str = "next", state_file: str | None = None,
          regional: bool = True) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     cfg = load_config()
     out = ROOT / cfg["paths"]["outputs"]
-    figs = ROOT / cfg["paths"]["figures"]
     proc = ROOT / cfg["paths"]["processed"]
     res = pd.read_parquet(proc / "results_province.parquet")
     tot = pd.read_parquet(proc / "province_totals.parquet")
@@ -167,11 +166,7 @@ def main(n_sims: int = 10_000, tag: str = "next", state_file: str | None = None,
              "scenario": scenario,
              "cutoff_date": cfg["cutoff_date"]}, indent=2))
         last = nat[nat.election == base_election].set_index("party")["escanos"].astype(int).to_dict()
-        plot_seat_distributions(seat_df, ["PP", "PSOE", "VOX", "SUMAR", "PODEMOS", "SALF"],
-                                figs / "seats_distribution.png", cfg["cutoff_date"], last)
-        plot_bloc_majority(seat_df, {k: v for k, v in blocs.items() if k in
-                           ["Right (PP+Vox+UPN+SALF)", "2023 investiture bloc (above + PNV + Junts)"]},
-                           figs / "bloc_majority.png", cfg["cutoff_date"])
+        each_language(draw_seats, seat_df, "next", cfg, last)
         print(q.round(1).to_string())
         print(probs.round(3).to_string())
         print("swing noise sd (log):", round(noise_sd, 3), calib)

@@ -196,10 +196,9 @@ def main(cycles: list[str] | None = None) -> pd.DataFrame:
     sc.to_csv(out / "backtest_scorecard.csv", index=False)
     pd.concat(details).to_csv(out / "backtest_details.csv", index=False)
     (out / "backtest_meta.json").write_text(json.dumps(metas, indent=2))
-    from electoral.plots import plot_backtest
+    from electoral.figures import draw_backtest, each_language
 
-    labels = {"e2016": "June 2016", "e2019apr": "April 2019", "e2019nov": "November 2019", "e2023": "July 2023"}
-    plot_backtest(pd.concat(details), ROOT / cfg["paths"]["figures"] / "backtest.png", cfg["cutoff_date"], labels)
+    each_language(draw_backtest, pd.concat(details), cfg)
     return sc
 
 

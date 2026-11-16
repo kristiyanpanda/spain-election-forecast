@@ -2,6 +2,8 @@
 
 **A Bayesian poll-aggregation and seat-projection model, with a four-election backtest.**
 
+*Versión en español: [`spanish version/README.md`](spanish%20version/README.md).*
+
 > **INTERIM — polls to 14 November 2026; the final run will use the polls published up to 23 November,
 > the last day the law allows.** Everything below is conditional on polls published up to the data
 > cut-off, **14 November 2026**, the day after the campaign opened and two weeks before polling day.
@@ -26,13 +28,15 @@ Amplio and Podemos apart, with Podemos absent from the ten provinces where it jo
 **sensitivity** is one Frente Amplio + Podemos list everywhere, keeping 0.83 of the sum as Unidos
 Podemos did in 2016.
 
-![Forecast Congress](reports/figures/hemicycle_29n_split.png)
-*Expected seats on 29 November, base case: each party's mean over 10,000 simulations, rounded so they
-add up to 350. No single simulation need look exactly like this; the 90 % ranges are in the table below.
-PP + Vox reach 196 here. "Frente Amplio" includes Compromís-Front Valencià. "Others" are local lists
-(Soria ¡Ya!, Teruel Existe, UPL). Merged-left version:
-[`hemicycle_29n_merged.png`](reports/figures/hemicycle_29n_merged.png); interactive version with both:
-`docs/index.html`.*
+![Figure 1. Forecast Congress](reports/figures/hemicycle_29n_split.png)
+***Figure 1. Forecast Congress, 29 November 2026.*** *Expected seats, base case: each party's mean over
+10,000 simulations, rounded so they add up to 350. No single simulation need look exactly like this;
+the 90 % ranges are in the table below. PP + Vox reach 196 here. "Frente Amplio" includes
+Compromís-Front Valencià. "Others" are local lists (Soria ¡Ya!, Teruel Existe, UPL). Merged-left version:
+[`hemicycle_29n_merged.png`](reports/figures/hemicycle_29n_merged.png). In the interactive page
+(`docs/index.html`) this chart is a coalition builder: set each party to yes, abstain or no in an
+investiture vote and see the count against 176 and the share of simulations in which that pact
+succeeds.*
 
 | party | vote at cut-off | seats if held at cut-off, 90 % | seats on 29 Nov, split left (base) | seats on 29 Nov, merged left |
 |---|---|---|---|---|
@@ -81,19 +85,24 @@ PP + Vox reach 196 here. "Frente Amplio" includes Compromís-Front Valencià. "O
 - The election-day error was re-calibrated on the refitted backtest: 11.5 % of each party's share
   (13.3 % before).
 
-## Three figures
+## Trend, blocs and backtest
 
-![Trends](reports/figures/trend_national.png)
-*Latent vote share (median, 50 % and 90 % bands) and every poll since July 2023. Numbered lines: Ceuta
-(30 Jul), decrees rejected (2 Oct), dissolution (5 Oct), coalitions closed and Colau announced (17 Oct), Urda
-rail crash (28 Oct), lists proclaimed (3 Nov), campaign starts (13 Nov). The step in Podemos in mid-October is the
-switch to the registered ballots.*
+![Figure 2. State-wide parties since the July 2023 election](reports/figures/trend_national.png)
+***Figure 2. State-wide parties since the July 2023 election: polls and latent trend.*** *Latent vote
+share (median, 50 % and 90 % bands) and every poll. Left: the whole cycle; the shaded strip is the period
+enlarged on the right. Right: the last four months, with the dated events: the Ceuta border crisis
+(30 Jul), the decrees rejected in Congress (2 Oct), the dissolution (5 Oct), coalitions closed and Colau
+announced (17 Oct), the Urda rail crash (28 Oct), lists proclaimed (3 Nov) and the start of the campaign
+(13 Nov). The dashed line is the data cut-off. The step in Podemos in mid-October is the switch to the
+registered ballots.*
 
-![Bloc majority](reports/figures/bloc_majority_29n_split.png)
-*Seat totals for the two competing blocs on 29 November, base case (split left).*
+![Figure 3. Bloc seat totals](reports/figures/bloc_majority_29n_split.png)
+***Figure 3. Bloc seat totals on 29 November.*** *Seat totals for the two competing blocs, base case
+(split left).*
 
-![Backtest](reports/figures/backtest.png)
-*What the same pipeline would have said 30 days before each of the last four elections, against the result.*
+![Figure 4. Backtest](reports/figures/backtest.png)
+***Figure 4. Backtest.*** *What the same pipeline would have said 30 days before each of the last four
+elections, against the result.*
 
 ## Methods
 
@@ -165,6 +174,11 @@ make all          # data -> tests -> descriptive -> aggregate -> seats -> backte
 ```
 
 Individual phases: `uv run electoral build-data | descriptive | aggregate | seats | backtest | forecast | report`.
+`uv run electoral figures` re-draws every figure from the saved outputs without refitting. Figures and
+the interactive page are written in English (`reports/figures/`, `docs/index.html`) and in Spanish
+(`spanish version/`); the wording of both is in `src/electoral/i18n.py` and `report.py`. The coalition
+builder of the page is `pactometro/template.html`; `uv run electoral pactometro` writes it as a page of
+its own (`pactometro/index.html`) for trying changes.
 `build-data` downloads the CIS PDFs and microdata (about 100 studies) and the CEO microdata (about
 330 MB) into the gitignored `data/raw/`. The aggregator takes about eight minutes; the backtest about
 ten (per-cycle results are cached in `outputs/backtest/`). Seeds, dates, party supply scenarios
@@ -180,11 +194,14 @@ config.yaml            dates, seed, sources, model, party-supply scenarios, regi
 data/party_map_*.yaml  party lineage and bloc definitions (edit here to disagree)
 data/regional/         regional tables extracted from PDFs, with their URLs
 data/processed/        tidy datasets + DATA_DICTIONARY.md + DATA_QUALITY.md + cis_studies.csv + regional_polls.csv
-src/electoral/         mir, wiki_polls, cis, cis_microdata, regional, build_data, model, seats, backtest, forecast, report
+src/electoral/         mir, wiki_polls, cis, cis_microdata, regional, build_data, model, seats, backtest, forecast,
+                       plots, figures, i18n (English / Spanish), pactometro, report
 tests/                 D'Hondt (incl. exact reproduction of official seats), parsers, CIS, regional layer, model, 29N ballots
 outputs/               poll average, house effects, seat draws, scorecard, diagnostics (traces gitignored)
 reports/figures/       all figures; docs/methods_note.md is the write-up; docs/index.html the interactive page
 docs/context_29N_2026.md  the political context, party supply and sources for the 29N re-run
+spanish version/       README.md, index.html and figures/ in Spanish
+pactometro/            the coalition builder (template.html) embedded in both interactive pages
 ```
 
 ## Limitations
@@ -231,6 +248,9 @@ Kristiyan Pandas, [github.com/kristiyanpanda](https://github.com/kristiyanpanda)
 Analytics. Interactive version of the results: `docs/index.html`.
 
 ## Resumen en español
+
+*Versión completa en español: [`spanish version/README.md`](spanish%20version/README.md); página
+interactiva: `spanish version/index.html`.*
 
 **PROVISIONAL (intermedio): encuestas hasta el 14-11-2026; la versión final usará las publicadas hasta el
 23 de noviembre, último día permitido por la ley.**

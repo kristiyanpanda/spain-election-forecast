@@ -49,11 +49,25 @@ def forecast() -> None:
     main()
 
 
+@app.command("figures")
+def figures(lang: str = "all") -> None:
+    """Re-draw every static figure from the saved outputs (lang: en, es or all); no refit."""
+    from electoral.figures import main
+    main(lang=lang)
+
+
 @app.command("report")
-def report() -> None:
-    """Phase G: interactive HTML in docs/index.html."""
+def report(lang: str = "all") -> None:
+    """Phase G: interactive HTML, docs/index.html (en) and "spanish version/index.html" (es)."""
     from electoral.report import main
-    main()
+    main(lang=lang)
+
+
+@app.command("pactometro")
+def pactometro(lang: str = "es") -> None:
+    """Prototype: interactive coalition builder in pactometro/index.html (lang: language it opens in)."""
+    from electoral.pactometro import main
+    main(default_lang=lang)
 
 
 if __name__ == "__main__":

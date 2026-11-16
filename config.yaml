@@ -10,15 +10,17 @@ last_election: "2023-07-23"
 legal_deadline: "2027-08-15"     # term expires 2027-07-23; election on day 54 after convocation
 election_date: "2026-11-29"      # snap election (RD 806/2026, BOE 6 Oct 2026): the forecast horizon
 provisional_label: "INTERIM — polls to 14 Nov 2026; final run on 23 Nov, the last day polls may be published"
-# marked on the trend charts (date: label)
+provisional_label_es: "PROVISIONAL — encuestas hasta el 14-11-2026; versión final el 23-N, último día en que pueden publicarse"
+# marked on the trend charts, numbered in date order. en / es: the name in the key of the interactive
+# page; short_en / short_es: the one word written on the static chart
 events:
-  "2026-07-30": "Ceuta"
-  "2026-10-02": "Decrees rejected"
-  "2026-10-05": "Dissolution"
-  "2026-10-17": "Coalitions closed, Colau"
-  "2026-10-28": "Urda rail crash"
-  "2026-11-03": "Lists proclaimed"
-  "2026-11-13": "Campaign starts"
+  "2026-07-30": {en: "Ceuta border crisis", es: "Crisis fronteriza de Ceuta", short_en: "Ceuta", short_es: "Ceuta"}
+  "2026-10-02": {en: "Decrees rejected", es: "Decretos rechazados", short_en: "Decrees", short_es: "Decretos"}
+  "2026-10-05": {en: "Dissolution", es: "Disolución", short_en: "Dissolution", short_es: "Disolución"}
+  "2026-10-17": {en: "Coalitions closed, Colau", es: "Cierre de coaliciones, Colau", short_en: "Coalitions", short_es: "Coaliciones"}
+  "2026-10-28": {en: "Urda rail crash", es: "Accidente ferroviario de Urda", short_en: "Urda", short_es: "Urda"}
+  "2026-11-03": {en: "Lists proclaimed", es: "Candidaturas proclamadas", short_en: "Lists", short_es: "Listas"}
+  "2026-11-13": {en: "Campaign starts", es: "Inicio de la campaña", short_en: "Campaign", short_es: "Campaña"}
 seed: 20260918
 
 model:
