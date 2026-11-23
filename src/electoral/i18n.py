@@ -123,6 +123,48 @@ ES = {
     "ENP (votes) in the province, 2023": "NEP (votos) en la provincia, 2023",
     "Regional fragmentation, 2023: where the peripheral vote lives":
         "Fragmentación territorial, 2023: dónde está el voto periférico",
+    # ------------------------------------------------------------------ chamber comparison (chamber.py)
+    "Congress at the dissolution ({date})": "El Congreso en la disolución ({date})",
+    "2023 investiture bloc {a}  ·  PP + Vox + UPN + ex-Vox {b}":
+        "Bloque de investidura de 2023: {a}  ·  PP + Vox + UPN + ex-Vox: {b}",
+    "2023 investiture bloc {a}  ·  PP + Vox (+ UPN, SALF) {b}":
+        "Bloque de investidura de 2023: {a}  ·  PP + Vox (+ UPN, SALF): {b}",
+    "arc: 2023 investiture bloc": "arco: bloque de investidura de 2023",
+    "arc: PP + Vox and allies": "arco: PP + Vox y aliados",
+    "From the Congress that invested Sánchez to the 29 November forecast":
+        "Del Congreso que invistió a Sánchez a la previsión del 29 de noviembre",
+    "Left: seats by party on the last day of the full chamber, from each group's membership dates on "
+    "congreso.es. Right: expected seats, base case (mean of 10,000 simulations, rounded to 350). "
+    "Legend: dissolution → forecast.":
+        "Izquierda: escaños por partido el último día del pleno completo, según las altas y bajas de cada "
+        "grupo en congreso.es. Derecha: escaños esperados, caso base (media de 10.000 simulaciones, "
+        "redondeada a 350). Leyenda: disolución → previsión.",
+    "Congress: congreso.es (groups, XV Legislature). Seats: model forecast, not a result.":
+        "Congreso: congreso.es (grupos, XV Legislatura). Escaños: previsión del modelo, no un resultado.",
+    "2023 investiture bloc": "Bloque de investidura de 2023",
+    "2023 investiture bloc + Adelante Andalucía": "Bloque de investidura de 2023 + Adelante Andalucía",
+    "2023 investiture bloc without Junts": "Bloque de investidura de 2023 sin Junts",
+    "Seat by seat: the chamber at the dissolution against the 29 November forecast":
+        "Escaño a escaño: la cámara en la disolución frente a la previsión del 29 de noviembre",
+    "Hollow dot: seats on {date} (congreso.es). Solid dot: forecast median; band: 90 % range; number: "
+    "change in the median.":
+        "Punto hueco: escaños el {date} (congreso.es). Punto lleno: mediana prevista; banda: rango del "
+        "90 %; número: cambio en la mediana.",
+    "Congress: congreso.es. Forecast: base case, 10,000 simulations.":
+        "Congreso: congreso.es. Previsión: caso base, 10.000 simulaciones.",
+    "CIS official estimate": "Estimación oficial del CIS",
+    "Same CIS microdata, re-weighted by 2023 recall (likely voters)":
+        "Los mismos microdatos del CIS, reponderados por recuerdo de 2023 (votantes probables)",
+    "The CIS barometers across the legislature, read two ways":
+        "Los barómetros del CIS a lo largo de la legislatura, leídos de dos maneras",
+    "Dots: each barometer and pre-election study (cis.es). Diamonds: July 2023 result. Squares: model "
+    "forecast for 29 November with 90 % range. Sumar line from Oct 2026: Frente Amplio + "
+    "Compromís-Front Valencià.":
+        "Puntos: cada barómetro y el preelectoral (cis.es). Rombos: resultado de julio de 2023. "
+        "Cuadrados: previsión del modelo para el 29 de noviembre con rango del 90 %. Línea de Sumar desde "
+        "octubre de 2026: Frente Amplio + Compromís-Front Valencià.",
+    "Source: CIS (cis.es), estimates and microdata; re-weighting in src/electoral/cis_microdata.py.":
+        "Fuente: CIS (cis.es), estimaciones y microdatos; reponderación en src/electoral/cis_microdata.py.",
 }
 
 

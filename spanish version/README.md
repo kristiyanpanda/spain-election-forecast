@@ -118,6 +118,23 @@ competencia, caso base (listas separadas en la izquierda).*
 ***Figura 4. Backtest.*** *Lo que habría dicho el mismo procedimiento 30 días antes de cada una de las
 cuatro últimas elecciones, frente al resultado.*
 
+## Del Congreso actual al 29-N
+
+La cámara que invistió a Sánchez (179 votos contra 171, 16-11-2023), reconstruida con las altas y bajas
+de cada grupo en congreso.es, frente a la previsión. **En la disolución, el bloque de la investidura de
+2023 seguía sumando 179 sobre el papel (172 sin Junts, que rompió el pacto en octubre de 2025); para el
+29-N se prevé en 152 escaños (132-173), con un 3,5 % de probabilidad de llegar a 176.** PP + Vox pasan de
+171 a 192 (171-212). El vuelco ocurre dentro de cada bloque: Vox +32 y PP −10 en la derecha; Frente
+Amplio −18, PSOE −7, Podemos −4 y Junts −3 frente a ERC +3 entre los socios de 2023. Las razones,
+partido a partido y contrastadas con todos los barómetros del CIS de la legislatura (estimación oficial
+y nuestros microdatos reponderados), están en [`congreso_29N.md`](congreso_29N.md).
+
+![Figura 5. Del Congreso de la disolución a la previsión del 29-N](figures/hemicycle_comparison_29n.png)
+***Figura 5.*** *Izquierda: escaños por partido el 5-10-2026, último día del pleno completo
+(congreso.es). Derecha: escaños esperados el 29-N. Cambios escaño a escaño:
+[`seat_change_29n.png`](figures/seat_change_29n.png); el CIS a lo largo de la legislatura:
+[`cis_legislature.png`](figures/cis_legislature.png). Se reproduce con `electoral chamber`.*
+
 ## Métodos
 
 | componente | decisión | código |
@@ -215,14 +232,14 @@ data/party_map_*.yaml  genealogía de partidos y definición de bloques (se edit
 data/regional/         tablas regionales extraídas de PDF, con sus URL
 data/processed/        datos ordenados + DATA_DICTIONARY.md + DATA_QUALITY.md + cis_studies.csv + regional_polls.csv
 src/electoral/         mir, wiki_polls, cis, cis_microdata, regional, build_data, model, seats, backtest, forecast,
-                       plots, figures, i18n (inglés / español), pactometro, report
+                       plots, figures, i18n (inglés / español), pactometro, report, chamber
 tests/                 D'Hondt (con la reproducción exacta de los escaños oficiales), lectores, CIS, capa regional,
                        modelo, papeletas del 29-N
 outputs/               media de encuestas, efectos de casa, simulaciones de escaños, backtest, diagnósticos
 reports/figures/       todas las figuras en inglés; docs/methods_note.md es la nota metodológica (en inglés);
                        docs/index.html, la página interactiva en inglés
 docs/context_29N_2026.md  contexto político, oferta electoral y fuentes de la actualización del 29-N (en inglés)
-spanish version/       este README, index.html y figures/ en español
+spanish version/       este README, index.html, congreso_29N.md (el Congreso frente a la previsión) y figures/
 pactometro/            el pactómetro (template.html) que se inserta en las dos páginas interactivas
 ```
 

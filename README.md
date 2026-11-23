@@ -111,6 +111,23 @@ registered ballots.*
 ***Figure 4. Backtest.*** *What the same pipeline would have said 30 days before each of the last four
 elections, against the result.*
 
+## From the current Congress to 29 November
+
+The chamber that invested Sánchez (179 votes to 171, 16 Nov 2023), rebuilt from the membership dates
+of each group on congreso.es, against the forecast. **At the dissolution the 2023 investiture bloc
+still added up to 179 on paper (172 without Junts, which broke the pact in October 2025); on 29
+November it is forecast at 152 seats (132-173), with a 3.5 % chance of 176.** PP + Vox go from 171 to
+192 (171-212). The swing happens inside each bloc: Vox +32 and PP −10 on the right; Frente Amplio −18,
+PSOE −7, Podemos −4 and Junts −3 against ERC +3 among the 2023 partners. The party-by-party reasons,
+read against every CIS barometer of the legislature (official estimate and our re-weighted
+microdata), are in [`docs/chamber_29N.md`](docs/chamber_29N.md).
+
+![Figure 5. From the Congress at the dissolution to the 29 November forecast](reports/figures/hemicycle_comparison_29n.png)
+***Figure 5.*** *Left: seats by party on 5 Oct 2026, the last day of the full chamber (congreso.es).
+Right: expected seats on 29 November. Seat-by-seat changes:
+[`seat_change_29n.png`](reports/figures/seat_change_29n.png); the CIS across the legislature:
+[`cis_legislature.png`](reports/figures/cis_legislature.png). Reproduce with `electoral chamber`.*
+
 ## Methods
 
 | component | choice | code |
@@ -202,11 +219,12 @@ data/party_map_*.yaml  party lineage and bloc definitions (edit here to disagree
 data/regional/         regional tables extracted from PDFs, with their URLs
 data/processed/        tidy datasets + DATA_DICTIONARY.md + DATA_QUALITY.md + cis_studies.csv + regional_polls.csv
 src/electoral/         mir, wiki_polls, cis, cis_microdata, regional, build_data, model, seats, backtest, forecast,
-                       plots, figures, i18n (English / Spanish), pactometro, report
+                       plots, figures, i18n (English / Spanish), pactometro, report, chamber
 tests/                 D'Hondt (incl. exact reproduction of official seats), parsers, CIS, regional layer, model, 29N ballots
 outputs/               poll average, house effects, seat draws, scorecard, diagnostics (traces gitignored)
 reports/figures/       all figures; docs/methods_note.md is the write-up; docs/index.html the interactive page
 docs/context_29N_2026.md  the political context, party supply and sources for the 29N re-run
+docs/chamber_29N.md    the Congress at the investiture and dissolution (congreso.es) against the forecast
 spanish version/       README.md, index.html and figures/ in Spanish
 pactometro/            the coalition builder (template.html) embedded in both interactive pages
 ```

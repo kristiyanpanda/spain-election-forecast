@@ -63,6 +63,13 @@ def report(lang: str = "all") -> None:
     main(lang=lang)
 
 
+@app.command("chamber")
+def chamber(refresh: bool = False) -> None:
+    """Congress at the investiture and the dissolution (congreso.es) against the 29N forecast."""
+    from electoral.chamber import main
+    main(refresh=refresh)
+
+
 @app.command("pactometro")
 def pactometro(lang: str = "es") -> None:
     """Prototype: interactive coalition builder in pactometro/index.html (lang: language it opens in)."""
