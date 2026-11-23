@@ -4,6 +4,8 @@
 
 *English version: [`README.md`](../README.md).*
 
+**Página interactiva:** https://kristiyanpanda.github.io/spain-election-forecast/es/ (inglés: [aquí](https://kristiyanpanda.github.io/spain-election-forecast/)).
+
 > **FINAL — encuestas hasta el 23 de noviembre de 2026, último día en que la ley permite publicarlas
 > antes de las elecciones del 29 de noviembre.** Todo lo que sigue depende de las encuestas publicadas
 > hasta el cierre de datos, el **23 de noviembre de 2026**, seis días antes de la votación. Es la última

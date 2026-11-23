@@ -4,6 +4,8 @@
 
 *Versión en español: [`spanish version/README.md`](spanish%20version/README.md).*
 
+**Interactive page:** https://kristiyanpanda.github.io/spain-election-forecast/ (Spanish: [/es/](https://kristiyanpanda.github.io/spain-election-forecast/es/)).
+
 > **FINAL — polls to 23 November 2026, the last day the law allows them to be published before the
 > 29 November election.** Everything below is conditional on polls published up to the data cut-off,
 > **23 November 2026**, six days before polling day. This is the last run before the vote; the 14
