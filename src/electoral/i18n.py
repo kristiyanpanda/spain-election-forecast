@@ -53,6 +53,20 @@ ES = {
     "cut-off": "cierre de datos",
     "Polls: Wikipedia (CC BY-SA 4.0) and CIS (cis.es); model: logit random walk + house effects.":
         "Encuestas: Wikipedia (CC BY-SA 4.0) y CIS (cis.es); modelo: paseo aleatorio logit + efectos de casa.",
+    # ------------------------------------------------------------------ parties since 1977 (electoral.history)
+    "Head of government": "Presidente del Gobierno",
+    "State-wide parties": "Partidos de ámbito estatal",
+    "Nationalist and regional parties": "Partidos nacionalistas y regionalistas",
+    "Spanish parties since 1977: vote share at every general election":
+        "Los partidos en España desde 1977: voto en cada elección general",
+    "Dots: general elections (share of the valid vote, Ministry of the Interior); hollow dot and bar: 29 Nov forecast, "
+    "median and 90 % interval; cross: last election of a party that is gone; dotted links: a party that went into "
+    "another.":
+        "Puntos: elecciones generales (% del voto válido, Ministerio del Interior); círculo hueco y barra: previsión "
+        "del 29-N, mediana e intervalo del 90 %; aspa: última elección de un partido desaparecido; enlaces "
+        "punteados: un partido que se integró en otro.",
+    "Gaps: HB called for abstention in 2000; Batasuna was banned in 2004 and 2008.":
+        "Huecos: HB pidió la abstención en 2000; Batasuna estaba ilegalizada en 2004 y 2008.",
     "Line: median of the latent share; bands: 50 % and 90 %; dots: polls; diamonds: 2023 result.":
         "Línea: mediana de la estimación; bandas: 50 % y 90 %; puntos: encuestas; rombos: resultado de 2023.",
     # ------------------------------------------------------------------ house effects

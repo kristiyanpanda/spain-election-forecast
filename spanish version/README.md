@@ -135,6 +135,31 @@ y nuestros microdatos reponderados), están en [`congreso_29N.md`](congreso_29N.
 [`seat_change_29n.png`](figures/seat_change_29n.png); el CIS a lo largo de la legislatura:
 [`cis_legislature.png`](figures/cis_legislature.png). Se reproduce con `electoral chamber`.*
 
+## Los partidos desde 1977
+
+El porcentaje del voto válido de cada partido en las dieciséis elecciones generales desde 1977
+(Ministerio del Interior), siguiendo a cada partido a través de sus cambios de nombre, con la previsión
+del 29-N al final. Se ven tres sistemas de partidos. **UCD** ganó las dos primeras elecciones (34-35 %)
+y se hundió al 6,8 % en 1982, el año del 48,1 % del PSOE. Desde entonces **PSOE y AP/PP** se turnaron:
+entre los dos llegaron al 83,8 % en 2008. La crisis de 2008 y el 15-M lo rompieron: en 2015 los dos
+bajaron al 50,7 %, con la entrada de **Podemos** (20,7 %) y **Cs** (13,9 %), y en abril de 2019 al
+45,4 %. **Vox** pasó del 0,2 % en 2016 al 15,1 % en noviembre de 2019. Cs perdió dos tercios de su voto
+aquel noviembre y no se presentó en 2023; el espacio a la izquierda del PSOE pasó de IU a Unidas
+Podemos, después a Sumar y ahora a Frente Amplio y Podemos por separado. La previsión devuelve a PP +
+PSOE a cerca del 59,6 % y deja a Vox en un máximo del 18,5 %. Entre los nacionalistas, CiU/Junts baja del 5 %
+(1986-1993) al 1,6 % de 2023, mientras ERC toca techo con el 3,9 % de abril de 2019.
+
+![Figura 6. Los partidos en España desde 1977](figures/party_history.png)
+***Figura 6.*** *Líneas: % del voto en cada elección general, siguiendo a cada partido a través de sus
+cambios de nombre (AP y PP, HB y EH Bildu, CiU y Junts); aspas: última elección de un partido
+desaparecido; enlaces punteados: un partido que se integró en otro; círculos huecos a la derecha:
+previsión del 29-N con su intervalo del 90 %. La franja de arriba indica el presidente del Gobierno;
+las verticales punteadas, las fechas clave. Las listas por debajo del 1 % que la previsión agrupa en
+«Otros» se añaden por sus siglas para que la línea no se corte (ERC en 1986-1989, el BNG sin escaño,
+Vox y UPyD en 2015-2016); HB pidió la abstención en 2000 y Batasuna estaba ilegalizada en 2004 y 2008.
+Datos: [`party_history.csv`](../data/processed/party_history.csv). Se reproduce con
+`electoral history`; la versión interactiva es la figura 4 de la página.*
+
 ## Métodos
 
 | componente | decisión | código |
@@ -232,7 +257,8 @@ data/party_map_*.yaml  genealogía de partidos y definición de bloques (se edit
 data/regional/         tablas regionales extraídas de PDF, con sus URL
 data/processed/        datos ordenados + DATA_DICTIONARY.md + DATA_QUALITY.md + cis_studies.csv + regional_polls.csv
 src/electoral/         mir, wiki_polls, cis, cis_microdata, regional, build_data, model, seats, backtest, forecast,
-                       plots, figures, i18n (inglés / español), pactometro, report, chamber
+                       plots, figures, i18n (inglés / español), pactometro, investitures, report, chamber,
+                       history (los partidos desde 1977)
 tests/                 D'Hondt (con la reproducción exacta de los escaños oficiales), lectores, CIS, capa regional,
                        modelo, papeletas del 29-N
 outputs/               media de encuestas, efectos de casa, simulaciones de escaños, backtest, diagnósticos

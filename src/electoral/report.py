@@ -111,6 +111,17 @@ TEXT = {
         "fig3": "Seats on {h_long} under the two party-supply scenarios",
         "fig3_cap": "Boxes: median, 50 % and 90 % intervals of 10,000 seat simulations. The horizontal line is the "
                     "176-seat majority.",
+        "h2_history": "The parties since 1977",
+        "fig4": "Vote share of every party at the general elections since 1977, and the {h_long} forecast",
+        "fig4_cap": "Dots: general elections, share of the valid vote (Ministry of the Interior). A line runs from a "
+                    "party's first election to its last, through its changes of name (AP and PP, HB and EH Bildu, CiU "
+                    "and Junts); a cross marks the last election of a party that is gone, and a dotted link a party "
+                    "that went into another (IU into Unidos Podemos, Unidas Podemos into Sumar). The hollow dots on "
+                    "the right are the {h} forecast with its 90 % interval. The band on top shows who governed; the "
+                    "numbers under the axis mark the dates in the key. Click a party in the legend to hide it; drag to "
+                    "zoom in, double-click to go back.",
+        "gov": "Head of government", "panel_state": "State-wide parties",
+        "panel_periph": "Nationalist and regional parties", "seats_w": "seats", "fc_w": "forecast",
         "h2_tables": "Summary tables", "h3_party": "Per party", "h3_prob": "Probabilities",
         "prob_note": "≥ 176: an absolute majority of seats. 2023 investiture bloc: PSOE, Sumar / Frente Amplio, Podemos, "
                      "ERC, EH Bildu, BNG, CC, Adelante Andalucía, PNV and Junts. Left + peripheral left: the same "
@@ -192,6 +203,17 @@ TEXT = {
         "fig3": "Escaños el {h_long} en los dos escenarios de oferta electoral",
         "fig3_cap": "Cajas: mediana e intervalos del 50 % y del 90 % de 10.000 simulaciones de escaños. La línea "
                     "horizontal es la mayoría absoluta de 176 escaños.",
+        "h2_history": "Los partidos desde 1977",
+        "fig4": "Voto de cada partido en las elecciones generales desde 1977 y previsión del {h_long}",
+        "fig4_cap": "Puntos: elecciones generales, % del voto válido (Ministerio del Interior). Cada línea va de la "
+                    "primera elección de un partido a la última, a través de sus cambios de nombre (AP y PP, HB y EH "
+                    "Bildu, CiU y Junts); un aspa marca la última elección de un partido desaparecido y un enlace "
+                    "punteado, un partido que se integró en otro (IU en Unidos Podemos, Unidas Podemos en Sumar). Los "
+                    "círculos huecos de la derecha son la previsión del 29-N con su intervalo del 90 %. La franja de "
+                    "arriba indica quién gobernaba; los números bajo el eje marcan las fechas de la clave. Pulsa un "
+                    "partido en la leyenda para ocultarlo; arrastra para ampliar y haz doble clic para volver.",
+        "gov": "Presidente del Gobierno", "panel_state": "Partidos de ámbito estatal",
+        "panel_periph": "Partidos nacionalistas y regionalistas", "seats_w": "escaños", "fc_w": "previsión",
         "h2_tables": "Tablas resumen", "h3_party": "Por partido", "h3_prob": "Probabilidades",
         "prob_note": "≥ 176: mayoría absoluta de escaños. Bloque de la investidura de 2023: PSOE, Sumar / Frente "
                      "Amplio, Podemos, ERC, EH Bildu, BNG, CC, Adelante Andalucía, PNV y Junts. Izquierda + izquierda "
@@ -363,6 +385,89 @@ def seats_figure(scenarios: list[tuple[str, pd.DataFrame]], T: dict) -> go.Figur
     return _layout(fig, height=400, margin={"l": 60, "r": 30, "t": 40, "b": 40})
 
 
+def history_figure(T: dict, h: str) -> tuple[go.Figure, str]:
+    """Parties since 1977 (``electoral.history``) as an interactive chart, and the HTML key of its dates."""
+    from electoral import history as H
+
+    lang = i18n.get_lang()
+    hist, fc = H.load(), H.forecast()
+    fdate = pd.Timestamp(H.FORECAST_DATE)
+    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[0.7, 0.3], vertical_spacing=0.07,
+                        subplot_titles=[T["panel_state"], T["panel_periph"]])
+    pct = lambda v: i18n.num(v)  # noqa: E731
+    lineages = [(lid, panel) for lid, _, _, panel in H.LINEAGES] + [("SALF", "state")]
+    for lid, panel in lineages:
+        row, c, nm = (1 if panel == "state" else 2), H.COLOR[lid], H.NAME[lid]
+        legend = nm + (f" ({H.ENDS[lid][lang]})" if lid in H.ENDS else "")
+        first = True
+        for g in (H.segments(hist, lid) if lid in set(hist.lineage) else []):
+            text = [f"<b>{nm}</b> · {d.year} ({r}): {pct(v)} % · {n} {T['seats_w']}"
+                    for d, r, v, n in zip(g.date, g.ran_as, g.share, g.seats)]
+            fig.add_trace(go.Scatter(x=g.date, y=g.share, mode="lines+markers", name=legend, legendgroup=lid,
+                                     showlegend=first, line={"color": c, "width": 2.4}, marker={"size": 6},
+                                     text=text, hovertemplate="%{text}<extra></extra>"), row=row, col=1)
+            first = False
+        h_ = hist[hist.lineage == lid].sort_values("date")
+        if lid in fc.index:
+            f = fc.loc[lid]
+            if len(h_):
+                fig.add_trace(go.Scatter(x=[h_.date.iloc[-1], fdate], y=[h_.share.iloc[-1], f.q50], mode="lines",
+                                         line={"color": c, "width": 1.6, "dash": "dash"}, legendgroup=lid,
+                                         showlegend=False, hoverinfo="skip"), row=row, col=1)
+            fig.add_trace(go.Scatter(
+                x=[fdate], y=[f.q50], mode="markers", name=legend, legendgroup=lid, showlegend=first,
+                marker={"size": 9, "color": "white", "line": {"color": c, "width": 2}},
+                error_y={"type": "data", "symmetric": False, "array": [f.q95 - f.q50], "arrayminus": [f.q50 - f.q05],
+                         "color": c, "thickness": 1.6, "width": 0},
+                text=[f"<b>{nm}</b> · {h} ({T['fc_w']}): {pct(f.q50)} % (90 %: {pct(f.q05)}-{pct(f.q95)}) · "
+                      f"{int(f.seats)} {T['seats_w']}"], hovertemplate="%{text}<extra></extra>"), row=row, col=1)
+        elif lid in H.ENDS and len(h_):
+            last = h_.iloc[-1]
+            fig.add_trace(go.Scatter(x=[last.date], y=[last.share], mode="markers", legendgroup=lid, showlegend=False,
+                                     marker={"symbol": "x", "size": 11, "color": c, "line": {"color": "white", "width": 1}},
+                                     hoverinfo="skip"), row=row, col=1)
+    for src, dst in H.LINKS:
+        a = hist[hist.lineage == src].sort_values("date").iloc[-1]
+        b = hist[hist.lineage == dst].sort_values("date").iloc[0]
+        fig.add_trace(go.Scatter(x=[a.date, b.date], y=[a.share, b.share], mode="lines", legendgroup=dst,
+                                 showlegend=False, line={"color": H.COLOR[dst], "width": 1.3, "dash": "dot"},
+                                 hoverinfo="skip"), row=1, col=1)
+    # heads of government: a band of coloured blocks over the top panel
+    starts = [pd.Timestamp(d) for _, _, d in H.GOVERNMENTS] + [fdate]
+    for (who, party, _), a, b in zip(H.GOVERNMENTS, starts[:-1], starts[1:]):
+        fig.add_shape(type="rect", xref="x", yref="paper", x0=a, x1=b, y0=1.06, y1=1.11,
+                      fillcolor=H.COLOR[party], opacity=0.85, line={"color": "white", "width": 1})
+        fig.add_annotation(x=a + (b - a) / 2, y=1.085, xref="x", yref="paper", showarrow=False, yanchor="middle",
+                           text=f"<b>{who if (b - a).days > 1000 else who[0] + '.'}</b>", font={"color": "white", "size": 12},
+                           hovertext=f"{who} ({party}), {i18n.date(a, short=True)}")
+    fig.add_annotation(x=0, y=1.115, xref="paper", yref="paper", showarrow=False, xanchor="left", yanchor="bottom",
+                       text=T["gov"], font={"size": 12, "color": "#5b6473"})
+    # key dates: a dotted line each, and its number under the bottom axis (names in the HTML key)
+    key = []
+    for n, (d, lab) in enumerate(H.EVENTS, 1):
+        d = pd.Timestamp(d)
+        fig.add_vline(x=d.timestamp() * 1000, line={"dash": "dot", "color": "#777", "width": 1})
+        fig.add_annotation(x=d, y=-0.03 - (0.045 if n > 1 and (d - pd.Timestamp(H.EVENTS[n - 2][0])).days < 300 else 0),
+                           xref="x", yref="paper", text=f"<b>{n}</b>", showarrow=False, yanchor="top",
+                           font={"size": 12, "color": "#1e2430"}, bgcolor="#ffffff", bordercolor="#777777",
+                           borderwidth=1, borderpad=1, hovertext=f"{n} · {lab[lang]} ({i18n.date(d, short=True)})")
+        key.append(f"<span><span class='n'>{n}</span>{lab[lang]} <span class='d'>· {i18n.date(d, short=True)}</span></span>")
+    fig.add_vline(x=fdate.timestamp() * 1000, line={"dash": "dash", "color": "black", "width": 1})
+    fig.update_xaxes(range=[pd.Timestamp("1976-09-01"), pd.Timestamp("2027-09-01")], showline=True,
+                     linecolor="#1e2430", dtick="M60", tickformat="%Y")
+    fig.update_xaxes(ticks="outside", ticklen=48, tickcolor="rgba(0,0,0,0)", row=2, col=1)
+    fig.update_yaxes(title_text=tr("% of valid vote"), rangemode="tozero")
+    fig.update_yaxes(range=[0, 51], row=1, col=1)
+    fig.update_yaxes(range=[0, 5.8], row=2, col=1)
+    for a in fig.layout.annotations[:2]:          # the panel titles, left-aligned
+        a.update(x=0, xanchor="left", font={"size": 13, "color": "#5b6473"})
+    fig = _layout(fig, height=760, hovermode="closest",
+                  legend={"orientation": "h", "x": 0, "xanchor": "left", "y": 1.155, "yanchor": "bottom",
+                          "bgcolor": "#f7f8fa", "bordercolor": "#c9ced6", "borderwidth": 1, "font": {"size": 12}},
+                  margin={"l": 60, "r": 30, "t": 205, "b": 70})
+    return fig, f"<div class='key'><span class='t'>{T['events']}</span>{''.join(key)}</div>"
+
+
 def build(cfg: dict) -> str:
     """The page in the current language (``i18n.set_lang``), as an HTML string."""
     lang = i18n.get_lang()
@@ -400,6 +505,7 @@ def build(cfg: dict) -> str:
     hemi = pactometro_fragment(cfg, lang)
     fig_trend = trend_figure(trend, polls, parties, cutoff, events, T)
     fig_seats = seats_figure([(scen["split"], seats_dl), (scen["merged"], seats_mg)], T)
+    fig_hist, key_hist = history_figure(T, h)
     key = "".join(f"<span><span class='n'>{e['n']}</span>{e['label']} <span class='d'>· "
                   f"{i18n.date(e['date'], short=True)}</span></span>" for e in events)
     key = f"<div class='key'><span class='t'>{T['events']}</span>{key}</div>"
@@ -485,6 +591,11 @@ def build(cfg: dict) -> str:
 {figure_title(3, 'fig3')}
 {_to_html(fig_seats)}
 <p class="small">{t['fig3_cap']}</p>
+<h2>{t['h2_history']}</h2>
+{figure_title(4, 'fig4')}
+{_to_html(fig_hist)}
+{key_hist}
+<p class="small">{t['fig4_cap']}</p>
 <h2>{t['h2_tables']}</h2>
 <h3>{t['h3_party']}</h3>
 {party_table}

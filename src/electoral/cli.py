@@ -70,6 +70,13 @@ def chamber(refresh: bool = False) -> None:
     main(refresh=refresh)
 
 
+@app.command("history")
+def history(refresh: bool = False) -> None:
+    """Vote share of every party at the general elections since 1977, with the 29N forecast."""
+    from electoral.history import main
+    main(refresh=refresh)
+
+
 @app.command("pactometro")
 def pactometro(lang: str = "es") -> None:
     """Prototype: interactive coalition builder in pactometro/index.html (lang: language it opens in)."""

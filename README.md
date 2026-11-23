@@ -128,6 +128,31 @@ Right: expected seats on 29 November. Seat-by-seat changes:
 [`seat_change_29n.png`](reports/figures/seat_change_29n.png); the CIS across the legislature:
 [`cis_legislature.png`](reports/figures/cis_legislature.png). Reproduce with `electoral chamber`.*
 
+## Spanish parties since 1977
+
+Every party's share of the valid vote at the sixteen general elections since 1977 (Ministry of the
+Interior), each party followed through its changes of name, with the 29 November forecast at the end.
+Three party systems show. **UCD** won the first two elections (34-35 %) and collapsed to 6.8 % in 1982,
+the year of the PSOE's 48.1 %. From then on **PSOE and AP/PP** took turns: together they reached 83.8 %
+in 2008. The 2008 crisis and the 15-M broke that: in 2015 the two fell to 50.7 %, with **Podemos**
+(20.7 %) and **Cs** (13.9 %) entering, and in April 2019 to 45.4 %. **Vox** went from 0.2 % in 2016
+to 15.1 % in November 2019. Cs lost two thirds of its vote that November and did not run in 2023; the
+space left of the PSOE went from IU to Unidas Podemos, then to Sumar and now to Frente Amplio and
+Podemos running apart. The forecast puts PP + PSOE back at about 59.6 % and Vox at a record 18.5 %. Among
+the nationalist parties, CiU/Junts slides from 5 % (1986-1993) to 1.6 % in 2023 while ERC peaks at
+3.9 % in April 2019.
+
+![Figure 6. Spanish parties since 1977](reports/figures/party_history.png)
+***Figure 6.*** *Lines: vote share at each general election, a party followed through its changes of
+name (AP and PP, HB and EH Bildu, CiU and Junts); crosses: the last election of a party that is gone;
+dotted links: a party that went into another; hollow dots on the right: the 29 November forecast with
+its 90 % interval. The band on top shows the head of government; the dotted verticals, key dates.
+Lists below 1 % that the forecast folds into "Others" are added by their acronym so that a line does
+not break (ERC in 1986-1989, the BNG without a seat, Vox and UPyD in 2015-2016); HB called for
+abstention in 2000 and Batasuna was banned in 2004 and 2008. Data:
+[`party_history.csv`](data/processed/party_history.csv). Reproduce with `electoral history`; the
+interactive version is figure 4 of the web page.*
+
 ## Methods
 
 | component | choice | code |
@@ -219,7 +244,8 @@ data/party_map_*.yaml  party lineage and bloc definitions (edit here to disagree
 data/regional/         regional tables extracted from PDFs, with their URLs
 data/processed/        tidy datasets + DATA_DICTIONARY.md + DATA_QUALITY.md + cis_studies.csv + regional_polls.csv
 src/electoral/         mir, wiki_polls, cis, cis_microdata, regional, build_data, model, seats, backtest, forecast,
-                       plots, figures, i18n (English / Spanish), pactometro, report, chamber
+                       plots, figures, i18n (English / Spanish), pactometro, investitures, report, chamber,
+                       history (the parties since 1977)
 tests/                 D'Hondt (incl. exact reproduction of official seats), parsers, CIS, regional layer, model, 29N ballots
 outputs/               poll average, house effects, seat draws, scorecard, diagnostics (traces gitignored)
 reports/figures/       all figures; docs/methods_note.md is the write-up; docs/index.html the interactive page
