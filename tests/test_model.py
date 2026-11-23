@@ -37,3 +37,14 @@ def test_prepare_grid_and_entrants():
     assert np.isnan(d.anchor[2]) and d.entry_week[2] == 6   # UP is an entrant, first polled week 6
     assert d.entry_week[0] == 0
     assert (d.n == 1000).all() and d.y.max() < 1
+
+
+def test_frente_amplio_continues_the_sumar_series():
+    from electoral import load_config
+
+    rule = load_config()["model"]["composites"]
+    polls = pd.DataFrame({"poll_id": ["a", "a", "b", "b"], "party": ["SUMAR", "PSOE", "FA", "PSOE"],
+                          "value": [6.5, 27.0, 7.1, 26.0], "pollster": "X",
+                          "fieldwork_end": pd.Timestamp("2026-10-20")})
+    out = apply_composites(polls, rule).set_index(["poll_id", "party"])["value"]
+    assert out["a", "SUMAR"] == 6.5 and out["b", "SUMAR"] == 7.1

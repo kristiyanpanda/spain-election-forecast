@@ -1,0 +1,72 @@
+# Maps row labels of the official CIS "Estimación de voto" tables (cis.es PDFs, 2016-2026) to the
+# canonical party ids of data/party_map_polls.yaml. A label matches a rule when it STARTS with the
+# rule's prefix after normalisation (lower-case, accents, spaces and dashes removed); the first
+# matching rule wins, so longer prefixes come first. Unmatched labels are an error at build time.
+#
+# Podemos-lineage rows are then resolved per study (electoral.cis.map_parties), to match the
+# Wikipedia feed (data/party_map_polls.yaml):
+#   from the Unidos Podemos pact (9 May 2016) until Sumar appears: PODEMOS, IU and CONFLUENCE
+#     (Podemos's regional allies on their own rows: En Comú Podem, Compromís-Podemos, En Marea,
+#     En Común-Unidas Podemos) are summed into UP; some tables (Sep 2019) print them apart;
+#   before the pact (Jan-Apr 2016): CONFLUENCE folds into PODEMOS, IU stays IU;
+#   once a SUMAR row exists (Apr 2023-): "Unidas Podemos" is Podemos alone -> PODEMOS.
+# En Marea is a confluence only until 2018; it ran alone in 2019 (-> OTHER).
+# Compromís alone: a confluence until 2018 (Compromís-Podemos), its own list in 2019, then counted
+# with Más País (their Nov 2019 joint list), as the Wikipedia feed does.
+# OTHER and BLANK rows are used for the sum check and then dropped, as in the Wikipedia feed.
+# Pre-election study 3584 (Oct 2026) lists the ballots as proclaimed: Frente Amplio with its joint
+# lists in Canarias (UPC) and Baleares (Ara Més-Front Ampli) -> FA; "Compromís: Front Valencià" -> FV;
+# "ERC-Podemos" (Podemos candidates on ERC's Catalan lists) -> ERC, as the Wikipedia feed does.
+rules:
+  - [PSOE, PSOE]
+  - [PP, PP]
+  - [VOX, VOX]
+  - [Unidos Podemos, UP]
+  - [Unidas Podemos, UP]
+  - [U. Podemos, UP]
+  - [Podemos, PODEMOS]
+  - [IU, IU]
+  - [Frente Amplio, FA]
+  - [Ara Més, FA]
+  - [UPC, FA]
+  - [Movimiento SUMAR, SUMAR]
+  - [SUMAR, SUMAR]
+  - [Ciudadanos, CS]
+  - [En Comú Podem, CONFLUENCE]
+  - [En Común-Unidas Podemos, CONFLUENCE]
+  - [Compromís-Podemos, CONFLUENCE]
+  - [En Marea, CONFLUENCE]
+  - ["Compromís: Front", FV]
+  - [Més Compromís, MASPAIS]       # Nov 2019: Más País-Compromís joint list
+  - [Más País, MASPAIS]            # incl. "Más País / Compromís" (2020-2022)
+  - [Compromís, COMPROMIS]
+  - [ERC, ERC]
+  - [JuntsxCat, JUNTS]
+  - [Junts, JUNTS]
+  - [JxCat, JUNTS]
+  - [PDeCAT, JUNTS]
+  - [CDC, JUNTS]
+  - [Convergència, JUNTS]
+  - [EAJ-PNV, PNV]
+  - [PNV, PNV]
+  - [EH Bildu, BILDU]
+  - [EH-Bildu, BILDU]
+  - [BNG, BNG]
+  - [CUP, CUP]
+  - [CCa, CC]
+  - [CC, CC]
+  - [UPN, UPN]
+  - [NA+, UPN]
+  - [Navarra Suma, UPN]
+  - [PRC, PRC]
+  - [Teruel Existe, TE]
+  - [Existe, TE]
+  - [PACMA, PACMA]
+  - [Se Acabó la Fiesta, SALF]
+  - [SALF, SALF]
+  - [Adelante Andalucía, AA]
+  - [Aliança Catalana, ALIANCA]
+  - [Geroa Bai, OTHER]
+  - [Nueva Canarias, OTHER]
+  - [Otros, OTHER]
+  - [En blanco, BLANK]

@@ -1,0 +1,24 @@
+event,members,probability,seats_q05,seats_q50,seats_q95,cutoff_date,scenario
+Right (PP+Vox+UPN+SALF) >= 176,PP+VOX+UPN+SALF,0.9028,171.0,192.0,213.0,2026-11-23,merged
+PP+Vox >= 176,PP+VOX,0.9009,171.0,192.0,212.0,2026-11-23,merged
+Left + peripheral left (PSOE+Sumar/FA+Podemos+ERC+Bildu+BNG+CC+Compromís+AA) >= 176,PSOE+SUMAR+PODEMOS+ERC+BILDU+BNG+CC+AA,0.0125,125.0,146.0,167.0,2026-11-23,merged
+2023 investiture bloc (above + PNV + Junts) >= 176,PSOE+SUMAR+PODEMOS+ERC+BILDU+BNG+CC+AA+PNV+JUNTS,0.0533,134.0,155.0,176.0,2026-11-23,merged
+State-wide left (PSOE+Sumar/FA+Podemos) >= 176,PSOE+SUMAR+PODEMOS,0.0003,103.0,124.0,145.0,2026-11-23,merged
+PP largest party,PP,0.7068,,,,2026-11-23,merged
+PP >= 176 alone,PP,0.0001,,,,2026-11-23,merged
+PSOE largest party,PSOE,0.293,,,,2026-11-23,merged
+PSOE >= 176 alone,PSOE,0.0,,,,2026-11-23,merged
+PP >= 150 seats,PP,0.0543,,,,2026-11-23,merged
+PP >= 160 seats,PP,0.0063,,,,2026-11-23,merged
+PP >= 176 seats,PP,0.0001,,,,2026-11-23,merged
+VOX >= 40 seats,VOX,0.9959,,,,2026-11-23,merged
+VOX >= 50 seats,VOX,0.9424,,,,2026-11-23,merged
+VOX >= 60 seats,VOX,0.6855,,,,2026-11-23,merged
+PSOE >= 100 seats,PSOE,0.8667,,,,2026-11-23,merged
+PSOE >= 110 seats,PSOE,0.6449,,,,2026-11-23,merged
+PSOE >= 121 seats,PSOE,0.3305,,,,2026-11-23,merged
+SUMAR >= 10 seats,SUMAR,0.3739,,,,2026-11-23,merged
+SUMAR >= 20 seats,SUMAR,0.0042,,,,2026-11-23,merged
+PODEMOS >= 1 seats,PODEMOS,0.0,,,,2026-11-23,merged
+PODEMOS >= 4 seats,PODEMOS,0.0,,,,2026-11-23,merged
+SALF >= 1 seats,SALF,0.0779,,,,2026-11-23,merged

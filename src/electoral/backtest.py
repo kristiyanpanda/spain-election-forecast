@@ -11,6 +11,11 @@ election's provincial baseline. Scores:
 * Brier score for two events: "PP largest party" and "right bloc >= 176";
 * the same for two baselines: the previous election result, and the plain mean of polls in the
   last 30 days before the cut-off (seats via deterministic proportional swing).
+
+The regional-poll layer enters only where regional surveys exist for the cycle: Catalonia in 2023
+(CEO waves finished before the observation cut-off, i.e. the March 2023 wave). Its error settings
+were calibrated on that same election (in-sample), so the 2023 seat scores flatter it; the row
+``model_without_regional`` shows the same fit without the layer.
 """
 
 from __future__ import annotations
@@ -78,7 +83,8 @@ def run_cycle(key: str, spec: dict, cfg: dict, polls: pd.DataFrame, nat: pd.Data
     anchor = {p: v for p, v in anchor.items() if not np.isnan(v) and v > 0}
 
     d = prepare(polls, key, parties, anchor, p_date, e_date, obs_cutoff=obs_cutoff,
-                breaks=spec.get("breaks") or None, composites=spec.get("composites") or None)
+                breaks=spec.get("breaks") or None, composites=spec.get("composites") or None,
+                families=cfg["model"].get("house_families"))
     idata = fit(d, seed=cfg["seed"], **cfg["backtest"]["sampling"])
     sd = state_draws(idata, d)                                    # election-week extrapolation
 
@@ -90,11 +96,29 @@ def run_cycle(key: str, spec: dict, cfg: dict, polls: pd.DataFrame, nat: pd.Data
     seat_df, share_df = simulate_seats(sd, shares0, blank0, seats0, prev_nat, cfg["backtest"]["n_sims"],
                                        noise_sd, cfg["seed"], spec.get("proxies") or {},
                                        absorb=spec.get("absorb") or {})
+    # regional-poll layer: only where regional surveys exist for the cycle (CEO, Catalonia 2023)
+    reg = spec.get("regional_ceo")
+    seat_plain = None
+    if reg:
+        from electoral.regional import ceo_observations
+
+        since = max(p_date, obs_cutoff - pd.DateOffset(months=cfg["regional"]["window_months"]))
+        obs = ceo_observations(cfg, ROOT, res, tot, since, obs_cutoff, prev, reg.get("recall_labels"))
+        if obs:
+            w = tot[tot.election == prev].set_index("prov")["votos_validos"]
+            seat_plain = seat_df
+            seat_df, _ = simulate_seats(sd, shares0, blank0, seats0, prev_nat, cfg["backtest"]["n_sims"],
+                                        noise_sd, cfg["seed"], spec.get("proxies") or {},
+                                        absorb=spec.get("absorb") or {}, weights=w / w.sum(),
+                                        regional=obs, regional_swing_sd=cfg["regional"]["swing_sd_pp"])
 
     act = nat[nat.election == el].set_index("party")
     actual_share, actual_seats = act["share_valid"], act["escanos"].astype(int)
     rows = []
     rows.append({"cycle": key, "method": "model", **score(share_df, seat_df, actual_share, actual_seats, parties)})
+    if seat_plain is not None:
+        rows.append({"cycle": key, "method": "model_without_regional",
+                     **score(share_df, seat_plain, actual_share, actual_seats, parties)})
 
     # baseline 1: previous election result carried forward (deterministic; no intervals)
     prev_share = pd.DataFrame([{p: anchor.get(p, 0.0) for p in parties}] * 2)
@@ -127,10 +151,13 @@ def run_cycle(key: str, spec: dict, cfg: dict, polls: pd.DataFrame, nat: pd.Data
         "seats_q05": [seat_df[p].quantile(0.05) if p in seat_df else np.nan for p in parties],
         "seats_q50": [seat_df[p].median() if p in seat_df else np.nan for p in parties],
         "seats_q95": [seat_df[p].quantile(0.95) if p in seat_df else np.nan for p in parties],
+        "seats_q50_without_regional": [(seat_plain if seat_plain is not None else seat_df)[p].median()
+                                       if p in seat_df else np.nan for p in parties],
         "seats_poll_avg": [avg_seats[p].iloc[0] if p in avg_seats else np.nan for p in parties],
         "seats_last_election": [prev_seats[p].iloc[0] if p in prev_seats else np.nan for p in parties],
     })
     meta = {"cycle": key, "election": el, "obs_cutoff": str(obs_cutoff.date()), "n_polls": int(len(d.polls)),
+            "regional_layer": bool(seat_plain is not None),
             "n_pollsters": len(d.pollsters), "noise_sd_log": noise_sd,
             "divergences": int(idata.sample_stats["diverging"].sum()) if "diverging" in idata.sample_stats else 0}
     return {"scores": rows, "meta": meta}, detail
@@ -169,6 +196,9 @@ def main(cycles: list[str] | None = None) -> pd.DataFrame:
     sc.to_csv(out / "backtest_scorecard.csv", index=False)
     pd.concat(details).to_csv(out / "backtest_details.csv", index=False)
     (out / "backtest_meta.json").write_text(json.dumps(metas, indent=2))
+    from electoral.figures import draw_backtest, each_language
+
+    each_language(draw_backtest, pd.concat(details), cfg)
     return sc
 
 

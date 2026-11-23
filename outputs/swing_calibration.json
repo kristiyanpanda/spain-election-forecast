@@ -8,7 +8,44 @@
   "n_sims": 10000,
   "proxies": {
     "PODEMOS": "SUMAR",
-    "SALF": null
+    "SALF": null,
+    "AA": [
+      "04",
+      "11",
+      "14",
+      "18",
+      "21",
+      "23",
+      "29",
+      "41"
+    ]
   },
-  "cutoff_date": "2026-09-18"
+  "absent": {
+    "PODEMOS": [
+      "08",
+      "17",
+      "25",
+      "43",
+      "03",
+      "12",
+      "46",
+      "35",
+      "38",
+      "07"
+    ]
+  },
+  "regional_part": {
+    "SUMAR": {
+      "provinces": [
+        "03",
+        "12",
+        "46"
+      ],
+      "fraction": 0.19427759740259742,
+      "sd_log": 0.1562762882359225,
+      "n_pollsters": 12
+    }
+  },
+  "scenario": "split",
+  "cutoff_date": "2026-11-23"
 }

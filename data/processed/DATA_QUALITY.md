@@ -1,6 +1,6 @@
 # Data quality report
 
-Generated 2026-09-18. Data cut-off: **2026-09-18**.
+Generated 2026-11-23. Data cut-off: **2026-11-23**.
 
 ## Official results (Ministerio del Interior)
 
@@ -43,45 +43,55 @@ Checks: **all passed**.
 | cycle    |   polls | first               | last                |   pollsters | missing_n   |
 |:---------|--------:|:--------------------|:--------------------|------------:|:------------|
 | e2016    |     150 | 2016-01-11 00:00:00 | 2016-06-26 00:00:00 |          27 | 14.0 %      |
-| e2019apr |     385 | 2016-07-01 00:00:00 | 2019-04-28 00:00:00 |          32 | 24.7 %      |
-| e2019nov |     159 | 2019-05-14 00:00:00 | 2019-11-10 00:00:00 |          26 | 23.9 %      |
-| e2023    |     906 | 2019-11-12 00:00:00 | 2023-07-22 00:00:00 |          39 | 17.3 %      |
-| next     |     493 | 2023-07-25 00:00:00 | 2026-09-11 00:00:00 |          26 | 8.7 %       |
+| e2019apr |     402 | 2016-07-01 00:00:00 | 2019-04-28 00:00:00 |          39 | 23.6 %      |
+| e2019nov |     162 | 2019-05-11 00:00:00 | 2019-11-10 00:00:00 |          29 | 23.5 %      |
+| e2023    |     933 | 2019-11-12 00:00:00 | 2023-07-22 00:00:00 |          41 | 16.8 %      |
+| next     |     737 | 2023-07-25 00:00:00 | 2026-11-22 00:00:00 |          45 | 6.6 %       |
 
-Latest poll before the cut-off: **2026-09-11** (InvyMark).
+Latest poll before the cut-off: **2026-11-22** (Data10).
 
 Top pollsters (all cycles):
 
 | pollster          |   polls |
 |:------------------|--------:|
-| EM-Analytics      |     429 |
-| InvyMark          |     143 |
-| Sigma Dos         |     135 |
-| NC Report         |     128 |
+| EM-Analytics      |     450 |
+| Sigma Dos         |     151 |
+| InvyMark          |     145 |
+| NC Report         |     134 |
+| SocioMétrica      |     115 |
 | Simple Lógica     |     110 |
-| GAD3              |     106 |
-| SocioMétrica      |     105 |
-| Celeste-Tel       |     102 |
-| CIS               |     102 |
+| GAD3              |     109 |
+| Celeste-Tel       |     104 |
+| CIS               |      99 |
+| 40dB              |      82 |
 | KeyData           |      78 |
-| 40dB              |      68 |
-| Metroscopia       |      67 |
-| DYM               |      65 |
-| GESOP             |      55 |
-| Hamalgama Métrica |      55 |
+| DYM               |      69 |
+| Metroscopia       |      68 |
+| IMOP              |      59 |
+| Hamalgama Métrica |      58 |
 
 Sum of published party shares per poll (should sit a few points below 100 because small parties and 'others' are omitted):
 
 |               |   count |   mean |   std |   min |   25% |   50% |   75% |   max |
 |:--------------|--------:|-------:|------:|------:|------:|------:|------:|------:|
-| sum_of_shares |    2093 |   93.1 |     8 |     0 |  89.2 |  95.6 |  97.1 |  99.5 |
+| sum_of_shares |    2384 |     93 |   8.5 |     0 |  89.2 |  95.5 |  97.1 |  99.5 |
 
-17 polls sum below 80 or above 101 (kept, flagged here; see `section`).
+23 polls sum below 80 or above 101 (kept, flagged here; see `section`).
 
 Notes from the build:
 
-* Dropped 1720 duplicated (poll, party) rows across pages.
-* Excluded 0 polls with fieldwork ending after the cut-off 2026-09-18.
+* Dropped 93 official CIS polls from the Wikipedia tables (official CIS is sourced from cis.es); CIS re-estimations by third parties kept as their own pollsters.
+* 73 CIS surveys feed more than one series (official, our microdata re-estimate, third-party re-estimates); their n is split across the series (median 3 series per survey).
+* Dropped 458 duplicated (poll, party) rows across pages.
+* Excluded 0 polls with fieldwork ending after the cut-off 2026-11-23.
+* Current cycle: 737 polls listed, 616 after keeping one release per overlapping fieldwork window of a pollster (trackers, cumulative panels); the file keeps them all, the aggregator drops the overlaps.
+* 60 polls give one figure for Frente Amplio + Compromís-Front Valencià (party `FAFV`); the others list `FA` and `FV` apart.
+* cis.es pages not found (no such study): barometro-de-julio-2016, barometro-de-agosto-2016, barometro-de-agosto-2017, barometro-de-agosto-2018, barometro-de-marzo-2019, barometro-de-abril-2019, barometro-de-agosto-2019, barometro-de-octubre-2019, barometro-de-diciembre-2019, barometro-de-agosto-2020, barometro-de-agosto-2021, barometro-de-agosto-2022, barometro-de-junio-2023, barometro-de-agosto-2023, barometro-de-septiembre-2023, barometro-de-agosto-2024, barometro-de-agosto-2025, barometro-de-agosto-2026, barometro-de-noviembre-2026.
+* 3245 (Macrobarómetro de abril 2019. Preelectoral elecciones al Parlamento Europeo, autonómicas y municipales 2019): official estimate not usable (Stream has ended unexpectedly)
+* 3500 (Encuesta flash situación política española): microdata lack PROBVOTO; no re-estimate
+* CEO: 2 face-to-face barometer waves in the window, 3902 respondents.
+* Galicia: 4188 CIS respondents pooled from 5 barometers.
+* Canarias: 2777 CIS respondents pooled from 5 barometers.
 
 ## Known limitations
 

@@ -1,4 +1,7 @@
-"""Phase F: project the latent shares to the legal deadline and re-run the seat simulation.
+"""Phase F: project the latent shares to election day and re-run the seat simulation.
+
+The horizon is ``election_date`` in config.yaml when set (29 Nov 2026 snap election), else the
+legal deadline. Seats are simulated once per party-supply scenario (``seats.scenarios``).
 
 Two candidate additions to the plain random-walk extrapolation are *tested on the backtest*
 before being used (config: none is used unless it helps):
@@ -11,8 +14,8 @@ before being used (config: none is used unless it helps):
    relative to each party's share (polling error scales with party size), is added on the logit
    scale so that the backtest intervals would have reached nominal coverage.
 
-Outputs: outputs/state_draws_deadline.parquet, forecast_deadline.json, seat_* files with tag
-"deadline", figure seats_deadline.png.
+Outputs: outputs/state_draws_<tag>.parquet, forecast_<tag>.json, vote_summary_<tag>.csv and seat_*
+files tagged <tag>_<scenario> (e.g. 29n_split, 29n_merged), figures seats_<tag>_<scenario>.png.
 """
 
 from __future__ import annotations
@@ -27,6 +30,12 @@ from scipy.stats import norm
 
 from electoral import ROOT, load_config
 from electoral.project_seats import main as seats_main
+
+
+def horizon(cfg: dict) -> tuple[pd.Timestamp, float]:
+    """Election day (or the legal deadline) and the weeks between the cut-off and it."""
+    h = pd.Timestamp(cfg.get("election_date") or cfg["legal_deadline"])
+    return h, (h - pd.Timestamp(cfg["cutoff_date"])).days / 7
 
 
 def test_mean_reversion(details: pd.DataFrame, weights=(0.1, 0.2, 0.3)) -> dict:
@@ -76,7 +85,7 @@ def test_error_inflation(details: pd.DataFrame, parties_min_share: float = 3.0) 
             "rmse_relative": float(np.sqrt(np.mean(r_rel ** 2)))}
 
 
-def main(tag: str = "deadline") -> dict:
+def main(tag: str = "29n") -> dict:
     cfg = load_config()
     out = ROOT / cfg["paths"]["outputs"]
     rng = np.random.default_rng(cfg["seed"])
@@ -85,7 +94,7 @@ def main(tag: str = "deadline") -> dict:
     pi_T = post["pi"].isel(week=-1).transpose("sample", "party").values          # (S, P)
     sigma = post["sigma_rw"].transpose("sample", "party").values                 # (S, P)
     parties = list(post["party"].values)
-    weeks_ahead = int((pd.Timestamp(cfg["legal_deadline"]) - pd.Timestamp(cfg["cutoff_date"])).days // 7)
+    h_date, weeks_ahead = horizon(cfg)
 
     details = pd.read_csv(out / "backtest_details.csv")
     rev = test_mean_reversion(details)
@@ -108,39 +117,39 @@ def main(tag: str = "deadline") -> dict:
     draws = pd.DataFrame(shares, columns=parties)
     draws.to_parquet(out / f"state_draws_{tag}.parquet", index=False)
 
-    seat_df, q, probs = seats_main(n_sims=cfg["backtest"]["n_sims"], tag=tag,
-                                   state_file=str(out / f"state_draws_{tag}.parquet"), write=False)
-    seat_df.to_parquet(out / f"seat_draws_{tag}.parquet", index=False)
-    q.to_csv(out / f"seats_summary_{tag}.csv")
-    probs.to_csv(out / f"seat_probabilities_{tag}.csv", index=False)
     vote_q = draws.quantile([0.05, 0.5, 0.95]).T
     vote_q.columns = ["q05", "q50", "q95"]
+    vote_q["cutoff_date"] = cfg["cutoff_date"]
     vote_q.to_csv(out / f"vote_summary_{tag}.csv")
-    meta = {"tag": tag, "cutoff_date": cfg["cutoff_date"], "horizon": cfg["legal_deadline"],
-            "weeks_ahead": weeks_ahead, "mean_reversion": rev, "error_inflation": infl}
+    meta = {"tag": tag, "cutoff_date": cfg["cutoff_date"], "horizon": str(h_date.date()),
+            "weeks_ahead": round(weeks_ahead, 2), "scenarios": list(cfg["seats"]["scenarios"]),
+            "mean_reversion": rev, "error_inflation": infl}
     (out / f"forecast_{tag}.json").write_text(json.dumps(meta, indent=2))
-    from electoral.plots import plot_bloc_majority, plot_seat_distributions
-    from electoral.project_seats import blocs_from_map
-    figs = ROOT / cfg["paths"]["figures"]
-    plot_seat_distributions(seat_df, ["PP", "PSOE", "VOX", "SUMAR", "PODEMOS", "SALF"],
-                            figs / f"seats_{tag}.png", cfg["cutoff_date"])
-    blocs = blocs_from_map()
-    plot_bloc_majority(seat_df, {k: v for k, v in blocs.items() if k in
-                       ["Right (PP+Vox+UPN+SALF)", "2023 investiture bloc (above + PNV + Junts)"]},
-                       figs / f"bloc_majority_{tag}.png", cfg["cutoff_date"])
+    from electoral.figures import draw_seats, each_language
+
+    for scenario in cfg["seats"]["scenarios"]:
+        st = f"{tag}_{scenario}"
+        seat_df, q, probs = seats_main(n_sims=cfg["backtest"]["n_sims"], tag=st, write=False,
+                                       state_file=str(out / f"state_draws_{tag}.parquet"), scenario=scenario)
+        seat_df.to_parquet(out / f"seat_draws_{st}.parquet", index=False)
+        q.to_csv(out / f"seats_summary_{st}.csv")
+        probs.to_csv(out / f"seat_probabilities_{st}.csv", index=False)
+        each_language(draw_seats, seat_df, st, cfg, hemicycle=scenario)
+        print(scenario)
+        print(q.round(1).to_string())
+        print(probs.round(3).to_string())
     print(json.dumps(meta, indent=2))
-    print(q.round(1).to_string())
-    print(probs.round(3).to_string())
     decompose_uncertainty(tag)
     return meta
 
 
 
-def decompose_uncertainty(tag: str = "deadline") -> pd.DataFrame:
+def decompose_uncertainty(tag: str = "29n", scenario: str = "split") -> pd.DataFrame:
     """Seat sd per party under nested sources of uncertainty (answers 'what drives it?').
 
     variants: nowcast (posterior at cut-off, no provincial noise) -> + provincial swing noise ->
-    + 47 weeks of random-walk drift -> + election-day error. Written to outputs/uncertainty_decomposition.csv.
+    + random-walk drift to the horizon -> + election-day error, under one party-supply scenario.
+    Written to outputs/uncertainty_decomposition.csv.
     """
     cfg = load_config()
     out = ROOT / cfg["paths"]["outputs"]
@@ -150,7 +159,7 @@ def decompose_uncertainty(tag: str = "deadline") -> pd.DataFrame:
     pi_T = post["pi"].isel(week=-1).transpose("sample", "party").values
     sigma = post["sigma_rw"].transpose("sample", "party").values
     parties = list(post["party"].values)
-    W = int((pd.Timestamp(cfg["legal_deadline"]) - pd.Timestamp(cfg["cutoff_date"])).days // 7)
+    _, W = horizon(cfg)
     infl = test_error_inflation(pd.read_csv(out / "backtest_details.csv"))
     theta = logit(np.clip(pi_T, 1e-5, 1 - 1e-5))
     z1, z2 = rng.standard_normal(theta.shape), rng.standard_normal(theta.shape)
@@ -158,24 +167,32 @@ def decompose_uncertainty(tag: str = "deadline") -> pd.DataFrame:
     p = expit(drift)
     full = drift + z2 * infl["extra_sd_relative"] / (1 - p)
     variants = {"nowcast_no_swing_noise": (pi_T, False), "nowcast": (pi_T, True),
-                "+drift_to_deadline": (expit(drift), True), "+election_day_error": (expit(full), True)}
+                "+drift_to_horizon": (expit(drift), True), "+election_day_error": (expit(full), True)}
     from electoral.seats import calibrate_swing_noise, province_baseline, simulate_seats
-    from electoral.project_seats import PROXIES
+    from electoral.project_seats import (absent, add_fixed_shares, province_weights, proxies,
+                                         regional_observations, regional_parts, scenario_merges)
     proc = ROOT / cfg["paths"]["processed"]
     res, tot, nat = (pd.read_parquet(proc / f) for f in ("results_province.parquet", "province_totals.parquet", "results_national.parquet"))
     shares0, blank0, seats0 = province_baseline(res, tot, "202307")
     national0 = nat[nat.election == "202307"].set_index("party")["share_valid"]
     noise_sd = json.loads((out / "swing_calibration.json").read_text())["noise_sd_log"]
     rows = []
+    polls = pd.read_parquet(proc / "polls_long.parquet")
+    parts = regional_parts(cfg, polls)
     for name, (sh, noise) in variants.items():
-        draws = pd.DataFrame(sh, columns=parties)
+        draws = add_fixed_shares(pd.DataFrame(sh, columns=parties), cfg, polls)
         seat_df, _ = simulate_seats(draws, shares0, blank0, seats0, national0, 4000, noise_sd, cfg["seed"],
-                                    PROXIES, noise=noise)
+                                    proxies(cfg), noise=noise, merges=scenario_merges(cfg, scenario),
+                                    weights=province_weights(tot, "202307"),
+                                    regional=regional_observations(cfg),
+                                    regional_swing_sd=cfg["regional"]["swing_sd_pp"], absent=absent(cfg),
+                                    regional_part=parts)
         right = seat_df[["PP", "VOX", "UPN", "SALF"]].sum(axis=1)
         row = {"variant": name, **{p: float(seat_df[p].std()) for p in ["PP", "PSOE", "VOX", "SUMAR", "PODEMOS", "JUNTS", "ERC"]},
                "right_bloc_sd": float(right.std()), "p_right_majority": float((right >= 176).mean())}
         rows.append(row)
     df = pd.DataFrame(rows).round(3)
+    df["scenario"], df["cutoff_date"] = scenario, cfg["cutoff_date"]
     df.to_csv(out / "uncertainty_decomposition.csv", index=False)
     print(df.to_string())
     return df

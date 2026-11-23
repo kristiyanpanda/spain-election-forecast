@@ -1,0 +1,13 @@
+region,provinces,party,share,n,tau_pp,sd_pp,source,fieldwork_start,fieldwork_end,method,cutoff_date
+Catalonia,08 17 25 43,ERC,17.73,3902,5.3,5.34,"CEO BOP (Juny 26 - 1167, Set 26 - 1169)",2026-05-25 00:00:00,2026-10-05 00:00:00,"Congress vote, 2023 recall",2026-11-23
+Catalonia,08 17 25 43,JUNTS,9.54,3902,5.3,5.32,"CEO BOP (Juny 26 - 1167, Set 26 - 1169)",2026-05-25 00:00:00,2026-10-05 00:00:00,"Congress vote, 2023 recall",2026-11-23
+Catalonia,08 17 25 43,PSOE,27.55,3902,5.3,5.35,"CEO BOP (Juny 26 - 1167, Set 26 - 1169)",2026-05-25 00:00:00,2026-10-05 00:00:00,"Congress vote, 2023 recall",2026-11-23
+Catalonia,08 17 25 43,SUMAR,6.54,3902,5.3,5.31,"CEO BOP (Juny 26 - 1167, Set 26 - 1169)",2026-05-25 00:00:00,2026-10-05 00:00:00,"Congress vote, 2023 recall",2026-11-23
+Araba/Álava,01,PNV,17.72,730,6.0,6.16,Sociómetro Vasco SV88,2026-03-23,2026-03-26,Basque Parliament estimate / 2024 result x 2023 general share,2026-11-23
+Araba/Álava,01,BILDU,19.02,730,6.0,6.17,Sociómetro Vasco SV88,2026-03-23,2026-03-26,Basque Parliament estimate / 2024 result x 2023 general share,2026-11-23
+Gipuzkoa,20,PNV,22.66,985,6.0,6.15,Sociómetro Vasco SV88,2026-03-23,2026-03-26,Basque Parliament estimate / 2024 result x 2023 general share,2026-11-23
+Gipuzkoa,20,BILDU,30.93,985,6.0,6.18,Sociómetro Vasco SV88,2026-03-23,2026-03-26,Basque Parliament estimate / 2024 result x 2023 general share,2026-11-23
+Bizkaia,48,PNV,26.65,1315,6.0,6.12,Sociómetro Vasco SV88,2026-03-23,2026-03-26,Basque Parliament estimate / 2024 result x 2023 general share,2026-11-23
+Bizkaia,48,BILDU,20.5,1315,6.0,6.1,Sociómetro Vasco SV88,2026-03-23,2026-03-26,Basque Parliament estimate / 2024 result x 2023 general share,2026-11-23
+Galicia,15 27 32 36,BNG,12.17,4188,5.3,5.32,"CIS microdata, 5 barometers",2026-06-01 00:00:00,2026-10-30 00:00:00,"Congress vote, regional 2023 recall",2026-11-23
+Canarias,35 38,CC,5.39,2777,5.3,5.32,"CIS microdata, 5 barometers",2026-06-01 00:00:00,2026-10-30 00:00:00,"Congress vote, regional 2023 recall",2026-11-23

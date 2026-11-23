@@ -5,18 +5,106 @@ author:                          # shown on docs/index.html; edit freely
   name: "Kristiyan Pandas"
   github: "https://github.com/kristiyanpanda"
 
-cutoff_date: "2026-09-18"        # polls published on or before this date are used
+cutoff_date: "2026-11-23"        # polls published on or before this date are used
 last_election: "2023-07-23"
 legal_deadline: "2027-08-15"     # term expires 2027-07-23; election on day 54 after convocation
+election_date: "2026-11-29"      # snap election (RD 806/2026, BOE 6 Oct 2026): the forecast horizon
+provisional_label: "FINAL — polls to 23 Nov 2026, the last day polls may be published before the 29 Nov election"
+provisional_label_es: "FINAL — encuestas hasta el 23-11-2026, último día en que pueden publicarse antes del 29-N"
+# marked on the trend charts, numbered in date order. en / es: the name in the key of the interactive
+# page; short_en / short_es: the one word written on the static chart
+events:
+  "2026-07-30": {en: "Ceuta border crisis", es: "Crisis fronteriza de Ceuta", short_en: "Ceuta", short_es: "Ceuta"}
+  "2026-10-02": {en: "Decrees rejected", es: "Decretos rechazados", short_en: "Decrees", short_es: "Decretos"}
+  "2026-10-05": {en: "Dissolution", es: "Disolución", short_en: "Dissolution", short_es: "Disolución"}
+  "2026-10-17": {en: "Coalitions closed, Colau", es: "Cierre de coaliciones, Colau", short_en: "Coalitions", short_es: "Coaliciones"}
+  "2026-10-28": {en: "Urda rail crash", es: "Accidente ferroviario de Urda", short_en: "Urda", short_es: "Urda"}
+  "2026-11-03": {en: "Lists proclaimed", es: "Candidaturas proclamadas", short_en: "Lists", short_es: "Listas"}
+  "2026-11-13": {en: "Campaign starts", es: "Inicio de la campaña", short_en: "Campaign", short_es: "Campaña"}
+  "2026-11-19": {en: "Sánchez-Feijóo debate", es: "Debate Sánchez-Feijóo", short_en: "Debate", short_es: "Debate"}
 seed: 20260918
 
 model:
   # parties tracked by the aggregator in the current cycle; everything else is "other"
+  # SUMAR is the Sumar -> Frente Amplio lineage (FA from 17 Oct 2026; see composites)
   parties: [PP, PSOE, VOX, SUMAR, PODEMOS, SALF, ERC, JUNTS, BILDU, PNV, BNG, CC]
-  # one-off level shifts allowed in the latent series (party: date)
+  # polls that list Frente Amplio feed the SUMAR series; earlier polls list Sumar itself. Since
+  # October 2026 the tables give Frente Amplio (FA, with its joint lists in Canarias and Baleares)
+  # and Compromís-Front Valencià (FV) apart, or one figure for both (FAFV): the series is their sum
+  composites: {SUMAR: {sum: [FA, FV, FAFV], fallback: [SUMAR], fallback_min: 1}}
+  # one-off level shifts allowed in the latent series (party: date or list of dates)
   breaks:
-    SUMAR: "2023-12-08"      # Podemos leaves the Sumar group; first poll listing them apart
+    SUMAR:
+      - "2023-12-08"         # Podemos leaves the Sumar group; first poll listing them apart
+      - "2026-10-11"         # polls switch to the ballots as registered (week of the first such poll):
+    PODEMOS: "2026-10-11"    #   Podemos is measured only where it has a list (not Catalonia, Valencia,
+    ERC: "2026-10-11"        #   Canarias, Baleares); FA and ERC absorb its voters on their joint lists
+  # House effects are centred on the average pollster, one vote each. Series built from the same
+  # raw data count as one pollster in that average (name: regular expression on the pollster id):
+  # the official CIS estimate, our microdata re-estimate and the third-party re-estimates of CIS data
+  house_families:
+    CIS: "^CIS"
   sampling: {draws: 1000, tune: 1000, chains: 4, target_accept: 0.9}
+
+# Party supply on 29 Nov 2026 (lists proclaimed in the BOE of 3 Nov 2026). Geography borrowed by
+# parties without a 2023 provincial footprint: a party id, null (uniform) or a list of provinces
+# (uniform over them).
+seats:
+  proxies:
+    PODEMOS: SUMAR                                   # Podemos ran inside Sumar in 2023
+    SALF: null
+    AA: ["04", "11", "14", "18", "21", "23", "29", "41"]   # Adelante Andalucía: Andalusia only
+  # Provinces where a tracked party has no ballot. Since mid-October pollsters ask about the lists
+  # as registered, so Podemos's polled share is its vote where it runs alone: it has no list in
+  # Catalonia (its candidates sit on ERC's lists; the CIS codes "ERC-Podemos"), the Valencian
+  # provinces (inside Compromís-Front Valencià), Canarias (Unidad del Pueblo Canario) or Baleares
+  # (inside Ara Més-Front Ampli since 26 Oct). Those voters are already in the ERC and FA figures.
+  absent:
+    PODEMOS: ["08", "17", "25", "43", "03", "12", "46", "35", "38", "07"]
+  # The Frente Amplio space is FA + Compromís-Front Valencià. Polls that list both apart say how
+  # much of it is the Valencian list (19 % in early Nov; Sumar's 2023 geography alone implies 13 %):
+  # that fraction of the SUMAR share goes to the three Valencian provinces, the rest elsewhere.
+  regional_part:
+    SUMAR: {part: FV, rest: FA, provinces: ["03", "12", "46"], days: 30, min_pollsters: 3}
+  # Parties too thinly polled for the aggregator, entered in the seat model at their recent poll
+  # median with log-normal noise. Adelante Andalucía: in the aggregator its latent share was not
+  # identified on 17 Oct (R-hat 4, 90 % up to 5 % nationally); it now has its own column in the tables.
+  fixed_shares:
+    AA: {days: 30, sd_log: 0.3}
+  # Joint lists applied province by province after the swing (electoral.seats.apply_merges).
+  scenarios:
+    split:      # BASE CASE: Frente Amplio and Podemos run apart except on the joint lists above
+      label: "Split left (base case)"
+      merges:
+        - {provinces: ["31"], party: UPN, into: {PP: 1.0}}               # PP+UPN coalition in Navarra
+    merged:     # SENSITIVITY: one Frente Amplio + Podemos list in every province
+      label: "Merged left (sensitivity)"
+      merges:
+        - {provinces: ["31"], party: UPN, into: {PP: 1.0}}
+        # 2016 precedent: Unidos Podemos kept about 0.83 of Podemos + IU's separate support;
+        # the efficiency multiplies the joint list's total (FA + Podemos)
+        - {provinces: all, party: PODEMOS, into: {SUMAR: 1.0}, efficiency: {mean: 0.83, sd: 0.05}}
+
+# Regional-poll layer (electoral.regional; dossier §2.2): regional estimates of a party's general-
+# election share pull the proportional-swing provincial shares toward them in the seat model.
+regional:
+  enabled: true
+  window_months: 6                 # regional surveys with fieldwork in the 6 months before the cut-off
+  min_party_respondents: 30        # fewer respondents naming the party -> no observation (keeps the national layer)
+  # Errors in points, calibrated on the only regional check available (regional.check_2023:
+  # Catalonia, July 2023, ERC/Junts/PSC/Comuns; outputs/regional_check_2023.csv). Four data points.
+  tau_pp:                          # survey error beyond sampling
+    direct: 5.3                    # CEO RMSE in 2023 (Feb-Jun waves); also used for CIS subsamples
+    cross_election: 6.0            # Sociómetro (Basque Parliament question): no check, set above direct
+  swing_sd_pp: 7.7                 # error of national polls + proportional swing at regional level (2023 RMSE)
+  ceo:
+    parties: [ERC, JUNTS, PSOE, SUMAR]
+    alianca_to: {JUNTS: 0.23, VOX: 0.22}   # Aliança Catalana is not running; the rest abstain
+  sociometro_parties: [PNV, BILDU]
+  sociometro_max_age_months: 9     # published two to three times a year; the latest wave with a Parliament estimate
+  cis_subsamples:
+    Galicia: {ccaa_label: "Galicia", provinces: ["15", "27", "32", "36"], parties: [BNG]}
+    Canarias: {ccaa_label: "Canarias", provinces: ["35", "38"], parties: [CC]}
 
 backtest:
   lead_days: 30            # observation cut-off = election day - lead_days
@@ -57,12 +145,16 @@ backtest:
       anchor_sum: {SUMAR: [UP, MASPAIS, COMPROMIS]}      # Sumar absorbed UP, Más País and Compromís
       composites: {SUMAR: {sum: [SUMAR, PODEMOS], fallback: [UP, MASPAIS], fallback_min: 1}}
       absorb: {SUMAR: [UP, MASPAIS, COMPROMIS]}
+      # regional layer: CEO waves before the cut-off (March 2023); recall is of Nov 2019
+      regional_ceo: {recall_labels: {"Sumar - En Comú Podem": UP, "C's": CS, "Ciutadans/Ciudadanos": CS}}
       proxies: {}
       breaks: {}
 
 paths:
   raw_mir: data/raw/mir
   raw_polls: data/raw/polls
+  raw_cis: data/raw/cis
+  raw_ceo: data/raw/ceo
   processed: data/processed
   outputs: outputs
   figures: reports/figures
@@ -77,10 +169,44 @@ mir:
 wikipedia:
   # English Wikipedia, CC BY-SA 4.0. Fetched as wikitext via action=raw.
   pages:
-    next: "Opinion_polling_for_the_next_Spanish_general_election"
+    next: "Opinion_polling_for_the_2026_Spanish_general_election"
+    next_2023_2024: "Nationwide_opinion_polling_for_the_2026_Spanish_general_election_(2023–2024)"   # 2023-24 tables moved to this sub-page in Nov 2026
     e2023: "Opinion_polling_for_the_2023_Spanish_general_election"
     e2023_2022: "Nationwide_opinion_polling_for_the_2023_Spanish_general_election_(2022)"
     e2023_2019_2021: "Nationwide_opinion_polling_for_the_2023_Spanish_general_election_(2019–2021)"
     e2019nov: "Opinion_polling_for_the_November_2019_Spanish_general_election"
     e2019apr: "Opinion_polling_for_the_April_2019_Spanish_general_election"
     e2016: "Opinion_polling_for_the_2016_Spanish_general_election"
+
+cis:
+  # Centro de Investigaciones Sociológicas, cis.es, CC BY 4.0. Official estimates for all
+  # cycles; our microdata re-estimate for the current cycle only (not backtested).
+  first_month: "2016-01"           # barometers barometro-de-<mes>-<año> from here to the cut-off
+  # other studies carrying a general-election estimate, found in the cis.es catalogue (17 Oct 2026)
+  extra_studies:
+    - preelectoral-elecciones-generales-2016
+    - macrobarometro-de-marzo-2019.-preelectoral-elecciones-generales-2019
+    - macrobarometro-de-abril-2019.-preelectoral-elecciones-al-parlamento-europeo-autonomicas-y-municipales-2019
+    - macrobarometro-de-octubre-2019.-preelectoral-elecciones-generales-2019
+    - barometro-de-diciembre-2019.-postelectoral-elecciones-generales-2019
+    - macroencuesta-sobre-tendencias-en-voto-municipal.-octubre-2022
+    - barometro-de-junio-2023.-postelectoral-elecciones-municipales-y-autonomicas-2023
+    - preelectoral-elecciones-generales-2023
+    - encuesta-flash-elecciones-generales-2023
+    - barometro-de-septiembre-2023.-postelectoral-elecciones-generales-2023
+    - encuesta-flash-situacion-politica-espanola
+  # studies whose page (and microdata) are not on cis.es yet but whose estimate PDF is: read from
+  # the PDF, fieldwork and sample from the press note. Move to extra_studies once the page exists.
+  direct_studies:
+    - study: "3584"
+      title: "Preelectoral elecciones generales 2026"
+      estimate_url: "https://www.cis.es/documents/d/guest/3584_estimacion-pdf"
+      microdata_url: "https://www.cis.es/documents/d/guest/md3584-zip"   # online by 23 Nov 2026
+      published: "2026-11-12"
+      fieldwork: ["2026-10-07", "2026-10-30"]
+      sample_size: 45074
+  microdata_from: "2023-07-24"     # re-weighted series starts the day after the 2023 election
+  likely_voter_min: 9              # PROBVOTO (0-10) threshold for likely voters
+  # FT3273 (Barómetro de febrero 2020) prints "Del 1 al 11 de enero": days kept, month corrected.
+  fieldwork_overrides:
+    "3273": ["2020-02-01", "2020-02-11"]
