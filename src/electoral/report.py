@@ -1,6 +1,6 @@
 """Phase G: one self-contained interactive HTML page (Plotly), in English and Spanish.
 
-English: ``docs/index.html``; Spanish: ``spanish version/index.html``. Sections: headline numbers,
+English: ``docs/index.html``; Spanish: ``docs/es/index.html`` (copy in ``spanish version/``). Sections: headline numbers,
 the Congress chart with its coalition builder (figure 1, ``electoral.pactometro``), latent vote-share trends with 90 % bands, raw polls and numbered
 events (figure 2), seat ranges on election day under the base (split left) and sensitivity (merged
 left) party supply (figure 3), probability tables, the backtest scorecard, and an author/method
@@ -90,7 +90,7 @@ TEXT = {
         "h1": "Forecasting the {election} Spanish general election",
         "subtitle": "A Bayesian poll-aggregation and seat-projection model with a four-election backtest",
         "byline": "By <b>{author}</b>{links} · data cut-off {cutoff} · last poll {last_poll} · "
-                  "<a href='../spanish%20version/index.html'>Versión en español</a>",
+                  "<a href='es/index.html'>Versión en español</a>",
         "note": "<b>{provisional}.</b> Everything on this page is conditional on the {n_polls} polls from {n_pollsters} "
                 "pollsters published up to <b>{cutoff}</b>, {ahead} before polling day. These are model "
                 "probabilities, not predictions of the result; the backtest below shows how wrong the same method has "
@@ -170,7 +170,7 @@ TEXT = {
         "subtitle": "Modelo bayesiano de agregación de encuestas y proyección de escaños, con backtest sobre cuatro "
                     "elecciones",
         "byline": "Por <b>{author}</b>{links} · datos hasta el {cutoff} · última encuesta: {last_poll} · "
-                  "<a href='../docs/index.html'>English version</a>",
+                  "<a href='../index.html'>English version</a>",
         "note": "<b>{provisional}.</b> Todo lo que aparece en esta página depende de las {n_polls} encuestas de "
                 "{n_pollsters} encuestadoras publicadas hasta el <b>{cutoff}</b>, {ahead} antes de la "
                 "votación. Son probabilidades del modelo, no predicciones del resultado; el backtest de más abajo "
@@ -508,10 +508,18 @@ def main(lang: str = "all") -> None:
             html = build(cfg)
         finally:
             i18n.set_lang("en")
-        path = ROOT / "docs" / "index.html" if code == "en" else ROOT / i18n.ES_DIR / "index.html"
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(html, encoding="utf-8")
-        print(f"wrote {path} ({len(html) // 1024} KB)")
+        # docs/ is served by GitHub Pages: English at the root, Spanish under es/
+        targets = [(ROOT / "docs" / "index.html", html)] if code == "en" else [
+            (ROOT / "docs" / "es" / "index.html", html),
+            # copy next to the Spanish README; its language link goes back to docs/
+            (ROOT / i18n.ES_DIR / "index.html",
+             html.replace("<a href='../index.html'>English version</a>",
+                          "<a href='../docs/index.html'>English version</a>")),
+        ]
+        for path, text in targets:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8")
+            print(f"wrote {path} ({len(text) // 1024} KB)")
 
 
 if __name__ == "__main__":
