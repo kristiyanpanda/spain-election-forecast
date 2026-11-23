@@ -77,6 +77,32 @@ body { font-family: Calibri, Carlito, 'Segoe UI', 'Helvetica Neue', Arial, sans-
 .pm .pm-vote button { min-width: 44px; padding: 5px 8px; }
 .pm .pm-vote button[aria-pressed="true"][data-v="a"] { background: var(--muted); }
 .pm .pm-vote button[aria-pressed="true"][data-v="n"] { background: #fff; color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
+.pm .pm-fact { border-left: 3px solid var(--accent); background: var(--band); padding: 8px 12px; margin: 0 0 14px;
+               font-size: 14px; max-width: 120ch; }
+.pm .pm-moment button { font-size: 13.5px; }
+.pm .pm-momentbox { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.pm .pm-dd { position: relative; display: inline-block; }
+.pm .pm-ddbtn { font: inherit; font-size: 13.5px; border: 1px solid var(--line); border-radius: 8px; background: #fff;
+                color: var(--ink); padding: 6px 12px; cursor: pointer; }
+.pm .pm-ddbtn:hover { border-color: var(--ink); }
+.pm .pm-ddbtn[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+.pm .pm-ddbtn .car { display: inline-block; margin-left: 6px; font-size: 11px; transition: transform .15s; }
+.pm .pm-ddbtn[aria-expanded="true"] .car { transform: rotate(180deg); }
+.pm .pm-ddmenu { position: absolute; z-index: 6; top: calc(100% + 4px); left: 0; width: 360px; max-width: 92vw; background: #fff;
+                 border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 28px rgba(30, 36, 48, .18); padding: 6px; }
+.pm .pm-ddmenu[hidden] { display: none; }
+.pm .pm-ddhead { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em;
+                 padding: 4px 10px 6px; }
+.pm .pm-ddmenu button { display: grid; grid-template-columns: 48px 1fr; column-gap: 10px; width: 100%; text-align: left;
+                        font: inherit; border: 0; background: transparent; padding: 7px 10px; border-radius: 6px; cursor: pointer;
+                        color: var(--ink); }
+.pm .pm-ddmenu button:hover, .pm .pm-ddmenu button:focus-visible { background: var(--band); outline: none; }
+.pm .pm-ddmenu button[aria-checked="true"] { background: var(--head); }
+.pm .pm-ddmenu .yr { grid-row: span 2; font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; align-self: center; }
+.pm .pm-ddmenu .who { font-weight: 600; font-size: 14.5px; }
+.pm .pm-ddmenu .who i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.pm .pm-ddmenu .res { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pm .pm-d { font-weight: 600; color: var(--ink); }
 #pm-tip { position: fixed; pointer-events: none; background: #1e2430; color: #fff; font-size: 13px; padding: 5px 9px;
           border-radius: 4px; opacity: 0; transition: opacity .1s; z-index: 5; max-width: 240px; }
 </style>
@@ -85,10 +111,14 @@ body { font-family: Calibri, Carlito, 'Segoe UI', 'Helvetica Neue', Arial, sans-
   <p class="pm-sub" data-t="sub"></p>
   <p class="pm-flag" id="pm-flag"></p>
   <div class="pm-top">
-    <div><span class="pm-lab" data-t="scenario"></span><span class="pm-seg" id="pm-scen"></span></div>
+    <div class="pm-momentbox"><span class="pm-lab" data-t="moment"></span><span class="pm-seg pm-moment" id="pm-moment"></span>
+      <span class="pm-dd"><button class="pm-ddbtn" id="pm-ddbtn" aria-haspopup="menu" aria-expanded="false"></button>
+        <span class="pm-ddmenu" id="pm-ddmenu" role="menu" hidden></span></span></div>
+    <div id="pm-scenbox"><span class="pm-lab" data-t="scenario"></span><span class="pm-seg" id="pm-scen"></span></div>
     <div class="pm-chips"><span class="pm-lab" data-t="presets"></span><span id="pm-presets" class="pm-chips"></span></div>
     <div class="pm-langbox" style="margin-left:auto"><span class="pm-seg" id="pm-lang"><button data-l="es">ES</button><button data-l="en">EN</button></span></div>
   </div>
+  <p class="pm-fact" id="pm-fact"></p>
   <div class="pm-grid">
     <section>
       <svg class="pm-chamber" id="pm-chamber" viewBox="0 0 1000 548" role="img"></svg>
@@ -96,6 +126,7 @@ body { font-family: Calibri, Carlito, 'Segoe UI', 'Helvetica Neue', Arial, sans-
         <span><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#5b6473"/></svg><span data-t="enc_y"></span></span>
         <span><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" fill="#fff" stroke="#5b6473" stroke-width="2"/></svg><span data-t="enc_a"></span></span>
         <span><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="#5b6473" fill-opacity=".2"/></svg><span data-t="enc_n"></span></span>
+        <span id="pm-enc-x"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" fill="#fff" stroke="#5b6473" stroke-width="1.5" stroke-dasharray="2.5 2"/></svg><span data-t="enc_x"></span></span>
       </div>
       <div class="pm-meter">
         <div class="pm-track" id="pm-track"></div>
@@ -103,11 +134,11 @@ body { font-family: Calibri, Carlito, 'Segoe UI', 'Helvetica Neue', Arial, sans-
       </div>
       <div class="pm-tiles">
         <div class="pm-tile"><div class="k" data-t="yes_full"></div><div class="v" id="pm-n-y"></div><div class="s" id="pm-s-y"></div></div>
-        <div class="pm-tile"><div class="k" data-t="abs_full"></div><div class="v" id="pm-n-a"></div><div class="s"></div></div>
+        <div class="pm-tile"><div class="k" data-t="abs_full"></div><div class="v" id="pm-n-a"></div><div class="s" id="pm-s-a"></div></div>
         <div class="pm-tile"><div class="k" data-t="no_full"></div><div class="v" id="pm-n-n"></div><div class="s"></div></div>
       </div>
       <div class="pm-verdict" id="pm-verdict"></div>
-      <div class="pm-probs">
+      <div class="pm-probs" id="pm-probs">
         <h4 data-t="probs_title"></h4>
         <div class="pm-prow"><div class="p" id="pm-p-abs"></div><div><div class="t" data-t="p_abs"></div><div class="pm-pbar"><i id="pm-b-abs"></i></div></div></div>
         <div class="pm-prow"><div class="p" id="pm-p-sim"></div><div><div class="t" data-t="p_sim"></div><div class="pm-pbar"><i id="pm-b-sim"></i></div></div></div>
@@ -117,6 +148,7 @@ body { font-family: Calibri, Carlito, 'Segoe UI', 'Helvetica Neue', Arial, sans-
     <section>
       <p class="pm-small" data-t="hint" style="margin-top:0"></p>
       <div class="pm-list" id="pm-list"></div>
+      <p class="pm-small" id="pm-gone"></p>
     </section>
   </div>
   <p class="pm-small" data-t="note" style="margin-top:18px;max-width:110ch"></p>
@@ -128,11 +160,18 @@ const DATA = __DATA__;
 const T = {
   es: {
     title: "Pactómetro del 29-N: ¿quién puede gobernar?",
-    sub: "Marca el voto de cada partido en una investidura (sí, abstención o no) y comprueba si salen las cuentas. Los escaños son la previsión del modelo, no un resultado: el hemiciclo muestra los escaños esperados y las probabilidades se calculan sobre las {n} simulaciones.",
-    scenario: "Escenario", presets: "Pactos de ejemplo",
+    sub: "Marca el voto de cada partido en una investidura (sí, abstención o no) y comprueba si salen las cuentas. Por defecto ves la previsión del 29-N: escaños esperados del modelo, no un resultado, con probabilidades sobre las {n} simulaciones. En «Momento» puedes pasar al Congreso real al disolverse o, en el menú de investiduras, al de cada gobierno desde 1996, con la votación tal como fue y el cambio de escaños de cada partido frente a la investidura anterior.",
+    moment: "Momento", scenario: "Escenario", presets: "Pactos de ejemplo",
+    inv: "Investiduras", inv_head: "Gobiernos investidos desde 1996", ballot1: "1.ª votación", ballot2: "2.ª votación",
+    censure: "moción de censura", res: "{y} sí · {n} no · {a} abst.", resx: " · {x} ausentes", resx1: " · 1 ausente", p_real: "Votación real",
+    chg: "{d} frente a {prev}", same: "igual que en {prev}", newp: "nuevo frente a {prev}",
+    gone: "Sin escaño frente a {prev}: {list}.", xs: "y {x} sin votar",
+    tipR: "{name}: {s} escaños · vota {v}", tipR0: "{name}: {s} escaños",
+    v1c_t: "✔ Moción de censura aprobada", v1c_s: "Los síes ({y}) alcanzan la mayoría absoluta de 176 que exige la moción.",
+    v3c_t: "✖ Moción de censura rechazada", v3c_s: "Faltan {m} síes para la mayoría absoluta de 176; la moción no tiene segunda votación.",
     p_right: "PP + Vox", p_inv: "Bloque de la investidura de 2023", p_grand: "PP + PSOE", p_abst: "PP con abstención de Vox", p_reset: "Borrar",
     y: "Sí", a: "Abs.", n: "No", yes_full: "Sí", abs_full: "Abstención", no_full: "No",
-    enc_y: "sí", enc_a: "abstención", enc_n: "no",
+    enc_y: "sí", enc_a: "abstención", enc_n: "no", enc_x: "ausente",
     tick: "176 · mayoría absoluta", cap: "síes · 176 para la mayoría absoluta", cap0: "escaños · 176 para la mayoría absoluta",
     v0_t: "Elige un pacto", v0_s: "Marca qué partidos votan sí y cuáles se abstienen; el resto vota no.",
     v1_t: "✔ Investidura en primera votación", v1_s: "Los síes ({y}) alcanzan la mayoría absoluta de 176 escaños.",
@@ -143,17 +182,24 @@ const T = {
     p_range: "Síes en las simulaciones: mediana {m}, intervalo del 90 %: {a}-{b}.", p_range0: "Todavía no hay ningún partido marcado.",
     row: "intervalo del 90 %: {a}-{b} escaños",
     hint: "Pulsa un partido en el hemiciclo para cambiar su voto, o usa los botones de esta lista.",
-    note: "Artículo 99 de la Constitución: la investidura exige mayoría absoluta (176 de 350) en la primera votación o, 48 horas después, más síes que noes. Los escaños esperados son la media de las simulaciones, redondeada para sumar 350; cada simulación reparte los escaños de otra manera, por eso un pacto que en el dibujo se queda cerca de 176 tiene una probabilidad intermedia. «Otros» son candidaturas locales (Soria ¡Ya!, Teruel Existe, UPL). La línea discontinua marca la mitad del hemiciclo. Datos hasta el {cutoff}.",
-    tip: "{name}: {s} escaños esperados (90 %: {a}-{b}) · vota {v}", tip0: "{name}: {s} escaños esperados (90 %: {a}-{b})", vy: "sí", va: "abstención", vn: "no",
+    note: "Artículo 99 de la Constitución: la investidura exige mayoría absoluta (176 de 350) en la primera votación o, 48 horas después, más síes que noes. Los escaños esperados son la media de las simulaciones, redondeada para sumar 350; cada simulación reparte los escaños de otra manera, por eso un pacto que en el dibujo se queda cerca de 176 tiene una probabilidad intermedia. «Otros» son candidaturas locales (Soria ¡Ya!, Teruel Existe, UPL). Los congresos de 2023 y 2026 salen de las altas y bajas de cada grupo en congreso.es y cuentan cada escaño por el partido de su lista, no por su grupo (Podemos, BNG, CC, UPN y Ortega Smith estaban en el Grupo Mixto). Los anteriores son los escaños de cada lista en las elecciones; los totales de cada votación son los del archivo de investiduras del Congreso, y el voto de cada partido, el de las tablas de votación de Wikipedia. Las listas conjuntas se separan cuando sus partidos votaron por separado (UPN y Foro con el PP, NC con el PSOE o con CC). La línea discontinua marca la mitad del hemiciclo. Datos hasta el {cutoff}.",
+    tip: "{name}: {s} escaños esperados (90 %: {a}-{b}) · vota {v}", tip0: "{name}: {s} escaños esperados (90 %: {a}-{b})", vy: "sí", va: "abstención", vn: "no", vx: "ausente",
     aria: "Hemiciclo de 350 escaños: {y} sí, {a} abstención, {n} no. Mayoría absoluta: 176."
   },
   en: {
     title: "Coalition builder for 29 November: who can govern?",
-    sub: "Set each party's vote in an investiture (yes, abstain or no) and see whether the numbers add up. Seats are the model's forecast, not a result: the chamber shows expected seats and the probabilities are counted over the {n} simulations.",
-    scenario: "Scenario", presets: "Example pacts",
+    sub: "Set each party's vote in an investiture (yes, abstain or no) and see whether the numbers add up. You start on the 29 November forecast: the model's expected seats, not a result, with probabilities over the {n} simulations. \"Moment\" switches to the real Congress at the dissolution or, in the investitures menu, to the one that elected each government since 1996, with the vote as it was cast and each party's seat change since the previous investiture.",
+    moment: "Moment", scenario: "Scenario", presets: "Example pacts",
+    inv: "Investitures", inv_head: "Governments invested since 1996", ballot1: "1st vote", ballot2: "2nd vote",
+    censure: "no-confidence vote", res: "{y} yes · {n} no · {a} abst.", resx: " · {x} absent", resx1: " · 1 absent", p_real: "Actual vote",
+    chg: "{d} against {prev}", same: "same as at {prev}", newp: "new since {prev}",
+    gone: "No seat now, against {prev}: {list}.", xs: "and {x} not voting",
+    tipR: "{name}: {s} seats · votes {v}", tipR0: "{name}: {s} seats",
+    v1c_t: "✔ No-confidence vote passed", v1c_s: "The yes votes ({y}) reach the absolute majority of 176 the motion needs.",
+    v3c_t: "✖ No-confidence vote fails", v3c_s: "{m} yes votes short of the absolute majority of 176; a motion has no second vote.",
     p_right: "PP + Vox", p_inv: "2023 investiture bloc", p_grand: "PP + PSOE", p_abst: "PP, Vox abstains", p_reset: "Clear",
     y: "Yes", a: "Abs.", n: "No", yes_full: "Yes", abs_full: "Abstain", no_full: "No",
-    enc_y: "yes", enc_a: "abstain", enc_n: "no",
+    enc_y: "yes", enc_a: "abstain", enc_n: "no", enc_x: "absent",
     tick: "176 · absolute majority", cap: "yes votes · 176 for an absolute majority", cap0: "seats · 176 for an absolute majority",
     v0_t: "Pick a pact", v0_s: "Mark which parties vote yes and which abstain; the rest vote no.",
     v1_t: "✔ Elected on the first vote", v1_s: "The yes votes ({y}) reach the absolute majority of 176 seats.",
@@ -164,8 +210,8 @@ const T = {
     p_range: "Yes votes across simulations: median {m}, 90 % interval {a}-{b}.", p_range0: "No party is marked yet.",
     row: "90 % range: {a}-{b} seats",
     hint: "Click a party in the chamber to change its vote, or use the buttons in this list.",
-    note: "Article 99 of the Spanish Constitution: an investiture needs an absolute majority (176 of 350) on the first vote or, 48 hours later, more yes than no votes. Expected seats are the mean of the simulations, rounded to add up to 350; each simulation splits the seats differently, which is why a pact that sits near 176 in the picture has an in-between probability. \"Others\" are local lists (Soria ¡Ya!, Teruel Existe, UPL). The dashed line marks the middle of the chamber. Data to {cutoff}.",
-    tip: "{name}: {s} expected seats (90 %: {a}-{b}) · votes {v}", tip0: "{name}: {s} expected seats (90 %: {a}-{b})", vy: "yes", va: "abstain", vn: "no",
+    note: "Article 99 of the Spanish Constitution: an investiture needs an absolute majority (176 of 350) on the first vote or, 48 hours later, more yes than no votes. Expected seats are the mean of the simulations, rounded to add up to 350; each simulation splits the seats differently, which is why a pact that sits near 176 in the picture has an in-between probability. \"Others\" are local lists (Soria ¡Ya!, Teruel Existe, UPL). The 2023 and 2026 chambers come from each group's membership dates on congreso.es and count every seat for the party of its list, not its group (Podemos, BNG, CC, UPN and Ortega Smith sat in the Mixed Group). The older ones are each list's seats at the election; the totals of every ballot are those of the Congress's investiture archive, and each party's vote is taken from the Wikipedia ballot tables. Joint lists are split where their parties voted on their own (UPN and Foro with the PP, NC with the PSOE or CC). The dashed line marks the middle of the chamber. Data to {cutoff}.",
+    tip: "{name}: {s} expected seats (90 %: {a}-{b}) · votes {v}", tip0: "{name}: {s} expected seats (90 %: {a}-{b})", vy: "yes", va: "abstain", vn: "no", vx: "absent",
     aria: "Chamber of 350 seats: {y} yes, {a} abstain, {n} no. Absolute majority: 176."
   }
 };
@@ -178,7 +224,7 @@ const PRESETS = {
 };
 const NS = "http://www.w3.org/2000/svg";
 const root = document.getElementById("pm"), $ = id => document.getElementById("pm-" + id);
-const state = {lang: DATA.default_lang, scen: Object.keys(DATA.scenarios)[0], vote: {}};
+const state = {lang: DATA.default_lang, scen: Object.keys(DATA.scenarios)[0], moment: "forecast", vote: {}};
 if (DATA.embedded) root.classList.add("pm-embedded");
 const draws = {};
 for (const [k, s] of Object.entries(DATA.scenarios)) {
@@ -189,15 +235,50 @@ for (const [k, s] of Object.entries(DATA.scenarios)) {
 const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (_, k) => o[k]);
 const nf = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, state.lang === "es" ? "." : ",");
 const pct = p => p > 0.995 ? "> 99 %" : p < 0.005 ? "< 1 %" : Math.round(100 * p) + " %";
-const name = id => DATA.names[state.lang][id] || id;
-const parties = () => DATA.scenarios[state.scen].parties;
-const voteOf = id => state.vote[id] || "n";
+const momentOf = key => DATA.moments.find(m => m.key === (key || state.moment));
+// a real chamber may rename an id (SUMAR is the Sumar list in 2023, Frente Amplio in the forecast; JUNTS was CiU ...)
+const name = (id, m = momentOf()) => (m.names || {})[id] || DATA.names[state.lang][id] || id;
+const real = () => momentOf().kind === "real";
+const isInv = () => momentOf().group === "inv";
+const parties = () => real() ? momentOf().parties : DATA.scenarios[state.scen].parties;
+const refOf = key => momentOf(key).ref[state.lang];
+const clone = o => JSON.parse(JSON.stringify(o || {}));
+// seats of the moment each party is compared against (null for the oldest one)
+function before() {
+  const c = momentOf().compare; if (!c) return null;
+  return Object.fromEntries(momentOf(c).parties.map(p => [p.id, p.seats]));
+}
+function change(p) {
+  const t = T[state.lang], b = before(); if (!b) return "";
+  const prev = refOf(momentOf().compare);
+  if (!(p.id in b)) return fmt(t.newp, {prev});
+  const d = p.seats - b[p.id];
+  return d === 0 ? fmt(t.same, {prev}) : fmt(t.chg, {d: `<span class="pm-d">${d > 0 ? "+" : "−"}${Math.abs(d)}</span>`, prev});
+}
+function setMoment(k) {
+  state.moment = k; state.vote = clone(momentOf().vote);
+  menu(false); rebuild();
+}
+// a party's vote: "y", "a", "n", "x" (absent) or "m" when its deputies split (state.vote holds the counts)
+const voteOf = id => { const v = state.vote[id]; return v && typeof v === "object" ? "m" : v || "n"; };
+function counts(p) {
+  const v = state.vote[p.id], c = {y: 0, a: 0, n: 0, x: 0};
+  if (v && typeof v === "object") Object.assign(c, v); else c[v || "n"] = p.seats;
+  return c;
+}
+// what a party voted, in words ("68 abstención, 15 no, 1 ausente" for a split)
+function voteText(p) {
+  const t = T[state.lang], v = voteOf(p.id);
+  if (v !== "m") return t["v" + v];
+  const c = counts(p); return ["y", "a", "n", "x"].filter(k => c[k]).map(k => `${c[k]} ${t["v" + k]}`).join(", ");
+}
 // nothing marked yet: the chamber is drawn in full colour, as the plain forecast
 const blank = () => !parties().some(p => voteOf(p.id) !== "n");
 
 function setVote(id, v) { state.vote[id] = v; render(); }
-function cycle(id) { setVote(id, {n: "y", y: "a", a: "n"}[voteOf(id)]); }
+function cycle(id) { setVote(id, {n: "y", y: "a", a: "n", x: "y", m: "y"}[voteOf(id)]); }
 function preset(key) {
+  if (key === "p_real") { state.vote = clone(momentOf().vote); render(); return; }
   const p = PRESETS[key]; state.vote = {};
   (p.y || []).forEach(id => state.vote[id] = "y"); (p.a || []).forEach(id => state.vote[id] = "a");
   render();
@@ -244,7 +325,8 @@ function buildChamber() {
 
 function showTip(e, p) {
   const t = T[state.lang], tip = document.getElementById("pm-tip");
-  tip.textContent = fmt(blank() ? t.tip0 : t.tip, {name: name(p.id), s: p.seats, a: p.q05, b: p.q95, v: t["v" + voteOf(p.id)]});
+  const key = (real() ? "tipR" : "tip") + (blank() ? "0" : "");
+  tip.textContent = fmt(t[key], {name: name(p.id), s: p.seats, a: p.q05, b: p.q95, v: voteText(p)});
   tip.style.left = Math.min(e.clientX + 14, window.innerWidth - 250) + "px"; tip.style.top = (e.clientY + 14) + "px"; tip.style.opacity = 1;
 }
 function hideTip() { document.getElementById("pm-tip").style.opacity = 0; }
@@ -255,12 +337,17 @@ function buildList() {
   for (const p of rows) {
     const r = document.createElement("div"); r.className = "pm-row";
     r.innerHTML = `<div class="pm-sw" style="background:${DATA.colors[p.id] || "#999"}"></div>
-      <div><div class="pm-pn">${name(p.id)} <span>${p.seats}</span></div><div class="pm-pm">${fmt(t.row, {a: p.q05, b: p.q95})}</div></div>
+      <div><div class="pm-pn">${name(p.id)} <span>${p.seats}</span></div><div class="pm-pm">${[real() ? (["m", "x"].includes(voteOf(p.id)) ? voteText(p) : "") : fmt(t.row, {a: p.q05, b: p.q95}), change(p)].filter(Boolean).join(" · ")}</div></div>
       <div class="pm-seg pm-vote" role="group" aria-label="${name(p.id)}">${["y", "a", "n"].map(v =>
         `<button data-v="${v}" aria-pressed="false" title="${t[{y: "yes_full", a: "abs_full", n: "no_full"}[v]]}">${t[v]}</button>`).join("")}</div>`;
     r.querySelectorAll("button").forEach(b => b.addEventListener("click", () => setVote(p.id, b.dataset.v)));
     r.dataset.id = p.id; box.appendChild(r);
   }
+  // parties of the compared chamber that have no row now (a row at 0 seats already shows its change)
+  const b = before(), now = new Set(parties().map(p => p.id));
+  const c = momentOf().compare;
+  const gone = b ? Object.entries(b).filter(([id, s]) => s > 0 && !now.has(id)).map(([id, s]) => `${name(id, momentOf(c))} (${s})`) : [];
+  $("gone").textContent = gone.length ? fmt(t.gone, {prev: refOf(c), list: gone.join(", ")}) : "";
 }
 
 function buildStatic() {
@@ -269,13 +356,36 @@ function buildStatic() {
   root.querySelectorAll("[data-t]").forEach(el => {
     el.textContent = fmt(t[el.dataset.t], {n: nf(DATA.n_sims), cutoff: DATA.cutoff[state.lang]}); });
   $("flag").textContent = DATA.provisional[state.lang] || "";
+  const mo = $("moment"); mo.textContent = "";
+  for (const m of DATA.moments.filter(m => m.group === "main")) {
+    const b = document.createElement("button"); b.textContent = m.short[state.lang];
+    b.setAttribute("aria-pressed", m.key === state.moment); b.addEventListener("click", () => setMoment(m.key)); mo.appendChild(b);
+  }
+  const db = $("ddbtn");
+  db.innerHTML = `${isInv() ? momentOf().short[state.lang] : t.inv}<span class="car" aria-hidden="true">▾</span>`;
+  db.setAttribute("aria-pressed", isInv());
+  const dm = $("ddmenu"); dm.textContent = "";
+  const head = document.createElement("div"); head.className = "pm-ddhead"; head.textContent = t.inv_head; dm.appendChild(head);
+  for (const m of DATA.moments.filter(m => m.group === "inv").reverse()) {
+    const b = document.createElement("button"), r = m.result;
+    b.setAttribute("role", "menuitemradio"); b.setAttribute("aria-checked", m.key === state.moment);
+    const how = m.ballot === "censure" ? t.censure : t["ballot" + m.ballot];
+    b.innerHTML = `<span class="yr">${m.date.slice(0, 4)}</span>
+      <span class="who"><i style="background:${DATA.colors[m.party]}"></i>${m.who} <span class="pm-small">(${m.party})</span></span>
+      <span class="res">${how} · ${fmt(t.res, r)}${r.x ? fmt(r.x === 1 ? t.resx1 : t.resx, r) : ""}</span>`;
+    b.addEventListener("click", () => setMoment(m.key)); dm.appendChild(b);
+  }
+  $("enc-x").style.display = isInv() && momentOf().result.x ? "" : "none";
+  $("fact").textContent = fmt(momentOf().detail[state.lang], {n: nf(DATA.n_sims)});
+  $("scenbox").style.display = real() ? "none" : "";
+  $("probs").style.display = real() ? "none" : "";
   const sc = $("scen"); sc.textContent = "";
   for (const k of Object.keys(DATA.scenarios)) {
     const b = document.createElement("button"); b.textContent = DATA.scenarios[k].label[state.lang];
     b.setAttribute("aria-pressed", k === state.scen); b.addEventListener("click", () => { state.scen = k; rebuild(); }); sc.appendChild(b);
   }
   const pr = $("presets"); pr.textContent = "";
-  for (const k of Object.keys(PRESETS)) {
+  for (const k of isInv() ? ["p_real", "p_reset"] : Object.keys(PRESETS)) {
     const b = document.createElement("button"); b.className = "pm-chip"; b.textContent = t[k]; b.addEventListener("click", () => preset(k)); pr.appendChild(b);
   }
   root.querySelectorAll("#pm-lang button").forEach(b => { b.setAttribute("aria-pressed", b.dataset.l === state.lang);
@@ -284,30 +394,46 @@ function buildStatic() {
 
 function render() {
   const t = T[state.lang], tot = {y: 0, a: 0, n: 0}, track = $("track"), none = blank(); track.textContent = "";
-  const groups = {y: [], a: [], n: []};
-  for (const p of parties()) { const v = voteOf(p.id); tot[v] += p.seats; if (p.seats) groups[v].push(p); }
-  for (const g of root.querySelectorAll("g.pm-party")) {
-    const v = voteOf(g.dataset.id), c = DATA.colors[g.dataset.id] || "#999";
-    g.setAttribute("aria-label", none ? name(g.dataset.id) : `${name(g.dataset.id)}: ${t["v" + v]}`);
-    for (const el of g.children) {
-      el.setAttribute("fill", v === "a" ? "#fff" : c); el.setAttribute("fill-opacity", v === "n" && !none ? 0.2 : 1);
-      el.setAttribute("stroke", c); el.setAttribute("stroke-width", v === "a" ? 2.6 : 0); el.setAttribute("r", v === "a" ? 8.3 : 9.6);
-    }
+  tot.x = 0;
+  const groups = {y: [], a: [], n: [], x: []}, byId = Object.fromEntries(parties().map(p => [p.id, p]));
+  for (const p of parties()) {
+    const c = counts(p);
+    for (const v of ["y", "a", "n", "x"]) { tot[v] += c[v]; if (c[v]) groups[v].push({p, s: c[v]}); }
   }
-  for (const v of ["y", "a", "n"]) for (const p of groups[v]) {
+  for (const g of root.querySelectorAll("g.pm-party")) {
+    const p = byId[g.dataset.id], c = DATA.colors[p.id] || "#999", k = counts(p);
+    const seat = ["y", "a", "n", "x"].flatMap(v => Array(k[v]).fill(v));
+    g.setAttribute("aria-label", none ? name(p.id) : `${name(p.id)}: ${voteText(p)}`);
+    [...g.children].forEach((el, i) => {
+      const v = seat[i] || "n", hollow = v === "a" || v === "x";
+      el.setAttribute("fill", hollow ? "#fff" : c); el.setAttribute("fill-opacity", v === "n" && !none ? 0.2 : 1);
+      el.setAttribute("stroke", v === "x" ? "#5b6473" : c); el.setAttribute("stroke-width", v === "a" ? 2.6 : v === "x" ? 1.6 : 0);
+      el.setAttribute("stroke-dasharray", v === "x" ? "2.5 2" : "none"); el.setAttribute("r", hollow ? 8.3 : 9.6);
+    });
+  }
+  const full = {y: "yes_full", a: "abs_full", n: "no_full", x: "vx"};
+  for (const v of ["y", "a", "n", "x"]) for (const {p, s} of groups[v]) {
     const d = document.createElement("div"), c = DATA.colors[p.id] || "#999";
-    d.style.width = (100 * p.seats / 350) + "%";
-    d.style.background = v === "y" ? c : v === "a" ? `repeating-linear-gradient(135deg, ${c}66 0 4px, #fff 4px 8px)` : c + (none ? "" : "2e");
-    d.title = none ? `${name(p.id)} · ${p.seats}` : `${name(p.id)} · ${p.seats} · ${t[{y: "yes_full", a: "abs_full", n: "no_full"}[v]]}`;
+    d.style.width = (100 * s / 350) + "%";
+    d.style.background = v === "y" ? c : v === "a" ? `repeating-linear-gradient(135deg, ${c}66 0 4px, #fff 4px 8px)`
+      : v === "x" ? "repeating-linear-gradient(90deg, #c9ced6 0 2px, #fff 2px 5px)" : c + (none ? "" : "2e");
+    d.title = none ? `${name(p.id)} · ${s}` : `${name(p.id)} · ${s} · ${t[full[v]]}`;
     track.appendChild(d);
   }
   $("n-y").textContent = none ? "–" : tot.y; $("n-a").textContent = none ? "–" : tot.a; $("n-n").textContent = none ? "–" : tot.n;
+  $("s-a").textContent = !none && tot.x ? fmt(t.xs, tot) : "";
   $("s-y").textContent = groups.y.map(p => name(p.id)).join(" + ");
   $("big").textContent = none ? 350 : tot.y; $("cap").textContent = none ? t.cap0 : t.cap;
   $("chamber").setAttribute("aria-label", fmt(t.aria, tot));
   const v = $("verdict"), o = {y: tot.y, n: tot.n, m: Math.max(0, 176 - tot.y)};
-  const kind = none ? ["", "v0"] : tot.y >= 176 ? ["good", "v1"] : tot.y > tot.n ? ["warn", "v2"] : ["bad", "v3"];
+  const kind = none ? ["", "v0"] : momentOf().ballot === "censure" ? (tot.y >= 176 ? ["good", "v1c"] : ["bad", "v3c"])
+    : tot.y >= 176 ? ["good", "v1"] : tot.y > tot.n ? ["warn", "v2"] : ["bad", "v3"];
   v.className = "pm-verdict " + kind[0]; v.innerHTML = `<b>${t[kind[1] + "_t"]}</b>${fmt(t[kind[1] + "_s"], o)}`;
+  if (real()) {
+    for (const r of root.querySelectorAll(".pm-row")) r.querySelectorAll("button").forEach(b =>
+      b.setAttribute("aria-pressed", !none && b.dataset.v === voteOf(r.dataset.id)));
+    return;
+  }
   const s = simulate();
   $("p-abs").textContent = none ? "–" : pct(s.abs); $("b-abs").style.width = (none ? 0 : 100 * s.abs) + "%";
   $("p-sim").textContent = none ? "–" : pct(s.simple); $("b-sim").style.width = (none ? 0 : 100 * s.simple) + "%";
@@ -315,6 +441,21 @@ function render() {
   for (const r of root.querySelectorAll(".pm-row")) r.querySelectorAll("button").forEach(b =>
     b.setAttribute("aria-pressed", !none && b.dataset.v === voteOf(r.dataset.id)));
 }
+
+function menu(open) {
+  $("ddmenu").hidden = !open; $("ddbtn").setAttribute("aria-expanded", open);
+  if (open) (root.querySelector('#pm-ddmenu [aria-checked="true"]') || root.querySelector("#pm-ddmenu button")).focus();
+}
+$("ddbtn").addEventListener("click", e => { e.stopPropagation(); menu($("ddmenu").hidden); });
+document.addEventListener("click", e => { if (!$("ddmenu").hidden && !e.target.closest(".pm-dd")) menu(false); });
+root.addEventListener("keydown", e => {
+  if ($("ddmenu").hidden) return;
+  const items = [...root.querySelectorAll("#pm-ddmenu button")], i = items.indexOf(document.activeElement);
+  if (e.key === "Escape") { menu(false); $("ddbtn").focus(); }
+  else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault(); items[(i + (e.key === "ArrowDown" ? 1 : items.length - 1)) % items.length].focus();
+  }
+});
 
 function rebuild() { buildStatic(); buildChamber(); buildList(); render(); }
 rebuild();
