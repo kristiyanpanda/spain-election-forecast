@@ -34,6 +34,13 @@ VOTE_LABELS = {
     "EH Bildu": "BILDU", "EAJ-PNV": "PNV", "BNG": "BNG", "CCa": "CC", "UPN": "UPN",
     "Adelante Andalucía": "AA", "PACMA": "PACMA", "CUP": "CUP", "Aliança Catalana": "ALIANCA",
     "En blanco": "BLANK", "Voto nulo": "NULL", "Nulo": "NULL",
+    # ballots as registered for 29 Nov 2026 (pre-election study 3584): Frente Amplio and its joint
+    # lists in Canarias (UPC) and Baleares (Ara Més) are FA, as in the poll tables; PP runs with UPN
+    # in Navarra
+    "Frente Amplio (CHA-FA en Aragón y Comuns-FA en Cataluña)": "FA", "Frente Amplio": "FA",
+    "UPC (Unidad del Pueblo Canario)": "FA", "Ara Més-Front Ampli": "FA",
+    "Compromís: Front Valencià": "FV", "UPN-PP": "PP",
+    "Coalición Canaria-Municipalistas Primero Canarias": "CC", "Se Acabó La Fiesta": "SALF",
 }
 NOT_VALID = {"No sabe todavía", "No votaría", "N.C.", "N.S.", "Voto nulo", "Nulo", "Ninguno",
              "No votará", "No sabe", "No contesta"}

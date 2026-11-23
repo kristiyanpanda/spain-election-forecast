@@ -1,13 +1,13 @@
 {
   "divergences": 0,
-  "rhat_max": 1.0,
-  "ess_bulk_min": 710.0,
+  "rhat_max": 1.01,
+  "ess_bulk_min": 793.0,
   "draws": 4000,
   "tag": "next",
-  "cutoff_date": "2026-11-14",
-  "n_polls": 583,
-  "n_obs": 5575,
-  "n_pollsters": 39,
-  "weeks": 174,
-  "last_poll": "2026-11-13"
+  "cutoff_date": "2026-11-23",
+  "n_polls": 610,
+  "n_obs": 5814,
+  "n_pollsters": 43,
+  "weeks": 176,
+  "last_poll": "2026-11-22"
 }

@@ -92,7 +92,7 @@ TEXT = {
         "byline": "By <b>{author}</b>{links} · data cut-off {cutoff} · last poll {last_poll} · "
                   "<a href='../spanish%20version/index.html'>Versión en español</a>",
         "note": "<b>{provisional}.</b> Everything on this page is conditional on the {n_polls} polls from {n_pollsters} "
-                "pollsters published up to <b>{cutoff}</b>, about {weeks} weeks before polling day. These are model "
+                "pollsters published up to <b>{cutoff}</b>, {ahead} before polling day. These are model "
                 "probabilities, not predictions of the result; the backtest below shows how wrong the same method has "
                 "been before.",
         "card_vote": "{party} vote, {h}", "card_major": "PP + Vox (+UPN, SALF) majority",
@@ -172,7 +172,7 @@ TEXT = {
         "byline": "Por <b>{author}</b>{links} · datos hasta el {cutoff} · última encuesta: {last_poll} · "
                   "<a href='../docs/index.html'>English version</a>",
         "note": "<b>{provisional}.</b> Todo lo que aparece en esta página depende de las {n_polls} encuestas de "
-                "{n_pollsters} encuestadoras publicadas hasta el <b>{cutoff}</b>, unas {weeks} semanas antes de la "
+                "{n_pollsters} encuestadoras publicadas hasta el <b>{cutoff}</b>, {ahead} antes de la "
                 "votación. Son probabilidades del modelo, no predicciones del resultado; el backtest de más abajo "
                 "muestra cuánto se ha equivocado antes este mismo método.",
         "card_vote": "Voto {party}, {h}", "card_major": "Mayoría de PP + Vox (+UPN, SALF)",
@@ -250,6 +250,19 @@ TEXT = {
     },
 }
 
+
+
+def _ahead(weeks: float, lang: str) -> str:
+    """'six days' / 'seis días' under two weeks, else 'about N weeks' / 'unas N semanas'."""
+    days = round(weeks * 7)
+    if days < 14:
+        en = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+              "eleven", "twelve", "thirteen"]
+        es = ["cero", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez",
+              "once", "doce", "trece"]
+        return (f"{en[days]} day{'s' if days != 1 else ''}" if lang == "en"
+                else f"{es[days]} día{'s' if days != 1 else ''}")
+    return f"about {weeks:.0f} weeks" if lang == "en" else f"unas {weeks:.0f} semanas"
 
 def _hex_rgba(h: str, a: float) -> str:
     h = h.lstrip("#")
@@ -444,7 +457,7 @@ def build(cfg: dict) -> str:
     fill = {"author": author.get("name", ""), "links": links, "cutoff": i18n.date(cutoff),
             "last_poll": i18n.date(diag["last_poll"]), "election": h_long, "h": h, "h_long": h_long,
             "provisional": provisional, "n_polls": diag["n_polls"], "n_pollsters": diag["n_pollsters"],
-            "weeks": f"{fc['weeks_ahead']:.0f}", "cover": f"{100 * sc.loc['model', 'vote_cover90']:.0f}",
+            "weeks": f"{fc['weeks_ahead']:.0f}", "ahead": _ahead(fc["weeks_ahead"], lang), "cover": f"{100 * sc.loc['model', 'vote_cover90']:.0f}",
             "infl": f"{100 * fc['error_inflation']['extra_sd_relative']:.0f}",
             "reversion": T["adopted"] if fc["mean_reversion"]["chosen_weight"] else T["rejected"],
             "divergences": diag["divergences"], "rhat": num(diag["rhat_max"], 2)}

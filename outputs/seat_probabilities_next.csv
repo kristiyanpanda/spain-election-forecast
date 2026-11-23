@@ -1,24 +1,24 @@
 event,members,probability,seats_q05,seats_q50,seats_q95,cutoff_date,scenario
-Right (PP+Vox+UPN+SALF) >= 176,PP+VOX+UPN+SALF,1.0,189.95000000000005,196.0,202.0,2026-11-14,split
-PP+Vox >= 176,PP+VOX,1.0,189.0,196.0,202.0,2026-11-14,split
-Left + peripheral left (PSOE+Sumar/FA+Podemos+ERC+Bildu+BNG+CC+Compromís+AA) >= 176,PSOE+SUMAR+PODEMOS+ERC+BILDU+BNG+CC+AA,0.0,135.0,142.0,148.0,2026-11-14,split
-2023 investiture bloc (above + PNV + Junts) >= 176,PSOE+SUMAR+PODEMOS+ERC+BILDU+BNG+CC+AA+PNV+JUNTS,0.0,145.0,151.0,158.0,2026-11-14,split
-State-wide left (PSOE+Sumar/FA+Podemos) >= 176,PSOE+SUMAR+PODEMOS,0.0,114.0,120.0,127.0,2026-11-14,split
-PP largest party,PP,0.9979,,,,2026-11-14,split
-PP >= 176 alone,PP,0.0,,,,2026-11-14,split
-PSOE largest party,PSOE,0.0021,,,,2026-11-14,split
-PSOE >= 176 alone,PSOE,0.0,,,,2026-11-14,split
-PP >= 150 seats,PP,0.0,,,,2026-11-14,split
-PP >= 160 seats,PP,0.0,,,,2026-11-14,split
-PP >= 176 seats,PP,0.0,,,,2026-11-14,split
-VOX >= 40 seats,VOX,1.0,,,,2026-11-14,split
-VOX >= 50 seats,VOX,1.0,,,,2026-11-14,split
-VOX >= 60 seats,VOX,0.9948,,,,2026-11-14,split
-PSOE >= 100 seats,PSOE,0.9958,,,,2026-11-14,split
-PSOE >= 110 seats,PSOE,0.5025,,,,2026-11-14,split
-PSOE >= 121 seats,PSOE,0.0023,,,,2026-11-14,split
-SUMAR >= 10 seats,SUMAR,0.629,,,,2026-11-14,split
-SUMAR >= 20 seats,SUMAR,0.0,,,,2026-11-14,split
-PODEMOS >= 1 seats,PODEMOS,0.66,,,,2026-11-14,split
-PODEMOS >= 4 seats,PODEMOS,0.0,,,,2026-11-14,split
-SALF >= 1 seats,SALF,0.0226,,,,2026-11-14,split
+Right (PP+Vox+UPN+SALF) >= 176,PP+VOX+UPN+SALF,1.0,185.0,192.0,199.0,2026-11-23,split
+PP+Vox >= 176,PP+VOX,1.0,185.0,192.0,199.0,2026-11-23,split
+Left + peripheral left (PSOE+Sumar/FA+Podemos+ERC+Bildu+BNG+CC+Compromís+AA) >= 176,PSOE+SUMAR+PODEMOS+ERC+BILDU+BNG+CC+AA,0.0,139.0,146.0,153.0,2026-11-23,split
+2023 investiture bloc (above + PNV + Junts) >= 176,PSOE+SUMAR+PODEMOS+ERC+BILDU+BNG+CC+AA+PNV+JUNTS,0.0,149.0,155.0,162.0,2026-11-23,split
+State-wide left (PSOE+Sumar/FA+Podemos) >= 176,PSOE+SUMAR+PODEMOS,0.0,117.0,124.0,131.0,2026-11-23,split
+PP largest party,PP,0.9728,,,,2026-11-23,split
+PP >= 176 alone,PP,0.0,,,,2026-11-23,split
+PSOE largest party,PSOE,0.0272,,,,2026-11-23,split
+PSOE >= 176 alone,PSOE,0.0,,,,2026-11-23,split
+PP >= 150 seats,PP,0.0,,,,2026-11-23,split
+PP >= 160 seats,PP,0.0,,,,2026-11-23,split
+PP >= 176 seats,PP,0.0,,,,2026-11-23,split
+VOX >= 40 seats,VOX,1.0,,,,2026-11-23,split
+VOX >= 50 seats,VOX,1.0,,,,2026-11-23,split
+VOX >= 60 seats,VOX,0.92,,,,2026-11-23,split
+PSOE >= 100 seats,PSOE,0.9999,,,,2026-11-23,split
+PSOE >= 110 seats,PSOE,0.8994,,,,2026-11-23,split
+PSOE >= 121 seats,PSOE,0.0705,,,,2026-11-23,split
+SUMAR >= 10 seats,SUMAR,0.3622,,,,2026-11-23,split
+SUMAR >= 20 seats,SUMAR,0.0,,,,2026-11-23,split
+PODEMOS >= 1 seats,PODEMOS,0.2589,,,,2026-11-23,split
+PODEMOS >= 4 seats,PODEMOS,0.0,,,,2026-11-23,split
+SALF >= 1 seats,SALF,0.0238,,,,2026-11-23,split

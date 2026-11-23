@@ -108,7 +108,7 @@ def catalogue(cfg: dict, raw_dir: Path, force: bool = False) -> tuple[pd.DataFra
             continue  # its study page has been catalogued, or it came out after the cut-off
         rows.append({"slug": None, "study": str(d["study"]), "title": d["title"],
                      "published": pd.Timestamp(d["published"]), "estimate_url": d["estimate_url"],
-                     "ficha_url": None, "microdata_url": None})
+                     "ficha_url": d.get("ficha_url"), "microdata_url": d.get("microdata_url")})
     return pd.DataFrame(rows), missing
 
 

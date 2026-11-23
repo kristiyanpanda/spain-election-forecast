@@ -5,12 +5,12 @@ author:                          # shown on docs/index.html; edit freely
   name: "Kristiyan Pandas"
   github: "https://github.com/kristiyanpanda"
 
-cutoff_date: "2026-11-14"        # polls published on or before this date are used
+cutoff_date: "2026-11-23"        # polls published on or before this date are used
 last_election: "2023-07-23"
 legal_deadline: "2027-08-15"     # term expires 2027-07-23; election on day 54 after convocation
 election_date: "2026-11-29"      # snap election (RD 806/2026, BOE 6 Oct 2026): the forecast horizon
-provisional_label: "INTERIM — polls to 14 Nov 2026; final run on 23 Nov, the last day polls may be published"
-provisional_label_es: "PROVISIONAL — encuestas hasta el 14-11-2026; versión final el 23-N, último día en que pueden publicarse"
+provisional_label: "FINAL — polls to 23 Nov 2026, the last day polls may be published before the 29 Nov election"
+provisional_label_es: "FINAL — encuestas hasta el 23-11-2026, último día en que pueden publicarse antes del 29-N"
 # marked on the trend charts, numbered in date order. en / es: the name in the key of the interactive
 # page; short_en / short_es: the one word written on the static chart
 events:
@@ -21,6 +21,7 @@ events:
   "2026-10-28": {en: "Urda rail crash", es: "Accidente ferroviario de Urda", short_en: "Urda", short_es: "Urda"}
   "2026-11-03": {en: "Lists proclaimed", es: "Candidaturas proclamadas", short_en: "Lists", short_es: "Listas"}
   "2026-11-13": {en: "Campaign starts", es: "Inicio de la campaña", short_en: "Campaign", short_es: "Campaña"}
+  "2026-11-19": {en: "Sánchez-Feijóo debate", es: "Debate Sánchez-Feijóo", short_en: "Debate", short_es: "Debate"}
 seed: 20260918
 
 model:
@@ -169,6 +170,7 @@ wikipedia:
   # English Wikipedia, CC BY-SA 4.0. Fetched as wikitext via action=raw.
   pages:
     next: "Opinion_polling_for_the_2026_Spanish_general_election"
+    next_2023_2024: "Nationwide_opinion_polling_for_the_2026_Spanish_general_election_(2023–2024)"   # 2023-24 tables moved to this sub-page in Nov 2026
     e2023: "Opinion_polling_for_the_2023_Spanish_general_election"
     e2023_2022: "Nationwide_opinion_polling_for_the_2023_Spanish_general_election_(2022)"
     e2023_2019_2021: "Nationwide_opinion_polling_for_the_2023_Spanish_general_election_(2019–2021)"
@@ -199,6 +201,7 @@ cis:
     - study: "3584"
       title: "Preelectoral elecciones generales 2026"
       estimate_url: "https://www.cis.es/documents/d/guest/3584_estimacion-pdf"
+      microdata_url: "https://www.cis.es/documents/d/guest/md3584-zip"   # online by 23 Nov 2026
       published: "2026-11-12"
       fieldwork: ["2026-10-07", "2026-10-30"]
       sample_size: 45074

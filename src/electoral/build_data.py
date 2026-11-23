@@ -24,10 +24,10 @@ from electoral import cis, cis_microdata, mir, regional, wiki_polls
 
 # Wikipedia page key -> election cycle the polls belong to (sub-pages merged)
 CYCLE_OF = {
-    "next": "next", "e2023": "e2023", "e2023_2022": "e2023", "e2023_2019_2021": "e2023",
+    "next": "next", "next_2023_2024": "next", "e2023": "e2023", "e2023_2022": "e2023", "e2023_2019_2021": "e2023",
     "e2019nov": "e2019nov", "e2019apr": "e2019apr", "e2016": "e2016",
 }
-DEFAULT_YEAR = {"next": 2026, "e2023": 2023, "e2023_2022": 2022, "e2023_2019_2021": 2021,
+DEFAULT_YEAR = {"next": 2026, "next_2023_2024": 2024, "e2023": 2023, "e2023_2022": 2022, "e2023_2019_2021": 2021,
                 "e2019nov": 2019, "e2019apr": 2019, "e2016": 2016}
 # Same organisation under two names in the tables (ElectoPanel is Electomanía's panel,
 # rebranded EM-Analytics in 2023). Pollster ids are otherwise the name before the slash.

@@ -1,8 +1,8 @@
 {
   "tag": "29n",
-  "cutoff_date": "2026-11-14",
+  "cutoff_date": "2026-11-23",
   "horizon": "2026-11-29",
-  "weeks_ahead": 2.14,
+  "weeks_ahead": 0.86,
   "scenarios": [
     "split",
     "merged"

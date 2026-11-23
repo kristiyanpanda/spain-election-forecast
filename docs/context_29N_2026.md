@@ -476,6 +476,54 @@ Youth: [Noticias de Navarra / EFE](https://www.noticiasdenavarra.com/politica/20
 Not checked against a primary source: the 40dB youth figures (taken from Agenda Pública) and the
 debate calendar beyond 19 Nov.
 
+## 9. Update, 23 November (final run: the last day polls may be published)
+
+### 9.1 What happened since 14 November
+
+| date | event |
+|---|---|
+| 19 Nov | The only Sánchez-Feijóo debate (moderated by María Casado). Most press verdicts give it to Feijóo; the newspaper reader polls quoted afterwards (El Mundo, ABC, El País, El Debate) are self-selected and not evidence. PSOE says Sánchez won. |
+| 20-23 Nov | The PSOE recovers ground in nearly every tracker in the last week (Sigma Dos: PP lead from 5.4 to 3.4 points in seven days); Sánchez asks for a concentrated vote for the PSOE, Colau and Montero argue against it. Feijóo asks PSOE voters to lend him their vote so as not to depend on Vox. |
+| 23 Nov | The Audiencia Nacional opens the "3 %" trial (CDC's former financing). RTVE eight-spokesperson debate at 22:00, after the cut-off: not in the data. |
+| 24 Nov | Publication ban on polls begins (LOREG art. 69.7). |
+
+### 9.2 The last week of polls (14-22 Nov fieldwork)
+
+- 78 new releases since the interim run; 20 pollsters have a release ending 17-22 Nov. Most: PP
+  30-33, PSOE 27-29, Vox 17-19.5, Frente Amplio + Front Valencià 5-8, Podemos 0.7-1.7.
+- **The PP-PSOE gap narrowed and the right bloc slipped.** Each pollster's latest release, median
+  across pollsters, 1-13 Nov against 17-22 Nov: PP 31.5 → 31.4, PSOE 26.5 → 28.4, Vox 18.8 → 18.0,
+  PP lead 4.6 → 2.9 points, PP + Vox 50.5 → 49.2 %. The movement is PSOE gaining, mostly from Vox and
+  the left of PSOE, not PP falling. Final seat totals for PP + Vox in the press: 187 (40dB) to 203.
+- Three pollsters read the race as nearly tied or PSOE-led: 40dB (PP +0.3 to +0.9 in its last
+  releases), SW Demoscopia (PSOE +2.6, cumulative sample since 26 Oct) and Cluster17 (PSOE 32.6,
+  PP 30.2). Metroscopia gave a 30-30 tie. Data10, DYM, GESOP and NC Report give PP leads of 4-5 points.
+- New pollsters in the table this week: Public First, Winston, Hamalgama Métrica, Metroscopia,
+  Cluster17, Infortécnica (no party figures).
+
+### 9.3 Data changes for the final run
+
+- **CIS 3584 microdata are now on cis.es** (`md3584-zip`, 45,074 interviews; the study page still
+  404s). Our recall-weighted likely-voter re-estimate: **PSOE 29.4, PP 27.9, Vox 22.0**, FA 4.6,
+  Front Valencià 1.4, ERC 2.4, Podemos 1.1. Like the two outside re-estimates, it puts PSOE first and
+  Vox much higher than the official estimate (18.4). Ballot labels new in this study (Frente Amplio
+  and its joint lists, Compromís-Front Valencià, UPN-PP, CC-Municipalistas) were added to the
+  microdata mapping.
+- **CEO:** no wave after the one published on 14 Oct (the open-data file is unchanged since then).
+- **Wikipedia:** the 2023-24 tables of the 2026 page moved to a sub-page ("Nationwide opinion
+  polling for the 2026 Spanish general election (2023–2024)"), now fetched as well; no row was lost
+  (660 current-cycle polls at 14 Nov, 738 now).
+
+Sources (accessed 23 Nov 2026): [Infobae, final polls](https://www.infobae.com/espana/2026/11/23/las-ultimas-encuestas-del-29-n-la-mayoria-absoluta-de-pp-y-vox-no-peligra-pese-a-las-23-provincias-donde-el-ultimo-diputado-se-decantaria-por-menos-de-10000-votos/),
+[ESdiario](https://www.esdiario.com/nacional/261123/203647/ultimas-encuestas-elecciones-29n-pp-vox-psoe-mayoria-absoluta.html),
+[elDiario.es](https://www.eldiario.es/politica/ultima-hora-elecciones-generales-actualidad-politica-directo_6_13683632_1126772.html),
+[El Español live](https://www.elespanol.com/espana/20261123/elecciones-generales-directo-encuestas-ultima-hora-campana-electoral-pp-psoe-vox-frente-amplio/1003744468186_10.html),
+[Telecinco](https://www.telecinco.es/noticias/espana/20261123/elecciones-generales-2026-recta-final-campana-candidatos-politicos-movilizar-electorado_18_020783689.html),
+debate: [Infobae](https://www.infobae.com/espana/2026/11/19/debate-cara-a-cara-entre-pedro-sanchez-y-alberto-nunez-feijoo-en-directo-ultima-hora-sobre-las-elecciones-generales-29-n-en-espana/),
+[El Debate](https://www.eldebate.com/cine-tv-series/20261122/cara-cara-feijoo-pasa-factura-sanchez-reabre-criticas-estrategia-televisiva_483475.html),
+RTVE debate: [Demócrata](https://www.democrata.es/en/general-elections-spain/rtve-will-hold-an-eight-way-election-debate-on-november-23-with-pp-psoe-vox-frente-amplio-and-nationalist-parties/).
+Polls: [Wikipedia table](https://en.wikipedia.org/wiki/Opinion_polling_for_the_2026_Spanish_general_election).
+
 ---
 
 ### Sources (accessed 5 Oct 2026)

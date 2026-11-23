@@ -4,14 +4,15 @@
 
 *English version: [`README.md`](../README.md).*
 
-> **PROVISIONAL — encuestas hasta el 14 de noviembre de 2026; la versión final usará las encuestas
-> publicadas hasta el 23 de noviembre, último día que permite la ley.** Todo lo que sigue depende de las
-> encuestas publicadas hasta el cierre de datos, el **14 de noviembre de 2026**, un día después del inicio
-> de la campaña y dos semanas antes de la votación. Para actualizarlo, basta con volver a ejecutar `make all`.
+> **FINAL — encuestas hasta el 23 de noviembre de 2026, último día en que la ley permite publicarlas
+> antes de las elecciones del 29 de noviembre.** Todo lo que sigue depende de las encuestas publicadas
+> hasta el cierre de datos, el **23 de noviembre de 2026**, seis días antes de la votación. Es la última
+> versión antes de las elecciones; la versión provisional del 14 de noviembre está archivada en
+> `outputs/archive/2026-11-14/`.
 
 Las elecciones al Congreso de 2023 dieron 137 escaños al PP, 121 al PSOE, 33 a Vox y 31 a Sumar. El 5 de
 octubre de 2026 se disolvieron las Cortes y se convocaron elecciones anticipadas para el 29 de noviembre.
-Este repositorio convierte el registro público de encuestas desde 2023 (659 encuestas de 40 encuestadoras
+Este repositorio convierte el registro público de encuestas desde 2023 (737 encuestas de 45 encuestadoras
 y series basadas en el CIS, con el CIS tomado directamente de cis.es) y los resultados oficiales de
 1977-2023 en una previsión probabilística de esas elecciones. Después comprueba cómo habría funcionado el
 mismo procedimiento 30 días antes de las elecciones de 2016, abril de 2019, noviembre de 2019 y 2023.
@@ -20,19 +21,21 @@ descriptiva de aquel trabajo se reproduce en `figures/`.
 
 ## Resultado principal
 
-**El 29 de noviembre**, el modelo da al PP el 30,5 % del voto (intervalo del 90 %: 25,0-36,6), al PSOE el
-27,5 % (22,5-33,2), a Vox el 19,0 % (15,6-23,1), al espacio del Frente Amplio (Frente Amplio más
-Compromís-Front Valencià, la línea que viene de Sumar) el 6,9 % (5,7-8,6) y a Podemos el 1,6 % (1,3-2,1)
-donde presenta lista propia. Los escaños siguen las candidaturas proclamadas el 3 de noviembre. El **caso
-base** es la izquierda tal como se ha registrado: Frente Amplio y Podemos por separado, con Podemos
-ausente de las diez provincias donde se integró en otras listas. El análisis de **sensibilidad** es una
-lista única de Frente Amplio y Podemos en todas las provincias, que conserva 0,83 de la suma, como
-Unidos Podemos en 2016.
+**El 29 de noviembre**, el modelo da al PP el 30,7 % del voto (intervalo del 90 %: 25,1-36,7), al PSOE el
+29,0 % (23,7-34,9), a Vox el 18,5 % (15,1-22,3), al espacio del Frente Amplio (Frente Amplio más
+Compromís-Front Valencià, la línea que viene de Sumar) el 6,7 % (5,4-8,1) y a Podemos el 1,4 % (1,1-1,7)
+donde presenta lista propia. **PP y Vox alcanzan la mayoría en el 90 % de las simulaciones; el PP es
+primera fuerza en el 71 %.** El PSOE ha recortado parte de la distancia en la última semana de campaña,
+pero no lo bastante para cambiar la aritmética de bloques. Los escaños siguen las candidaturas
+proclamadas el 3 de noviembre. El **caso base** es la izquierda tal como se ha registrado: Frente Amplio
+y Podemos por separado, con Podemos ausente de las diez provincias donde se integró en otras listas. El
+análisis de **sensibilidad** es una lista única de Frente Amplio y Podemos en todas las provincias, que
+conserva 0,83 de la suma, como Unidos Podemos en 2016.
 
 ![Figura 1. Congreso previsto](figures/hemicycle_29n_split.png)
 ***Figura 1. Congreso previsto, 29 de noviembre de 2026.*** *Escaños esperados, caso base: la media de
 cada partido en 10.000 simulaciones, redondeada para que sumen 350. Ninguna simulación tiene por qué ser
-exactamente así; los intervalos del 90 % están en la tabla de abajo. PP y Vox suman aquí 196. «Frente
+exactamente así; los intervalos del 90 % están en la tabla de abajo. PP y Vox suman aquí 191. «Frente
 Amplio» incluye a Compromís-Front Valencià. «Otros» son candidaturas locales (Soria ¡Ya!, Teruel Existe,
 UPL). Versión con lista única de la izquierda:
 [`hemicycle_29n_merged.png`](figures/hemicycle_29n_merged.png). En la página interactiva (`index.html`)
@@ -41,53 +44,56 @@ y se ve el recuento frente a los 176 y en qué proporción de las simulaciones s
 
 | partido | voto al cierre de datos | escaños si se votara al cierre, 90 % | escaños el 29-N, listas separadas (base) | escaños el 29-N, lista única |
 |---|---|---|---|---|
-| PP | 30,5 % | 122 - 135 | 128 (105 - 151) | 128 (105 - 151) |
-| PSOE | 27,6 % | 103 - 116 | 109 (89 - 131) | 109 (89 - 131) |
-| Vox | 19,1 % | 62 - 74 | 67 (52 - 85) | 68 (52 - 85) |
-| Frente Amplio + Compromís-Front Valencià | 7,0 % | 8 - 13 | 10 (6 - 16) | 10 (6 - 17) |
-| Podemos | 1,6 % | 0 - 1 | 1 (0 - 1) | (en Frente Amplio) |
+| PP | 30,7 % | 121 - 134 | 127 (105 - 150) | 127 (105 - 150) |
+| PSOE | 29,0 % | 108 - 121 | 114 (93 - 136) | 114 (93 - 137) |
+| Vox | 18,5 % | 59 - 70 | 64 (49 - 80) | 64 (49 - 81) |
+| Frente Amplio + Compromís-Front Valencià | 6,7 % | 7 - 11 | 9 (6 - 14) | 9 (5 - 14) |
+| Podemos | 1,4 % | 0 - 1 | 0 (0 - 1) | (en Frente Amplio) |
 | ERC | 2,6 % | 8 - 12 | 10 (7 - 13) | 10 (7 - 13) |
-| EH Bildu / PNV / Junts | 1,4 / 0,9 / 1,3 % | 6-8 / 4-6 / 3-6 | 7 / 5 / 5 | 7 / 5 / 5 |
-| BNG / CC / Adelante Andalucía | 0,9 / 0,4 / en torno a 1,3 % | 1-2 / 1 / 0-5 | 2 / 1 / 1 | 2 / 1 / 1 |
+| EH Bildu / PNV / Junts | 1,4 / 0,8 / 1,2 % | 6-8 / 4-6 / 3-6 | 7 / 5 / 4 | 7 / 5 / 4 |
+| BNG / CC / Adelante Andalucía | 0,9 / 0,3 / en torno a 1,5 % | 2-3 / 0-1 / 0-8 | 2 / 0 / 3 | 2 / 0 / 3 |
 
 | suceso (29-N) | listas separadas | lista única |
 |---|---|---|
-| PP + Vox (+ UPN, SALF) alcanzan 176 escaños | 94 % | 95 % |
-| PP, primera fuerza | 78 % | 78 % |
-| PSOE, primera fuerza | 22 % | 22 % |
-| El bloque de la investidura de 2023 (PSOE, FA, Podemos, ERC, Bildu, BNG, CC, AA, PNV, Junts) alcanza 176 | 3 % | 3 % |
+| PP + Vox (+ UPN, SALF) alcanzan 176 escaños | 90 % | 90 % |
+| PP, primera fuerza | 71 % | 71 % |
+| PSOE, primera fuerza | 29 % | 29 % |
+| El bloque de la investidura de 2023 (PSOE, FA, Podemos, ERC, Bildu, BNG, CC, AA, PNV, Junts) alcanza 176 | 6 % | 5 % |
 | El PP alcanza 176 en solitario | < 1 % | < 1 % |
 
-**Qué ha cambiado desde la versión del 17 de octubre** (PP 131, PSOE 107, Vox 66; mayoría de PP + Vox, 93 %).
-- **La distancia publicada entre PP y PSOE es menor, pero poco de eso es movimiento de las últimas cuatro
-  semanas.** La versión del 17 de octubre leía PP 31,1 / PSOE 26,9 en su cierre; esta lee PP 30,5 /
-  PSOE 27,6. Con las encuestas y las reglas de hoy, el modelo lee el propio 17 de octubre como PP 30,6 /
-  PSOE 27,4, de modo que el cambio desde entonces es PP -0,1, PSOE +0,2, Vox -0,3. El resto es una
-  relectura: los nuevos estudios y encuestadoras, y los cambios de reglas que se explican abajo, movieron
-  la referencia respecto a la que se miden los efectos de casa. No se han separado las dos cosas.
-- **La aritmética de bloques no se ha movido.** PP y Vox suman el 49,6 % del voto y tienen un 94 % de
-  probabilidad de mayoría; el PP es primera fuerza en el 78 % de las simulaciones (80 % antes). A dos
-  semanas de la votación, estas cifras dependen casi por completo del error de las encuestas el día de la
-  elección, no de la deriva.
-- **El estudio preelectoral del CIS** (45.074 entrevistas, PSOE 33,3 / PP 25,5) entra con su efecto de
-  casa habitual (-5,1 para el PP, +4,1 para el PSOE), así que su estimación oficial mueve poco la media.
-  Los datos brutos sí se movieron: nuestra propia lectura del barómetro de octubre, ponderada por recuerdo
-  de voto, es PP 28,4 / PSOE 27,6, frente a PP 30,6 / PSOE 25,7 en septiembre, y dos reestimaciones
-  externas del preelectoral ponen primero al PSOE.
-- **Las series basadas en el CIS cuentan como una sola encuestadora.** Diez de las 39 series son lecturas
-  de los datos brutos del CIS (la estimación oficial, la nuestra y ocho reestimaciones de terceros). Ahora
-  comparten un solo voto al centrar los efectos de casa. Con un voto cada una, el cierre daba PP 30,2 /
-  PSOE 27,8.
-- **Las encuestadoras discrepan más que en octubre**: la ventaja del PP va de 7,7 puntos (Data10) a -2,9
-  (SW Demoscopia, una firma nueva sin historial). El tracking diario de 40dB la deja en 1,3.
-- **La oferta electoral, tal como se ha proclamado.** Las encuestas preguntan ya por las candidaturas
-  registradas. Podemos se mide solo donde se presenta en solitario (del 3,1 % al 1,6 %, la mayor parte de
-  la caída es un cambio de definición) y obtiene 0-1 escaños; desaparece la suposición del 50/50 sobre sus
-  votantes catalanes. ERC marca un 2,6 % con Podemos en sus listas.
-- **Los trackings cuentan una sola vez.** Las publicaciones diarias y acumuladas de una misma
-  encuestadora con trabajo de campo solapado ya no son encuestas distintas (659 registradas, 583 usadas).
-- El error del día de la elección se ha recalibrado con el backtest reajustado: 11,5 % del voto de cada
-  partido (13,3 % antes).
+**Qué ha cambiado desde la versión provisional del 14 de noviembre** (PP 128, PSOE 109, Vox 67; mayoría
+de PP + Vox, 94 %; PP primera fuerza, 78 %).
+- **El PSOE ha subido en la última semana, sobre todo a costa de Vox.** Al cierre, el modelo lee PP
+  30,7 / PSOE 29,0 / Vox 18,5, frente a PP 30,5 / PSOE 27,6 / Vox 19,1 publicados el 14 de noviembre.
+  Las encuestas en bruto dicen lo mismo: la mediana, entre encuestadoras, de la última publicación de
+  cada una pasa de PP 31,5 / PSOE 26,5 / Vox 18,8 (1-13 nov) a PP 31,4 / PSOE 28,4 / Vox 18,0
+  (17-22 nov). El PP se mantiene, el PSOE sube unos dos puntos y bajan Vox y la izquierda del PSOE. El
+  debate Sánchez-Feijóo (19 nov) cae en mitad de ese periodo y las encuestas posteriores no muestran un
+  cambio de tendencia.
+- **Parte del cambio es una relectura, no un movimiento.** Con todos los datos, el modelo lee ahora el
+  propio 14 de noviembre como PP 30,8 / PSOE 28,6 / Vox 18,4. El agregador es un suavizador: las
+  encuestas posteriores informan la estimación de semanas anteriores, y las publicadas desde el 14 de
+  noviembre también reestiman el efecto de casa de cada encuestadora. Desde el 14 de noviembre releído,
+  el movimiento es PP -0,1, PSOE +0,4, Vox +0,1. No se han separado más las dos partes.
+- **La aritmética de bloques se ha movido, pero poco.** PP y Vox bajan del 49,6 % al 49,2 % del voto y
+  del 94 % al 90 % de probabilidad de mayoría; el total esperado del bloque de la derecha es de 191
+  escaños. La probabilidad de que el PSOE sea primera fuerza sube del 22 % al 29 %. A seis días de la
+  votación, estas cifras dependen casi por completo del error de las encuestas el día de la elección.
+- **Ya están los microdatos del preelectoral del CIS.** cis.es ha publicado los microdatos del estudio
+  3584 (45.074 entrevistas). Nuestra reestimación, ponderada por recuerdo de voto y con votantes
+  probables, da PSOE 29,4 / PP 27,9 / Vox 22,0: como las reestimaciones externas, el PSOE primero y Vox
+  muy por encima del 18,4 oficial. No mueve la media: un reajuste sin ella da las mismas cifras con un
+  decimal, porque las series basadas en el CIS forman una familia cuyos efectos de casa la absorben.
+- **Las encuestadoras discrepan sobre la distancia, no sobre el bloque.** En las últimas publicaciones la
+  ventaja del PP va de 6,8 puntos (Hamalgama Métrica) a -2,6 (SW Demoscopia); 40dB, Ipsos, Metroscopia y
+  More in Common la dejan por debajo de un punto, y la mayoría de las demás entre 2,5 y 5. PP y Vox suman
+  entre el 47 y el 53 % en todas salvo SW Demoscopia (45,7).
+- Solo cambios de datos: la página de Wikipedia trasladó sus tablas de 2023-24 a una subpágina (que ahora
+  también se descarga; no se ha perdido ninguna fila), y las etiquetas de las candidaturas del 29-N en
+  el CIS (Frente Amplio y sus listas conjuntas, Compromís-Front Valencià, UPN-PP) se han añadido a la
+  correspondencia de los microdatos. No ha cambiado el código del modelo, así que el backtest y su error
+  del día de la elección del 11,5 % son los del 14 de noviembre. No hay oleada nueva del CEO desde el
+  14 de octubre.
 
 ## Tendencia, bloques y backtest
 
@@ -98,7 +104,8 @@ el ciclo completo; la franja sombreada es el periodo ampliado a la derecha. Dere
 meses, con los acontecimientos fechados: la crisis fronteriza de Ceuta (30 de julio), el rechazo de los
 decretos en el Congreso (2 de octubre), la disolución (5 de octubre), el cierre de coaliciones y el
 anuncio de Colau (17 de octubre), el accidente ferroviario de Urda (28 de octubre), la proclamación de
-candidaturas (3 de noviembre) y el inicio de la campaña (13 de noviembre). La línea discontinua es el
+candidaturas (3 de noviembre), el inicio de la campaña (13 de noviembre) y el debate Sánchez-Feijóo
+(19 de noviembre). La línea discontinua es el
 cierre de datos. El escalón de Podemos a mediados de octubre es el paso a las papeletas registradas.*
 
 ![Figura 3. Escaños por bloque](figures/bloc_majority_29n_split.png)
@@ -120,7 +127,7 @@ cuatro últimas elecciones, frente al resultado.*
 | Agregador | paseo aleatorio semanal en escala logit para cada partido, anclado en el resultado de 2023; saltos de nivel donde cambió la oferta electoral; efectos de casa jerárquicos centrados en las encuestadoras que publican, con las series del CIS como una sola; ruido binomial más un exceso; NUTS (nutpie), 4 x 1.000 extracciones | `model.py` |
 | Escaños | variación proporcional sobre el voto provincial de 2023 más ruido provincial log-normal (sd 0,13); capa de encuestas regionales (CEO, Sociómetro, submuestras del CIS); papeletas del 29-N tal como se han proclamado (Podemos ausente de diez provincias, la parte valenciana del espacio del Frente Amplio fijada con encuestas, UPN con el PP); barrera del 3 %; 10.000 simulaciones | `seats.py`, `regional.py`, `project_seats.py` |
 | Backtest | reajuste 30 días antes de 2016, abril de 2019, noviembre de 2019 y 2023 solo con las encuestas anteriores; capa regional solo para Cataluña en 2023 (CEO) | `backtest.py` |
-| Día de la elección | 2 semanas de deriva del paseo aleatorio más un error del día de la elección calibrado con el backtest (11,5 % del voto de cada partido); la reversión a la media se probó y se descartó | `forecast.py` |
+| Día de la elección | seis días de deriva del paseo aleatorio más un error del día de la elección calibrado con el backtest (11,5 % del voto de cada partido); la reversión a la media se probó y se descartó | `forecast.py` |
 | Descriptivo | participación, número efectivo de partidos de Laakso-Taagepera, volatilidad de Pedersen dentro de los bloques y entre ellos, matriz de bloques, fragmentación provincial | `indices.py`, `descriptive.py` |
 
 ## Resultados del backtest (media de las cuatro elecciones, previsiones a 30 días)
@@ -158,9 +165,9 @@ Tabla completa por elección: `outputs/backtest_scorecard.csv` y `outputs/backte
 ## De dónde viene la incertidumbre
 
 Desviación típica de los escaños del PP al añadir las fuentes de una en una, caso base
-(`outputs/uncertainty_decomposition.csv`): la estimación al cierre de datos, 2,9 escaños; más el ruido
-provincial, 4,0; más dos semanas de deriva, 4,5; más el error de las encuestas el día de la elección,
-13,8. A dos semanas de la votación, el error compartido de las encuestas lo es casi todo. Para los
+(`outputs/uncertainty_decomposition.csv`): la estimación al cierre de datos, 2,7 escaños; más el ruido
+provincial, 4,1; más seis días de deriva, 4,3; más el error de las encuestas el día de la elección,
+13,8. A seis días de la votación, el error compartido de las encuestas lo es casi todo. Para los
 partidos de ámbito autonómico cercanos a la barrera del 3 % en su circunscripción pesan más el ruido
 provincial y las encuestas regionales.
 
@@ -219,30 +226,31 @@ pactometro/            el pactómetro (template.html) que se inserta en las dos 
 
 ## Limitaciones
 
-* **Versión provisional.** La versión final usará las encuestas publicadas hasta el 23 de noviembre.
-  Todavía falta aquí: los microdatos del estudio preelectoral del CIS (no estaban en cis.es el 14 de
-  noviembre, así que entra solo como estimación oficial) y cualquier oleada del CEO posterior al 5 de
-  octubre.
+* **Nada posterior al 23 de noviembre está en los datos.** No se pueden publicar encuestas en los cinco
+  últimos días (LOREG, art. 69.7), así que el debate a ocho de RTVE del 23 de noviembre y lo que venga
+  después solo entran a través del error del día de la elección. La última oleada del CEO terminó el 5
+  de octubre.
 * **Quién cuenta como encuestadora condiciona la distancia entre PP y PSOE.** Los efectos de casa se
-  centran en la encuestadora media, un voto cada una, con las diez series del CIS como una sola. Esa
-  media es una decisión: con un voto por serie la distancia es de 2,4 puntos en lugar de 2,9, y una
-  media simple de las encuestas privadas recientes da al PP unos cinco, porque en ella pesan más las
-  encuestadoras que más publican. La probabilidad de mayoría no es sensible a esto; la de «primera
-  fuerza», sí.
+  centran en la encuestadora media, un voto cada una, con las once series del CIS como una sola. Esa
+  media es una decisión: la ventaja del PP al cierre es de 1,7 puntos en el modelo, la mediana de las
+  últimas publicaciones de cada encuestadora es de 2,9 y una media simple de las encuestas privadas
+  recientes es mayor, porque en ella pesan más las encuestadoras que más publican. La probabilidad de
+  mayoría es poco sensible a esto; la de «primera fuerza», sí.
 * **Dónde gana sus escaños el espacio del Frente Amplio es en parte una suposición.** Su parte valenciana
-  sale de las siete encuestadoras que publican Compromís-Front Valencià por separado (entre el 10 y el
-  23 % del espacio); el resto conserva la geografía de Sumar en 2023, que probablemente infravalora a Más
-  Madrid. El modelo da al espacio 10 escaños donde el CIS y la mayoría de las encuestadoras le dan entre
-  11 y 15 con un voto parecido.
+  sale de las encuestadoras que publican Compromís-Front Valencià por separado (en torno a una quinta
+  parte del espacio); el resto conserva la geografía de Sumar en 2023, que probablemente infravalora a
+  Más Madrid. El modelo da al espacio 9 escaños donde la mayoría de las encuestadoras le dan entre 7 y 12
+  y el CIS entre 11 y 17 con un voto parecido.
 * **El error común de las encuestas es el riesgo dominante** y se trata con un término de inflación
-  calibrado con cuatro elecciones (veinte residuos partido-elección). A dos semanas de la votación es
-  casi toda la incertidumbre.
+  calibrado con cuatro elecciones (veinte residuos partido-elección). A seis días de la votación es
+  casi toda la incertidumbre. En 2023 todas las encuestadoras infravaloraron al PSOE en unos 5 puntos; el
+  modelo no supone que vuelva a ocurrir, en ningún sentido.
 * **La capa regional se apoya en poca evidencia.** Sus pesos se calibraron con una sola elección
   (Cataluña 2023, cuatro partidos), y entonces el CEO sobrestimó a ERC en 5 puntos. El Sociómetro
   pregunta por el Parlamento Vasco, así que se supone que su variación desde 2024 se traslada a unas
   generales. CC y Navarra no tienen fuente regional.
 * **Nuestra serie con microdatos del CIS no tiene backtest**, y Adelante Andalucía entra en el modelo de
-  escaños con la mediana de sus encuestas recientes (en torno al 1,3 %) y no a través del agregador.
+  escaños con la mediana de sus encuestas recientes (en torno al 1,5 %) y no a través del agregador.
 * **No hay modelo demográfico.** La disputa de la campaña por el voto joven no está modelizada: las
   encuestas muestran a los jóvenes inclinados a la derecha con una gran brecha de género, votando menos y
   decidiendo tarde (`docs/context_29N_2026.md`, §8.5). El movimiento de última hora solo queda cubierto

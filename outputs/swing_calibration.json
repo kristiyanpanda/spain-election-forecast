@@ -41,11 +41,11 @@
         "12",
         "46"
       ],
-      "fraction": 0.18950786056049213,
-      "sd_log": 0.2740364884044746,
-      "n_pollsters": 7
+      "fraction": 0.19427759740259742,
+      "sd_log": 0.1562762882359225,
+      "n_pollsters": 12
     }
   },
   "scenario": "split",
-  "cutoff_date": "2026-11-14"
+  "cutoff_date": "2026-11-23"
 }
